@@ -131,4 +131,6 @@ One nice benefit of importing our other components (children), is that we have a
     ])
     ```
 
-- [ ] Only throw errors when debug is true
+- [ ] only throw errors when debug is true
+- [ ] showcase how to set properties
+- [ ] how can we make use of regular DOM methods?
