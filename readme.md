@@ -4,6 +4,8 @@
 
 Whenever we write Vanilla JavaSript, it might look something like this:
 
+```javascript
+
     // create required elements
     const container = document.createElement('div');
     const displayTimer = document.createElement('div');
@@ -34,7 +36,8 @@ Whenever we write Vanilla JavaSript, it might look something like this:
     container.appendChild(stopButton);
 
     // mount container to DOM
-    document.body.appendChild(container); 
+    document.body.appendChild(container);
+```
 
 Notice that we are doing alot of things repeatedly: creating elements, adding classes and attributes, creating text nodes, attaching child elements etc... The benefit is we are grouping things together by task.
 
