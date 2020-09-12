@@ -97,7 +97,7 @@ You might have noticed we are setting classList inside an arrow function called 
 
 If we take a look at the `onClick` arrow function, we see that we're doing event delegation like we usually would in regular Vanilla JavaScript.
 
-One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes all over again.
+One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes or attributes we might want to check, all over again.
 
 ## Todo:
 
