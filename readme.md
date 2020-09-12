@@ -131,4 +131,4 @@ One nice benefit of importing our other components (children), is that we have a
     ])
     ```
 
-- [ ] ...
+- [ ] Only throw errors when debug is true
