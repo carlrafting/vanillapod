@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "eslint": "^7.9.0"
+  },
+  "name": "cevjs",
+  "version": "0.0.0",
+  "main": "src/index.js",
+  "repository": "https://github.com/carlrafting/cevjs.git",
+  "author": "Carl <carl.rafting@gmail.com>",
+  "license": "MIT"
+}
