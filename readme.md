@@ -36,12 +36,15 @@ Whenever we write Vanilla JavaSript, it might look something like this:
     container.appendChild(stopButton);
 
     // mount container to DOM
-    document.body.appendChild(container);
+    document.body.appendChild(container);`
+
 ```
 
 Notice that we are doing alot of things repeatedly: creating elements, adding classes and attributes, creating text nodes, attaching child elements etc... The benefit is we are grouping things together by task.
 
 CEVJS goal is to go through each of these steps for you. You just have to write regular old Vanilla JavaScript. It might look something like this:
+
+```javascript
 
     import heading from './heading.js';
     import displayTimer from './displayTimer.js';
@@ -84,9 +87,13 @@ CEVJS goal is to go through each of these steps for you. You just have to write 
         };
     }
 
+```
+
 Isn't this much better? We encapsulate all the code that has to do with the container, inside a `function` called container. All children are stored inside an array on a property called `children` which belongs to the object we return whenever `container()` is called.
 
 You might have noticed we are setting classList inside an arrow function called `attrs`, this is just a conveniant way if you are setting many attributes at once. You could just as well write it this way:
+
+```javascript
 
     // ...
 
@@ -98,6 +105,8 @@ You might have noticed we are setting classList inside an arrow function called 
         children
     };
 
+```
+
 If we take a look at the `onClick` arrow function, we see that we're doing event delegation like we usually would in regular Vanilla JavaScript.
 
 One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes or attributes we might want to check, all over again.
@@ -108,3 +117,4 @@ One nice benefit of importing our other components (children), is that we have a
 - [ ] complete name variable in doRegister function
 - [ ] make it possible to unmount component
 - [ ] message/pubsub component
+- [ ] make it nicer to check value of classList on another component. `stopButton().classList[1]` is not so nice...
