@@ -10,7 +10,7 @@ const validProps = {
 
 function validateProps(props) {
     for (const key in props) {
-        if (!validProps.hasOwnProperty(key)) {
+        if (!Object.prototype.hasOwnProperty.call(validProps, key)) {
             throw new Error(
                 `${key} is not a valid property name. Try one of the following instead: ` + Object.keys(validProps)
             );            
