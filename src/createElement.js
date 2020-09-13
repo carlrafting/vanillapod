@@ -1,3 +1,5 @@
+import debug from './debug.js';
+
 function setElementAttributes(element, { attributes, classList, data }) {
     if (classList) {
         classList.forEach(className => {
@@ -24,7 +26,7 @@ function setElementAttributes(element, { attributes, classList, data }) {
         }
 
         if (typeof attributes === 'object') {
-            console.log(attributes);
+            (debug() && console.log(attributes));
             for (const key in attributes) {
                 if (typeof key === 'object') {
                     setElementAttributes(element, key);
@@ -65,10 +67,10 @@ function setElementEventHandlers(element, { events = {} }) {
 
 function createElementChildren(instance) {
     if (instance.children) {
-        return instance.children.map((child, i) => {
+        return instance.children.map((child) => {
             const childInstance = child();
-            console.log('childInstance', childInstance);
-            const childElement = document.createElement(childInstance.element)
+            (debug() && console.log('childInstance', childInstance));
+            const childElement = document.createElement(childInstance.element);
             setElementAttributes(
                 childElement,
                 childInstance
@@ -81,39 +83,38 @@ function createElementChildren(instance) {
                 childElement,
                 childInstance
             );
-            let children;
+            let children = [];
             if (childInstance.children) {
                 children = createElementChildren(childInstance);
             }
-            return [childElement, children];
+            return [ childElement, children ];
         });
     }
 
     return [];
 }
 
-export default function createElement(elementObject) {
-    const [name, instance] = elementObject;
-    console.log(name, instance);
+export default function createElement([name, instance]) {
+    (debug() && console.log(name, instance));
 
-    console.log('Creating element...');
+    (debug() && console.log('Creating element...'));
     const element = document.createElement(instance.element);
-    console.log('Created element: ', element);
+    (debug() && console.log('Created element: ', element));
 
-    console.log('Setting attributes for element...');
+    (debug() && console.log('Setting attributes for element...'));
     setElementAttributes(element, instance);
 
-    console.log('Setting text for element...');
+    (debug() && console.log('Setting text for element...'));
     setElementTextContent(element, instance);
 
-    console.log('Attaching event handlers...');
+    (debug() && console.log('Attaching event handlers...'));
     setElementEventHandlers(element, instance);
 
     let children = [];
     if (instance.children && instance.children.length > 0) {
-        console.log('Creating children...');
+        (debug() && console.log('Creating children...'));
         children = createElementChildren(instance);
-        console.log('Created children:', children);
+        (debug() && console.log('Created children:', children));
     }
 
     return [

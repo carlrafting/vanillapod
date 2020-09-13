@@ -1,9 +1,28 @@
+import debug from './debug.js';
+
 export default function attachChildren([element, children]) {
-    console.log('Attaching children to element...')
+    (debug() && (
+        console.log('Attaching children to element...') &&
+        console.log('element', element)
+    ));
     if (children) {
-        children.forEach(child => element.appendChild(child));
+        (debug() && console.log('children', children));
+        children.forEach(child => {
+            const { childElement } = child;
+
+            (debug() && console.log('childElement', childElement));
+
+            // if (children && children.length > 0) {
+            //     attachChildren([childElement, { children }]);
+            // }
+
+            element.appendChild(child[0]);
+        });
+        // if (children.children) {
+        //     attachChildren(children)
+        // }
     }
-    console.log('Attached children to element ', element);
+    (debug() && console.log('Attached children to element ', element, children));
 
     return element;
 }

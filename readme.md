@@ -65,7 +65,7 @@ CEVJS goal is to go through each of these steps for you. You just have to write 
             data: {
                 hello: 'world'
             }
-        })
+        });
 
         const onClick = ({ target }) => {
             if (
@@ -77,7 +77,7 @@ CEVJS goal is to go through each of these steps for you. You just have to write 
             } else {
                 console.log('You clicked on something else...');
             }
-        }
+        };
 
         return {
             element: 'div'
@@ -117,8 +117,8 @@ One nice benefit of importing our other components (children), is that we have a
 - [ ] complete name variable in doRegister function
 - [ ] make it possible to unmount component
 - [ ] message/pubsub component
-- [ ] make it nicer to check value of classList on another component. `stopButton().classList[1]` is not so nice...
-- [ ] only output `console.log` if debug is true
+- [ ] make it nicer to check value of classList from another component. `stopButton().classList[1]` is not so nice...
+- [x] only output `console.log` if debug is true
 - [ ] refactor createElement.js if necessary...
 - [ ] write tests!
 - [ ] make it possible to attach multiple elements at once... ie: 
@@ -128,7 +128,7 @@ One nice benefit of importing our other components (children), is that we have a
         element1,
         element2,
         element3
-    ])
+    ]);
     ```
 
 - [ ] only throw errors when debug is true
