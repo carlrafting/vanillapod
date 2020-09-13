@@ -7,8 +7,8 @@ function setElementAttributes(element, { attributes, classList, data }) {
 
     if (data) {
         for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-                if (typeof key === 'array') {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                if (key instanceof Array) {
                     setElementAttributes(element, key);
                 }
                 element.dataset[key] = data[key];                
