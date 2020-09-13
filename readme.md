@@ -24,6 +24,19 @@ Whenever we write Vanilla JavaSript, it might look something like this:
     const startButton = document.createElement('button');
     const stopButton = document.createElement('button');
 
+    // hooks/lifecycle events
+    const containerHooks = {
+        before() {
+            console.log('before mount');
+        }
+        mount() {
+            console.log('on mount');
+        }
+        unmount() {
+            console.log('on unmount');
+        }
+    };
+
     // set attributes on elements
     container.classList.add('container', 'flow');
     startButton.classList.add('button', 'button--start');
@@ -46,8 +59,20 @@ Whenever we write Vanilla JavaSript, it might look something like this:
     container.appendChild(startButton);
     container.appendChild(stopButton);
 
+    // element DOM events
+    container.addEventListener('click', ({ target }) => {
+        if (target.classList.contains('button--stop')) {
+            console.log('You clicked the stop button!');
+        } else {
+            console.log('You clicked on something else...');
+        }
+    }, false)
+
+    // execute hooks
+    containerHooks.before();
+
     // mount container to DOM
-    document.body.appendChild(container);`
+    document.body.appendChild(container);
 
 ```
 

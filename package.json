@@ -3,6 +3,9 @@
     "doctoc": "^1.4.0",
     "eslint": "^7.9.0"
   },
+  "scripts": {
+    "toc": "doctoc readme.md"
+  },
   "name": "cevjs",
   "version": "0.0.0",
   "main": "src/index.js",
