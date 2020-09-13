@@ -1,5 +1,16 @@
 # CEVJS: Component-Enhanced Vanilla JavaSript
 
+## Table of Contents
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Goal: Enhanche Vanilla JavaScript](#goal-enhanche-vanilla-javascript)
+- [Debugging](#debugging)
+- [ToDo](#todo)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Goal: Enhanche Vanilla JavaScript
 
 Whenever we write Vanilla JavaSript, it might look something like this:
@@ -132,7 +143,7 @@ If anything is not going as expected, you can always turn on debugging. CEVJS wi
 ```
     
 
-## Todo:
+## ToDo
 
 - [ ] lifecycle events/hooks
 - [ ] complete name variable in doRegister function

@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "doctoc": "^1.4.0",
     "eslint": "^7.9.0"
   },
   "name": "cevjs",
