@@ -105,11 +105,31 @@ You might have noticed we are setting classList inside an arrow function called 
         children
     };
 
+    // ...
+
 ```
 
 If we take a look at the `onClick` arrow function, we see that we're doing event delegation like we usually would in regular Vanilla JavaScript.
 
 One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes or attributes we might want to check, all over again.
+
+## Debugging
+
+If anything is not going as expected, you can always turn on debugging. CEVJS will then output what it's doing along the way. To turn on debugging, do the following:
+
+```javascript
+    // yourscript.js
+
+    import { debug } from 'cevjs';
+
+    debug(true);
+
+    // to read debug value, just call debug().
+
+    debug() // returns true
+
+```
+    
 
 ## Todo:
 
