@@ -8,12 +8,14 @@ const validProps = {
     events: {}
 };
 
+let count = 0;
+
 function validateProps(props) {
     for (const key in props) {
         if (!Object.prototype.hasOwnProperty.call(validProps, key)) {
             throw new Error(
                 `${key} is not a valid property name. Try one of the following instead: ` + Object.keys(validProps)
-            );            
+            );
         }
     }
 }
@@ -23,8 +25,6 @@ export default function registerElement(name, props) {
 
     return [name, props];
 }
-
-let count = 0;
 
 export function doRegister(element) {
     const instance = element();
