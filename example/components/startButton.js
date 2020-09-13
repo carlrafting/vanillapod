@@ -8,7 +8,7 @@ export default function startButton() {
 
     const onClick = () => {
         console.log('You clicked the startbutton');
-    }   
+    };
 
     return element('button', config.startButtonText, attrs, { click: onClick });
 }
