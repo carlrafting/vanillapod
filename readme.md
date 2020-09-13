@@ -118,6 +118,7 @@ One nice benefit of importing our other components (children), is that we have a
 If anything is not going as expected, you can always turn on debugging. CEVJS will then output what it's doing along the way. To turn on debugging, do the following:
 
 ```javascript
+
     // yourscript.js
 
     import { debug } from 'cevjs';
