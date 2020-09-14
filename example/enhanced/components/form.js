@@ -36,9 +36,7 @@ export default function form() {
     const saveButton = () => ({
         element: 'button',
         text: 'Save',
-        attributes: {
-            classList: ['button', 'button--save']
-        },
+        classList: ['button', 'button--save'],
         events: {
             click(e) {
                 console.log('You clicked the save button');

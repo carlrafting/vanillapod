@@ -2,7 +2,7 @@ import debug from './debug.js';
 
 export default function setElementAttributes(element, { 
     attributes, 
-    attr, 
+    attrs, 
     classList, 
     classNames,
     data 
@@ -29,14 +29,14 @@ export default function setElementAttributes(element, {
         }
     }
 
-    if (attributes || attr) {
+    if (attributes || attrs) {
         if (!attributes) {
-            attributes = attr;
+            attributes = attrs;
         }
 
         if (typeof attributes === 'function') {
-            const attrs = attributes();
-            setElementAttributes(element, attrs);
+            const attrsObj = attributes();
+            setElementAttributes(element, { ...attrsObj });
             return;
         }
 
