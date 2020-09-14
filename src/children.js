@@ -1,5 +1,5 @@
 import debug from './debug.js';
-import { createElement, registerElement } from './element.js';
+import { createElement, registerElement, setElementProperties } from './element.js';
 import setElementAttributes from './attributes.js';
 import setElementEventHandlers from './events.js';
 import setElementTextContent from './text.js';
@@ -16,6 +16,10 @@ export default function setElementChildren(element, props) {
                 console.log('childElement', childElement) &&
                 console.log('childProps', childProps)
             ));
+            setElementProperties(
+                childElement, 
+                childProps
+            );
             setElementAttributes(
                 childElement,
                 childProps

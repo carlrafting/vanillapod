@@ -15,7 +15,7 @@ export default function form() {
     const createLabel = (text, htmlFor) => ({
         el: 'label',
         text,
-        props: {'htmlFor': htmlFor }
+        props: { htmlFor }
     });
 
     const [titleLabel, descLabel] = [

@@ -38,7 +38,7 @@ function validateProps(props) {
  * creates DOM element
  */
 export function createElement(props) {
-    (debug() && console.log(`Creating ${props.element} for ${props.elementCreatorFunction}`));
+    (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
 
     if (props.element || props.el) {
         (debug() && console.log('Creating element...'));
@@ -84,9 +84,11 @@ export function setElementProperties(element, { props, properties }) {
             props = properties;
         }
 
-        console.log('props:', props);
-
-        element[props] = props;
+        for (const key in props) {
+            if (Object.prototype.hasOwnProperty.call(props, key)) {
+                element[key] = props[key];               
+            }
+        }
     }
 
     console.log('no props');
