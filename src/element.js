@@ -78,6 +78,13 @@ export function registerElement(elementCreatorFunction) {
     error(new Error(`${elementCreatorFunction} is not a function`));
 }
 
+/**
+ * not to be confused with props variable in createElement, 
+ * might have to rename that later...
+ * 
+ * setElementProperties just sets whatever properties you specify 
+ * inside a components props or properties key.
+ */
 export function setElementProperties(element, { props, properties }) {
     if (props || properties) {
         if (!props) {
@@ -86,7 +93,7 @@ export function setElementProperties(element, { props, properties }) {
 
         for (const key in props) {
             if (Object.prototype.hasOwnProperty.call(props, key)) {
-                element[key] = props[key];               
+                element[key] = props[key];
             }
         }
     }
