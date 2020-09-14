@@ -41,9 +41,24 @@ export function createElement(props) {
     (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
 
     if (props.element || props.el) {
-        (debug() && console.log('Creating element...'));
-        const element = document.createElement(props.element || props.el);
-        (debug() && console.log('Created element: ', element));
+        if (!props.el) {
+            props.el = props.element;
+        }
+
+        let element;
+
+        if (typeof props.el === 'string') {
+            (debug() && console.log('Creating element...'));
+            element = document.createElement(props.el);
+            (debug() && console.log('Created element: ', element));
+        } else {
+            // in this case props.el is probably a DOM element
+            element = props.el;
+        }
+
+        if (!element) {
+            error(new Error(`element is ${element}`));
+        }
 
         return [
             element,
