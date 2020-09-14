@@ -16,6 +16,7 @@ export default function container() {
     ];
 
     const attrs = () => ({
+        classList: ['container', 'flow'],
         data: {
             hello: 'world',
             foo: ['bar', 'hello', 'world']
@@ -24,7 +25,7 @@ export default function container() {
     
     return {
         element: containerEl,
-        attrs,
+        attributes: attrs,
         children
     };
 }

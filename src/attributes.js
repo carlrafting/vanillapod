@@ -35,8 +35,8 @@ export default function setElementAttributes(element, {
         }
 
         if (typeof attributes === 'function') {
-            const attr = attributes();
-            setElementAttributes(element, attr);
+            const attrs = attributes();
+            setElementAttributes(element, attrs);
             return;
         }
 

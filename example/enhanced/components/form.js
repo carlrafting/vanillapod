@@ -25,8 +25,6 @@ export default function form() {
         () => createLabel(label.text, label.htmlFor)
     );
 
-    console.log('LABELS: ', [descLabel, titleLabel]);
-
     const description = () => ({
         element: 'textarea',
         text: 'this is some text inside the textarea...',

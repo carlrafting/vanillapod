@@ -112,8 +112,6 @@ export function setElementProperties(element, { props, properties }) {
             }
         }
     }
-
-    console.log('no props');
 }
 
 // A helper one can use to create elements within components
