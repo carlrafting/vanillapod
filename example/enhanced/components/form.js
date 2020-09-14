@@ -27,8 +27,9 @@ export default function form() {
             classList: ['button', 'button--save']
         },
         events: {
-            click() {
+            click(e) {
                 console.log('You clicked the save button');
+                e.preventDefault();
             }
         }
     });
