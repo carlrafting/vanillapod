@@ -7,6 +7,8 @@ import taskList from './taskList.js';
 import form from './form.js';
 
 export default function container() {
+    const containerEl = document.querySelector('.container');
+    
     const children = [
         heading,
         taskList,
@@ -14,12 +16,15 @@ export default function container() {
     ];
 
     const attrs = () => ({
-        classList: ['container', 'flow'],
         data: {
             hello: 'world',
             foo: ['bar', 'hello', 'world']
         }
     });
     
-    return helper('div', null, attrs, null, children);
+    return {
+        element: containerEl,
+        attrs,
+        children
+    };
 }

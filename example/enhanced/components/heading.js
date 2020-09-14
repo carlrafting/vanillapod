@@ -1,6 +1,11 @@
 import { config } from '../../config.js';
-import { helper } from '../../../src/element.js';
 
 export default function heading() {
-    return helper('h1', 'Fine!');
+    const h1 = document.querySelector('h1');
+    h1.textContent = '';
+
+    return {
+        element: h1,
+        text: document.title
+    };
 }
