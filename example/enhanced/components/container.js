@@ -1,19 +1,13 @@
 // cevjs
-import element from '../../src/elementHelper.js';
+import { helper } from '../../../src/element.js';
 
 // components
 import heading from './heading.js';
-import displayTimer from './displayTimer.js';
-import startButton from './startButton.js';
-import stopButton from './stopButton.js';
 import form from './form.js';
 
 export default function container() {
     const children = [
         heading,
-        displayTimer,
-        startButton,
-        stopButton,
         form
     ];
 
@@ -24,18 +18,6 @@ export default function container() {
             foo: ['bar', 'hello', 'world']
         }
     });
-
-    const onClick = ({ target }) => {
-        if (
-            target.classList.contains(
-                stopButton().classList[1]
-            )
-        ) {
-            console.log('You clicked the stop button!');
-        } else {
-            console.log('You clicked on something else...');
-        }
-    };
-
-    return element('div', null, attrs, { click: onClick }, children);
+    
+    return helper('div', null, attrs, {}, children);
 }

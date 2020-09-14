@@ -1,15 +1,14 @@
-import { doRegister } from './register.js';
-import execute from './execute.js';
-import attachChildren from './attachChildren.js';
-import createElement from './createElement.js';
+import bootstrap from '../src/bootstrap.js';
 
-export function mount(root, element) {
-    element = execute(
-        element,
-        doRegister,
-        createElement,
-        attachChildren
-    );
+// mount to DOM
+export default function mount(root, elementCreatorFunction) {
+    const { element } = bootstrap(elementCreatorFunction);
 
-    root.appendChild(element);
+    if (root) {
+        root.appendChild(element);
+        return;
+    }
+
+    const body = document.querySelector('body');
+    body.appendChild(element);
 }

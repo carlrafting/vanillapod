@@ -8,11 +8,28 @@ export default function form() {
         }
     });
 
+    const br = () => ({
+        element: 'br'
+    });
+
     const description = () => ({
         element: 'textarea',
         text: 'this is some text inside the textarea...',
         attributes: {
             id: 'desc'
+        }
+    });
+
+    const saveButton = () => ({
+        element: 'button',
+        text: 'Save',
+        attributes: {
+            classList: ['button', 'button--save']
+        },
+        events: {
+            click() {
+                console.log('You clicked the save button');
+            }
         }
     });
 
@@ -24,7 +41,10 @@ export default function form() {
         },
         children: [
             title,
-            description
+            br,
+            description,
+            br,
+            saveButton
         ]
     };
 }

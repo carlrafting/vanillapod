@@ -1,6 +1,6 @@
-import { config } from '../config.js';
-import element from '../../src/elementHelper.js';
+import { config } from '../../config.js';
+import { helper } from '../../../src/element.js';
 
 export default function heading() {
-    return element('h1', config.containerHeading);
+    return helper('h1', 'Fine!');
 }
