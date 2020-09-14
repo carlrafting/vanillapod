@@ -3,11 +3,13 @@ import { helper } from '../../../src/element.js';
 
 // components
 import heading from './heading.js';
+import taskList from './taskList.js';
 import form from './form.js';
 
 export default function container() {
     const children = [
         heading,
+        taskList,
         form
     ];
 
@@ -19,5 +21,5 @@ export default function container() {
         }
     });
     
-    return helper('div', null, attrs, {}, children);
+    return helper('div', null, attrs, null, children);
 }

@@ -1,9 +1,18 @@
 import debug from './debug.js';
 
-export default function setElementAttributes(element, { attributes, classList, data }) {
+export default function setElementAttributes(element, { 
+    attributes, 
+    attr, 
+    classList, 
+    classNames,
+    data 
+}) {
     (debug() && console.log(`Setting attributes for ${element}`));
 
-    if (classList) {
+    if (classList || classNames) {
+        if (!classList) {
+            classList = classNames;
+        }
         classList.forEach(className => {
             element.classList.add(className);
         });
@@ -20,7 +29,11 @@ export default function setElementAttributes(element, { attributes, classList, d
         }
     }
 
-    if (attributes) {
+    if (attributes || attr) {
+        if (!attributes) {
+            attributes = attr;
+        }
+
         if (typeof attributes === 'function') {
             const attr = attributes();
             setElementAttributes(element, attr);

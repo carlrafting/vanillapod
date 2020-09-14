@@ -12,13 +12,28 @@ export default function form() {
         element: 'br'
     });
 
+    const createLabel = (text, htmlFor) => ({
+        el: 'label',
+        text,
+        props: {'htmlFor': htmlFor }
+    });
+
+    const [titleLabel, descLabel] = [
+        { text: 'Title', htmlFor: 'txt' },
+        { text: 'Description', htmlFor: 'desc'}
+    ].map(label => 
+        () => createLabel(label.text, label.htmlFor)
+    );
+
+    console.log('LABELS: ', [descLabel, titleLabel]);
+
     const description = () => ({
         element: 'textarea',
         text: 'this is some text inside the textarea...',
         attributes: {
             id: 'desc'
         }
-    });
+    });    
 
     const saveButton = () => ({
         element: 'button',
@@ -41,10 +56,14 @@ export default function form() {
             method: 'post'
         },
         children: [
+            titleLabel,
+            br,
             title,
             br,
-            description,
+            descLabel,
             br,
+            description,
+            br,            
             saveButton
         ]
     };

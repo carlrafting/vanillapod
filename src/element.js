@@ -7,8 +7,10 @@ const validProps = {
     data: {},
     classList: [],
     classNames: [],
-    attributes: [],
-    attrs: [],
+    attributes: {},
+    properties: {},
+    props: {},
+    attrs: {},
     children: [],
     text: null,
     events: {},
@@ -36,11 +38,11 @@ function validateProps(props) {
  * creates DOM element
  */
 export function createElement(props) {
-    (debug() && console.log(`Creating ${props.element} for ${props.create}`));
+    (debug() && console.log(`Creating ${props.element} for ${props.elementCreatorFunction}`));
 
-    if (props.element) {
+    if (props.element || props.el) {
         (debug() && console.log('Creating element...'));
-        const element = document.createElement(props.element);
+        const element = document.createElement(props.element || props.el);
         (debug() && console.log('Created element: ', element));
 
         return [
@@ -56,9 +58,9 @@ export function createElement(props) {
  * register a new element instance 
  */
 export function registerElement(elementCreatorFunction) {
-    (debug() && console.log(`Registering ${elementCreatorFunction}`));
-
     if (typeof elementCreatorFunction === 'function') {
+        (debug() && console.log(`Registering ${elementCreatorFunction}...`));
+
         const props = elementCreatorFunction();
 
         if (typeof props !== 'object') {
@@ -67,13 +69,27 @@ export function registerElement(elementCreatorFunction) {
         
         if (validateProps(props)) {
             return {
-                create: elementCreatorFunction,
+                elementCreatorFunction,
                 ...props
             };
         }
     }
     
     error(new Error(`${elementCreatorFunction} is not a function`));
+}
+
+export function setElementProperties(element, { props, properties }) {
+    if (props || properties) {
+        if (!props) {
+            props = properties;
+        }
+
+        console.log('props:', props);
+
+        element[props] = props;
+    }
+
+    console.log('no props');
 }
 
 // A helper one can use to create elements within components

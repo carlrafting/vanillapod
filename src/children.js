@@ -7,9 +7,15 @@ import setElementTextContent from './text.js';
 export default function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
         props.children.map(child => {
-            const childProps = child();
-            (debug() && console.log('childProps', childProps));
-            const childElement = document.createElement(childProps.element);
+            // const childProps = child();
+            // const childElement = document.createElement(childProps.element);
+            const childInstance = registerElement(child);
+            const [childElement, childProps] = createElement(childInstance);
+            (debug() && (
+                console.log('childInstance', childInstance) &&
+                console.log('childElement', childElement) &&
+                console.log('childProps', childProps)
+            ));
             setElementAttributes(
                 childElement,
                 childProps

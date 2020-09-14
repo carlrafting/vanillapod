@@ -24,7 +24,6 @@ body {
 
 #root {
     display: flex;
-    justify-content: center;
     align-content: center;
     height: 100%;
 }
@@ -34,12 +33,16 @@ h1 {
 }
 
 .container {
+    width: 100%;
     max-width: 60em;
     margin: auto;
     background-color: #fff;
     box-sizing: border-box;
-    padding: 2rem 2rem;
+    padding: 4rem 2rem;
     text-align: center;
+    box-sizing: border-box;
+    border-radius: .5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
 
 .tasks {
