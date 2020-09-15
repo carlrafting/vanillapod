@@ -6,10 +6,10 @@
   "scripts": {
     "toc": "doctoc readme.md"
   },
-  "name": "cevjs",
+  "name": "vanillapod.js",
   "version": "0.0.0",
   "main": "src/index.js",
-  "repository": "https://github.com/carlrafting/cevjs.git",
+  "repository": "https://github.com/carlrafting/vanillapod.js.git",
   "author": "Carl <carl.rafting@gmail.com>",
   "license": "MIT"
 }
