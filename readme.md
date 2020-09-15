@@ -161,10 +161,11 @@ When you've defined your component, you have to mount it to an element in the DO
 
     mount(root, container);
 
-    // if you don't specify a root element as a first argument to mount(), the component will mount to the body element instead
+    // if you don't specify a root element as a first argument to mount(),
+    // the component will mount to the body element automatically
     mount(null, container);
 
-    // you can specify multiple components to mount
+    // you can specify multiple components to mount simultaneously
     mount(
         root,
         container,
