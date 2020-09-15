@@ -1,9 +1,14 @@
 {
     "env": {
         "browser": true,
+        "node": true,
         "es2021": true
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:jest-dom/recommended",
+        "plugin:testing-library/recommended"
+    ],
     "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module"
@@ -14,7 +19,7 @@
             4
         ],
         "linebreak-style": [
-            "error",
+            "warn",
             "windows"
         ],
         "quotes": [
@@ -25,5 +30,9 @@
             "error",
             "always"
         ]
-    }
+    },
+    "plugins": [
+        "testing-library",
+        "jest-dom"
+    ]
 }

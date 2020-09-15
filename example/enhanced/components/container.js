@@ -1,6 +1,3 @@
-// vanillapod
-import { helper } from '../../../src/element.js';
-
 // components
 import heading from './heading.js';
 import taskList from './taskList.js';
