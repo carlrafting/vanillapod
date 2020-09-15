@@ -159,6 +159,7 @@ When you've defined your component, you have to mount it to an element in the DO
 
 ```javascript
 
+    import container from 'path/to/container.js';
     const root = document.getElementById('root');
 
     mount(root, container);
