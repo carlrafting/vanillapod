@@ -80,7 +80,7 @@ Whenever we write Vanilla JavaSript, it might look something like this:
 
 Notice that we are doing alot of things repeatedly: creating elements, adding classes and attributes, creating text nodes, attaching child elements etc... The benefit is we are grouping things together by task.
 
-CEVJS goal is to go through each of these steps for you. You just have to write regular old Vanilla JavaScript. It might look something like this:
+The goal is to go through each of these steps for you. You just have to write regular old Vanilla JavaScript. It might look something like this:
 
 ```javascript
 
@@ -88,7 +88,7 @@ CEVJS goal is to go through each of these steps for you. You just have to write 
     import displayTimer from './displayTimer.js';
     import startButton from './startButton.js';
     import stopButton from './stopButton.js';
-    import element from 'cevjs/elementHelper.js';
+    import element from 'vanillapod/elementHelper.js';
 
     export default function container() {
         const children = [
@@ -153,13 +153,13 @@ One nice benefit of importing our other components (children), is that we have a
 
 ## Debugging
 
-If anything is not going as expected, you can always turn on debugging. CEVJS will then output what it's doing along the way. To turn on debugging, do the following:
+If anything is not going as expected, you can always turn on debugging. vanillapod.js will then output what it's doing along the way. To turn on debugging, do the following:
 
 ```javascript
 
     // yourscript.js
 
-    import { debug } from 'cevjs';
+    import { debug } from 'vanillapod';
 
     debug(true);
 
