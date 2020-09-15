@@ -10,15 +10,18 @@
     "eslint": "^7.9.0",
     "eslint-plugin-jest-dom": "^3.2.3",
     "eslint-plugin-testing-library": "^3.8.0",
-    "jest": "^26.4.2"
+    "jest": "^26.4.2",
+    "rollup": "^2.26.11"
   },
   "scripts": {
     "toc": "doctoc readme.md",
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup src/index.js --format=umd --name=vanillapod --file=./dist/vanillapod.js"
   },
   "name": "vanillapod",
   "version": "0.7.1",
-  "main": "src/index.js",
+  "main": "dist/vanillapod.js",
+  "module": "src/index.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
   "author": "Carl <carl.rafting@gmail.com>",
   "license": "MIT"

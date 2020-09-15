@@ -1,3 +1,5 @@
-export { mount } from './mount.js';
+import mount from './mount.js';
+import debug from './debug.js';
+
+export { mount, debug };
 export { elementHelper } from './element.js';
-export { debug } from './debug.js';
