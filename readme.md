@@ -151,6 +151,29 @@ If we take a look at the `onClick` arrow function, we see that we're doing event
 
 One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes or attributes we might want to check, all over again.
 
+## Mounting
+
+When you've defined your component, you have to mount it to an element in the DOM to render it in the browser.
+
+```javascript
+
+    const root = document.getElementById('root');
+
+    mount(root, container);
+
+    // if you don't specify a root element as a first argument to mount(), the component will mount to the body element instead
+    mount(null, container);
+
+    // you can specify multiple components to mount
+    mount(
+        root,
+        container,
+        anotherComponent,
+        thirdComponent
+    );
+
+```
+
 ## Debugging
 
 If anything is not going as expected, you can always turn on debugging. vanillapod.js will then output what it's doing along the way. To turn on debugging, do the following:
@@ -180,7 +203,7 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 - [x] only output `console.log` if debug is true
 - [x] refactor createElement.js if necessary...
 - [x] write tests!
-- [ ] make it possible to attach multiple elements at once... ie: 
+- [x] make it possible to attach multiple elements at once... ie: 
 
     ```javascript
     mount(root, [
