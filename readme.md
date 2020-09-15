@@ -1,6 +1,6 @@
 # vanillapod
 
-Lightweight library for building vanilla JavaSript components...
+Lightweight library for building vanilla JavaScript components...
 
 ## Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
