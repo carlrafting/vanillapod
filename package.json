@@ -17,7 +17,7 @@
     "test": "jest"
   },
   "name": "vanillapod",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "main": "src/index.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
   "author": "Carl <carl.rafting@gmail.com>",
