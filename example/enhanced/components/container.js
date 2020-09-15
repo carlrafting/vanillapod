@@ -1,4 +1,4 @@
-// cevjs
+// vanillapod
 import { helper } from '../../../src/element.js';
 
 // components

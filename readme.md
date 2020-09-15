@@ -1,6 +1,6 @@
-# vanillapod.js
+# vanillapod
 
-Component-Enhanced Vanilla JavaSript
+Vanilla JavaSript components...
 
 ## Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
