@@ -21,7 +21,7 @@ export default function setElementAttributes(element, {
     if (data) {
         for (const key in data) {
             if (Object.prototype.hasOwnProperty.call(data, key)) {
-                if (key instanceof Array) {
+                if (Array.isArray(key)) {
                     setElementAttributes(element, key);
                 }
                 element.dataset[key] = data[key];                
