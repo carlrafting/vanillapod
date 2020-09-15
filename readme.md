@@ -179,7 +179,7 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 - [ ] make it nicer to check value of classList from another component. `stopButton().classList[1]` is not so nice...
 - [x] only output `console.log` if debug is true
 - [x] refactor createElement.js if necessary...
-- [ ] write tests!
+- [x] write tests!
 - [ ] make it possible to attach multiple elements at once... ie: 
 
     ```javascript
