@@ -118,7 +118,7 @@ export function setElementProperties(element, { props, properties }) {
 //
 // Example:
 // 
-// import { helper } from 'path/to/element.js';
+// import { elementHelper } from 'vanillapod/element';
 //
 // export default function foobar() {
 //     function attrs() {
@@ -145,7 +145,7 @@ export function setElementProperties(element, { props, properties }) {
 //     );
 // }
 //
-export function helper(
+export function elementHelper(
     element='',
     text='',
     attributes=function(){},

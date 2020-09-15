@@ -90,7 +90,7 @@ The goal is to go through each of these steps for you. You just have to write re
     import displayTimer from './displayTimer.js';
     import startButton from './startButton.js';
     import stopButton from './stopButton.js';
-    import element from 'vanillapod/elementHelper.js';
+    import element from 'vanillapod/element.js';
 
     export default function container() {
         const children = [
@@ -159,7 +159,9 @@ When you've defined your component, you have to mount it to an element in the DO
 
 ```javascript
 
+    import mount from 'vanillapod/mount';
     import container from 'path/to/container.js';
+
     const root = document.getElementById('root');
 
     mount(root, container);
@@ -186,7 +188,7 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 
     // yourscript.js
 
-    import { debug } from 'vanillapod';
+    import { debug } from 'vanillapod/debug';
 
     debug(true);
 

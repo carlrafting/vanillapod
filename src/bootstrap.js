@@ -1,10 +1,9 @@
 import debug from './debug.js';
-import { registerElement, createElement } from './element.js';
+import { registerElement, createElement, setElementProperties } from './element.js';
 import setElementAttributes from './attributes.js';
 import setElementTextContent from './text.js';
 import setElementChildren from './children.js';
 import setElementEventHandlers from './events.js';
-import { setElementProperties } from './element.js';
 
 export default function bootstrap(elementCreatorFunction) {
     // create required element instances

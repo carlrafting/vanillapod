@@ -23,5 +23,7 @@ export default (exception) => {
         throw exception;
     }
 
-    errors[exception.name] = { exception };
+    errors[exception] = { exception };
 };
+
+export { errors };
