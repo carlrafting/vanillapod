@@ -19,7 +19,7 @@
     "build": "rollup -c"
   },
   "name": "vanillapod",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "main": "dist/vanillapod.js",
   "module": "src/index.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
