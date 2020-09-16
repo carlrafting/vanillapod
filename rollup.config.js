@@ -1,45 +1,48 @@
 import { terser } from 'rollup-plugin-terser';
-import babel, { getBabelOutputPlugin } from '@rollup/plugin-babel';
+import buble from '@rollup/plugin-buble';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
 
-// const bundleName = 'vanillapod';
-const babelOutputPluginOptions = { 
-    plugins: ['transform-es2015-modules-umd'],
-    presets: ['@babel/preset-env'] 
-}; 
+const bundleName = 'vanillapod';
+const input = './vanillapod.js';
 
-export default {
-    input: 'src/index.js',
-    plugins: [
-        babel({
-            babelHelpers: 'bundled'
-        })
-    ],
-    output: [
-        {
-            file: './dist/vanillapod.js',
-            format: 'es'
-        },
-        {
-            file: './dist/vanillapod.min.js',
-            format: 'es',
-            plugins: [
-                terser()
-            ]
-        },
-        {
-            file: './dist/vanillapod.umd.js',
-            format: 'es',
-            plugins: [
-                getBabelOutputPlugin(babelOutputPluginOptions)
-            ]
-        },
-        {
-            file: './dist/vanillapod.umd.min.js',
-            format: 'es',
-            plugins: [
-                getBabelOutputPlugin(babelOutputPluginOptions),
-                terser()
-            ]
-        }
-    ]
-};
+export default [
+    {
+        input,
+        output: [
+            {
+                file: './dist/vanillapod.js',
+                format: 'es'
+            },
+            {
+                file: './dist/vanillapod.min.js',
+                format: 'es',
+                plugins: [
+                    terser()
+                ]
+            }
+        ]
+    },
+    {
+        input,
+        plugins: [
+            babel({ babelHelpers: 'bundled' }),
+            resolve()
+        ],
+        output: [
+            {
+                file: './dist/vanillapod.es5.js',
+                name: bundleName,
+                format: 'iife'
+            },
+            {
+                file: './dist/vanillapod.es5.min.js',
+                format: 'iife',
+                name: bundleName,
+                plugins: [
+                    terser()
+                ] 
+            }
+        ]
+    }
+];

@@ -1,47 +1,77 @@
-(function (global, factory) {
-  if (typeof define === "function" && define.amd) {
-    define(["exports"], factory);
-  } else if (typeof exports !== "undefined") {
-    factory(exports);
-  } else {
-    var mod = {
-      exports: {}
-    };
-    factory(mod.exports);
-    global.undefined = mod.exports;
-  }
-})(this, function (exports) {
-  "use strict";
+var vanillapod = (function (exports) {
+  'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
 
   function _slicedToArray(arr, i) {
     return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
   }
 
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
   }
 
   function _iterableToArrayLimit(arr, i) {
@@ -71,73 +101,25 @@
     return _arr;
   }
 
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
 
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
 
-    return keys;
+    return arr2;
   }
 
-  function _objectSpread(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function _typeof(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function _typeof(obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function _typeof(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   function debug() {
@@ -148,7 +130,9 @@
     }
 
     return window.VANILLAPOD_DEBUG = value;
-  } //
+  }
+
+  //
   // usage:
   //
   // import error from 'error';
@@ -163,10 +147,8 @@
   // function CustomException() {}
   // error(new CustomException('This is my CustomException message'))
 
-
   var errors = [];
-
-  var error = function error(exception) {
+  var error = (function (exception) {
     if (debug()) {
       throw exception;
     }
@@ -174,7 +156,7 @@
     errors[exception] = {
       exception: exception
     };
-  };
+  });
 
   var validProps = {
     element: null,
@@ -241,7 +223,6 @@
    * register a new element instance 
    */
 
-
   function registerElement(elementCreatorFunction) {
     if (typeof elementCreatorFunction === 'function') {
       debug() && console.log("Registering ".concat(elementCreatorFunction, "..."));
@@ -252,7 +233,7 @@
       }
 
       if (validateProps(props)) {
-        return _objectSpread({
+        return _objectSpread2({
           elementCreatorFunction: elementCreatorFunction
         }, props);
       }
@@ -267,7 +248,6 @@
    * setElementProperties just sets whatever properties you specify 
    * inside a components props or properties key.
    */
-
 
   function setElementProperties(element, _ref) {
     var props = _ref.props,
@@ -316,14 +296,13 @@
   // }
   //
 
-
   function elementHelper() {
     var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
     var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
     var events = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
     var children = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-    return _objectSpread(_objectSpread({
+    return _objectSpread2(_objectSpread2({
       element: element,
       text: text
     }, attributes()), {}, {
@@ -332,12 +311,12 @@
     });
   }
 
-  function setElementAttributes(element, _ref2) {
-    var attributes = _ref2.attributes,
-        attrs = _ref2.attrs,
-        classList = _ref2.classList,
-        classNames = _ref2.classNames,
-        data = _ref2.data;
+  function setElementAttributes(element, _ref) {
+    var attributes = _ref.attributes,
+        attrs = _ref.attrs,
+        classList = _ref.classList,
+        classNames = _ref.classNames,
+        data = _ref.data;
     debug() && console.log("Setting attributes for ".concat(element));
 
     if (classList || classNames) {
@@ -369,7 +348,7 @@
 
       if (typeof attributes === 'function') {
         var attrsObj = attributes();
-        setElementAttributes(element, _objectSpread({}, attrsObj));
+        setElementAttributes(element, _objectSpread2({}, attrsObj));
         return;
       }
 
@@ -397,17 +376,17 @@
     }
   }
 
-  function setElementTextContent(element, _ref3) {
-    var text = _ref3.text;
+  function setElementTextContent(element, _ref) {
+    var text = _ref.text;
 
     if (text && text !== '') {
       element.appendChild(document.createTextNode(text));
     }
   }
 
-  function setElementEventHandlers(element, _ref4) {
-    var _ref4$events = _ref4.events,
-        events = _ref4$events === void 0 ? {} : _ref4$events;
+  function setElementEventHandlers(element, _ref) {
+    var _ref$events = _ref.events,
+        events = _ref$events === void 0 ? {} : _ref$events;
 
     if (events) {
       for (var event in events) {
@@ -450,12 +429,12 @@
     var instance = registerElement(elementCreatorFunction);
     debug() && console.log('Element instance: ', instance);
 
-    var _createElement3 = createElement(instance),
-        _createElement4 = _slicedToArray(_createElement3, 2),
-        element = _createElement4[0],
-        props = _createElement4[1];
+    var _createElement = createElement(instance),
+        _createElement2 = _slicedToArray(_createElement, 2),
+        element = _createElement2[0],
+        props = _createElement2[1]; // set element properties
 
-    // set element properties
+
     setElementProperties(element, props); // set attributes on elements
 
     setElementAttributes(element, props); // set textContent for elements
@@ -472,8 +451,8 @@
   }
 
   function mount(root) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key2 = 1; _key2 < _len; _key2++) {
-      args[_key2 - 1] = arguments[_key2];
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
     }
 
     args.forEach(function (arg) {
@@ -495,4 +474,7 @@
   exports.debug = debug;
   exports.elementHelper = elementHelper;
   exports.mount = mount;
-});
+
+  return exports;
+
+}({}));

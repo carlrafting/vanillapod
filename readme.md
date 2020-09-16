@@ -15,6 +15,15 @@ Lightweight library for building vanilla JavaScript components...
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Install
+
+```bash
+npm install vanillapod
+
+# or if you prefer using yarn
+yarn add vanillapod
+```
+
 ## Goal: Enhanche Vanilla JavaScript
 
 Whenever we write Vanilla JavaSript, it might look something like this:
