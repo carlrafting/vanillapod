@@ -23,7 +23,7 @@
     "clean": "rm -rf ./dist/**.js"
   },
   "name": "vanillapod",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "main": "./dist/vanillapod.es5.js",
   "module": "./dist/vanillapod.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
