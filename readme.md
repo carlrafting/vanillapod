@@ -18,10 +18,10 @@ Lightweight library for building vanilla JavaScript components...
 ## Install
 
 ```bash
-npm install vanillapod
+$ npm install vanillapod
 
 # or if you prefer using yarn
-yarn add vanillapod
+$ yarn add vanillapod
 ```
 
 ## Goal: Enhanche Vanilla JavaScript
