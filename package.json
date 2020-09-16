@@ -16,7 +16,7 @@
   "scripts": {
     "toc": "doctoc readme.md",
     "test": "jest",
-    "build": "rollup src/index.js --format=umd --name=vanillapod --file=./dist/vanillapod.js"
+    "build": "rollup -c"
   },
   "name": "vanillapod",
   "version": "0.7.1",
