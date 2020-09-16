@@ -8,6 +8,7 @@ Lightweight library for building vanilla JavaScript components...
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Install](#install)
 - [Goal: Enhanche Vanilla JavaScript](#goal-enhanche-vanilla-javascript)
 - [Mounting](#mounting)
 - [Debugging](#debugging)
