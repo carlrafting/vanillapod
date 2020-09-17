@@ -1,7 +1,6 @@
 /* global test, expect */
 
-import error, { errors } from '../src/error';
-import debug from '../src/debug';
+import { error, debug } from '../dist/vanillapod';
 
 test('error with debug enabled', () => {
     debug(true);

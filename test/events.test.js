@@ -1,6 +1,6 @@
-/* global test, expect */
+/* global jest, test, expect */
 
-import setElementEventHandlers from '../src/events';
+import { setElementEventHandlers } from '../dist/vanillapod';
 import userEvent from '@testing-library/user-event';
 
 test('set one element event handler', () => {

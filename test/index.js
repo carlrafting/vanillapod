@@ -1,5 +1,4 @@
-import mount from '../src/mount.js';
-import debug from '../src/debug.js';
+import { mount, debug } from '../dist/vanillapod.js';
 
 debug(true);
 

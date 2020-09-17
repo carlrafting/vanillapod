@@ -1,6 +1,6 @@
 /* global describe, test, expect */
 
-import { registerElement } from '../src/element';
+import { registerElement } from '../dist/vanillapod';
 
 describe('registerElement', () => {
     test('should return object', () => {

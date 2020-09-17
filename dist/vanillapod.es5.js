@@ -474,6 +474,10 @@ var vanillapod = (function (exports) {
   exports.debug = debug;
   exports.elementHelper = elementHelper;
   exports.mount = mount;
+  exports.registerElement = registerElement;
+  exports.setElementAttributes = setElementAttributes;
+  exports.setElementEventHandlers = setElementEventHandlers;
+  exports.setElementTextContent = setElementTextContent;
 
   return exports;
 

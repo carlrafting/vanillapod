@@ -1,6 +1,6 @@
 /* global test, expect */
 
-import setElementTextContent from '../src/text';
+import { setElementTextContent } from '../dist/vanillapod';
 
 test('set element text', () => {
     const text = 'hello world';

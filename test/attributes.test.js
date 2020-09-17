@@ -1,6 +1,6 @@
 /*global test, expect, beforeEach*/
 
-import setElmentAttributes from '../src/attributes';
+import { setElementAttributes } from '../dist/vanillapod';
 
 let element;
 
@@ -12,7 +12,7 @@ test('set element data', () => {
     const data = {
         foo: 'bar'
     };
-    setElmentAttributes(element, { data });
+    setElementAttributes(element, { data });
     const result = element.dataset.foo;
     expect(result).toBe(data.foo);
 });
@@ -22,7 +22,7 @@ test('set element classList', () => {
         'foo',
         'bar'
     ];
-    setElmentAttributes(element, { classList });
+    setElementAttributes(element, { classList });
     expect(element).toHaveClass(classList[0]);
     expect(element).toHaveClass(classList[1]);
 });
@@ -34,7 +34,7 @@ test('set element attributes', () => {
         },
         classList: ['foo', 'bar']
     });
-    setElmentAttributes(element, { attrs });
+    setElementAttributes(element, { attrs });
     expect(element).toHaveClass(attrs().classList[0]);
     expect(element).toHaveClass(attrs().classList[1]);
 });

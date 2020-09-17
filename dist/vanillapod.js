@@ -355,4 +355,4 @@ function mount(root, ...args) {
     });
 }
 
-export { debug, elementHelper, mount };
+export { debug, elementHelper, mount, registerElement, setElementAttributes, setElementEventHandlers, setElementTextContent };
