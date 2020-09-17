@@ -15,6 +15,7 @@ Lightweight library for building vanilla JavaScript components...
   - [Mounting](#mounting)
   - [Children](#children)
   - [Events](#events)
+- [ES5](#es5)
 - [Mounting](#mounting-1)
 - [Debugging](#debugging)
 - [Example App](#example-app)
