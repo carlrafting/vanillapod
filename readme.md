@@ -277,7 +277,6 @@ There is a ES5 bundle available for targeting older browsers that doesn't have s
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>vanillapod ES5</title>
-        <link rel="stylesheet" href="/src/css/style.css">
     </head>
     <body>
 
