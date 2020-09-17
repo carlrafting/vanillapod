@@ -106,7 +106,6 @@ The goal is to go through each of these steps for you. You just have to write re
     import displayTimer from './displayTimer.js';
     import startButton from './startButton.js';
     import stopButton from './stopButton.js';
-    import element from 'vanillapod/element.js';
 
     export default function container() {
         const children = [
@@ -173,7 +172,7 @@ One nice benefit of importing our other components (children), is that we have a
 
 ### Components
 
-You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES modules in browsers that support it. The first step to get started is defining your component.
+You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES2015 modules in browsers that support it. The first step to get started is defining your component.
 
 ```javascript
     // script.js
@@ -266,13 +265,55 @@ It's possible to attach event handlers to your component, by defining event hand
     // ...
 ```
 
+## ES5 
+
+There is a ES5 bundle available for targeting older browsers that doesn't have support for ES2015 modules. All vanillapod methods are namespaced under `vanillapod`. Here is how you use the ES5 bundle.
+
+```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>vanillapod ES5</title>
+        <link rel="stylesheet" href="/src/css/style.css">
+    </head>
+    <body>
+
+    <div id="root">
+        <h1>vanillapod ES5 Example</h1>
+    </div>
+
+    <script src="./node_modules/vanillapod/dist/vanillapod.es5.min.js"></script>
+    <script src="script.js"></script>
+
+    </body>
+    </html>
+```
+
+```javascript
+    // script.js
+
+    function myComponent() {
+        return {
+            element: 'div'
+            text: 'Hello World'
+        };
+    }
+
+    if (window.vanillapod) {
+        vanillapod.mount(null, myComponent);
+    } else {
+        console.error('Something went wrong!');
+    }
+```
 ## Mounting
 
 When you've defined your component, you have to mount it to an element in the DOM to render it in the browser.
 
 ```javascript
 
-    import mount from 'vanillapod/mount';
+    import { mount } from 'vanillapod';
     import container from 'path/to/container.js';
 
     const root = document.getElementById('root');
@@ -301,7 +342,7 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 
     // yourscript.js
 
-    import { debug } from 'vanillapod/debug';
+    import { debug } from 'vanillapod';
 
     debug(true);
 
