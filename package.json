@@ -20,7 +20,10 @@
     "toc": "doctoc readme.md",
     "test": "jest",
     "build": "rollup -c",
-    "clean": "rm -rf ./dist/**.js"
+    "clean": "rm -rf ./dist/**.js",
+    "preversion": "yarn test",
+    "postversion": 
+      "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
   },
   "name": "vanillapod",
   "version": "0.8.2",
