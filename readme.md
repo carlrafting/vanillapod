@@ -313,8 +313,31 @@ When you've defined your component, you have to mount it to an element in the DO
 
 ```javascript
 
-    import { mount } from 'vanillapod';
-    import container from 'path/to/container.js';
+    import { mount } from 'vanillapod';    
+
+    function container() {
+        return {
+            element: 'div',
+            classList: ['container'],
+            text: 'this is a container component'
+        };
+    }
+
+    function anotherComponent() {
+        return {
+            element: 'div',
+            classList: ['another-component'],
+            text: 'this is a second component'
+        };
+    }
+
+    function thirdComponent() {
+        return {
+            element: 'div',
+            classList: ['third-component'],
+            text: 'this is a third component'
+        };
+    }
 
     const root = document.getElementById('root');
 
