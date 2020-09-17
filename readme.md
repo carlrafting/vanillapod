@@ -10,8 +10,10 @@ Lightweight library for building vanilla JavaScript components...
 
 - [Install](#install)
 - [Goal: Enhanche Vanilla JavaScript](#goal-enhanche-vanilla-javascript)
+- [Getting Started](#getting-started)
 - [Mounting](#mounting)
 - [Debugging](#debugging)
+- [Example App](#example-app)
 - [ToDo](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -163,6 +165,103 @@ If we take a look at the `onClick` arrow function, we see that we're doing event
 
 One nice benefit of importing our other components (children), is that we have access to their attributes! This enables us to do event delegation without going through the hassle to specify the classes or attributes we might want to check, all over again.
 
+## Getting Started
+
+### Components
+
+You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES modules in browsers that support it. The first step to get started is defining your component.
+
+```javascript
+    // script.js
+
+    function myComponent() {
+        return {
+            element: 'h1',
+            text: 'This is my first vanillapod component!'
+        };
+    }
+```
+
+### Mounting
+
+After you've defined your component it's time to mount it to the DOM, in other words render the html. You can specify a root element you want to mount inside, and pass it to `mount` as the first argument.
+
+```javascript
+    // script.js 
+
+    // import with a bundler
+    import { mount } from 'vanillapod';
+
+    // import without bundler
+    import { mount } from './node_modules/vanillapod/dist/vanillapod.js';
+
+    // ...
+
+    const root = document.getElementById('root');
+
+    mount(root, myComponent);
+```
+
+### Children
+
+You can specify children of your component by specifying a `children` key in the object that gets returned by your component.
+
+```javascript
+    // script.js
+
+    // imports
+    // ...
+
+     function myComponent() {
+        const heading = () => ({
+            element: 'h1',
+            text: 'This is my first vanillapod component!'
+        });
+
+        return {
+            element: 'div',
+            children: [
+                heading
+            ]
+        };
+    }
+
+    // mounting
+    // ...
+
+```
+
+### Events
+
+It's possible to attach event handlers to your component, by defining event handler functions in a `events` key on the object that gets returned from your component.
+
+```javascript
+    // script.js
+
+    // imports
+    // ...
+
+    function myComponent() {
+        // heading child component
+        // ...
+        
+        const onClick = (e) => {
+            console.log('Click event fired!')
+        }
+
+        return {
+            // element & children props
+            // ...
+            events: {
+                click: onClick
+            }
+        };
+    }
+
+    // mounting
+    // ...
+```
+
 ## Mounting
 
 When you've defined your component, you have to mount it to an element in the DOM to render it in the browser.
@@ -207,6 +306,10 @@ If anything is not going as expected, you can always turn on debugging. vanillap
     debug() // returns true
 
 ```
+
+## Example App
+
+You can check out an example of how to build a [ToDo app with vanillapod here](https://github.com/carlrafting/vanillapod-example).
     
 
 ## ToDo
