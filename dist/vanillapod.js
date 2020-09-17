@@ -71,7 +71,7 @@ function validateProps(props) {
 function createElement(props) {
     (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
 
-    if (props.element || props.el) {
+    if (props.el || props.element) {
         if (!props.el) {
             props.el = props.element;
         }

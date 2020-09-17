@@ -194,7 +194,7 @@ var vanillapod = (function (exports) {
   function createElement(props) {
     debug() && console.log("Creating ".concat(props.element || props.el, " for ").concat(props.elementCreatorFunction));
 
-    if (props.element || props.el) {
+    if (props.el || props.element) {
       if (!props.el) {
         props.el = props.element;
       }
