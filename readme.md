@@ -296,7 +296,7 @@ There is a ES5 bundle available for targeting older browsers that doesn't have s
 
     function myComponent() {
         return {
-            element: 'div'
+            element: 'div',
             text: 'Hello World'
         };
     }
