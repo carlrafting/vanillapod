@@ -9,27 +9,32 @@ export default function bootstrap(elementCreatorFunction) {
     // create required element instances
     const instance = registerElement(elementCreatorFunction);
 
-    (debug() && console.log('Element instance: ', instance));
+    if (typeof instance.element === 'string') {
+        (debug() && console.log('Element instance: ', instance));
 
-    const [ element, props ] = createElement(instance);
+        const [ element, props ] = createElement(instance);
 
-    // set element properties
-    setElementProperties(element, props);
+        // set element properties
+        setElementProperties(element, props);
 
-    // set attributes on elements
-    setElementAttributes(element, props);
+        // set attributes on elements
+        setElementAttributes(element, props);
 
-    // set textContent for elements
-    setElementTextContent(element, props);
+        // set textContent for elements
+        setElementTextContent(element, props);
 
-    // register DOM event handlers
-    setElementEventHandlers(element, props);
+        // register DOM event handlers
+        setElementEventHandlers(element, props);
 
-    // attach element children
-    setElementChildren(element, props);
+        // attach element children
+        setElementChildren(element, props);
 
-    // TODO: register hooks
+        // TODO: register hooks
+        // ...
+    }
     
+    const { element } = instance;
+
     return {
         element
     };

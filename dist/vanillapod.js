@@ -1,3 +1,9 @@
+/**
+ * vanillapod.js 
+ * v0.8.3 
+ */
+var version = "0.8.3";
+
 function debug(value=false) {
     if (!value) {
         return window.VANILLAPOD_DEBUG;
@@ -31,6 +37,86 @@ var error = (exception) => {
 
     errors[exception] = { exception };
 };
+
+function setElementAttributes(element, { 
+    attributes, 
+    attrs, 
+    classList, 
+    classNames,
+    data 
+}) {
+    (debug() && console.log(`Setting attributes for ${element}`));
+
+    if (classList || classNames) {
+        if (!classList) {
+            classList = classNames;
+        }
+        classList.forEach(className => {
+            element.classList.add(className);
+        });
+    }
+
+    if (data) {
+        for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                if (Array.isArray(key)) {
+                    setElementAttributes(element, key);
+                }
+                element.dataset[key] = data[key];                
+            }
+        }
+    }
+
+    if (attributes || attrs) {
+        if (!attributes) {
+            attributes = attrs;
+        }
+
+        if (typeof attributes === 'function') {
+            const attrsObj = attributes();
+            setElementAttributes(element, { ...attrsObj });
+            return;
+        }
+
+        if (typeof attributes === 'object') {
+            (debug() && console.log(attributes));
+            for (const key in attributes) {
+                if (typeof key === 'object') {
+                    setElementAttributes(element, key);
+                    // return;
+                }
+                if (Object.prototype.hasOwnProperty.call(attributes, key)) {
+                    if (key in element) {
+                        element.setAttribute(`${key}`, attributes[key]);
+                    }                                        
+                }
+            }
+            return;
+        }        
+
+        attributes.forEach(attribute => {
+            element.setAttribute(attribute);
+        });
+    }    
+}
+
+function setElementTextContent(element, { text }) {
+    if (text && text !== '') {
+        element.appendChild(
+            document.createTextNode(text)
+        );
+    }
+}
+
+function setElementEventHandlers(element, { events = {} }) {
+    if (events) {
+        for (const event in events) {
+            if (Object.prototype.hasOwnProperty.call(events, event)) {
+                element.addEventListener(`${event}`, events[event], false);              
+            }
+        }
+    }
+}
 
 const validProps = {
     element: null,
@@ -145,138 +231,32 @@ function setElementProperties(element, { props, properties }) {
     }
 }
 
-// A helper one can use to create elements within components
-//
-// Example:
-// 
-// import { elementHelper } from 'vanillapod/element';
-//
-// export default function foobar() {
-//     function attrs() {
-//         return {
-//             classList: ['foo', 'bar'],
-//             data: {
-//                 foo: 'bar',
-//                 hello: ['world', 'hello']
-//             },
-//             attributes: {
-//                 value: 'foo'
-//             }
-//         }
-//     };
-//
-//     return helper(
-//         'div',
-//         'hello there',
-//         attrs,
-//         {
-//             click(e) { console.log(target) }
-//         },
-//         [ bar ]
-//     );
-// }
-//
-function elementHelper(
-    element='',
-    text='',
-    attributes=function(){},
-    events={},
-    children=[]
-) {
-    return {
-        element,
-        text,
-        ...attributes(),
-        events,
-        children
-    };
-}
+function elementHelper(props) {
+    const [ element, elProps ] = createElement(props);
 
-function setElementAttributes(element, { 
-    attributes, 
-    attrs, 
-    classList, 
-    classNames,
-    data 
-}) {
-    (debug() && console.log(`Setting attributes for ${element}`));
+    console.log('elementHelper: elProps', elProps);
 
-    if (classList || classNames) {
-        if (!classList) {
-            classList = classNames;
-        }
-        classList.forEach(className => {
-            element.classList.add(className);
-        });
-    }
+    // set element properties
+    setElementProperties(element, elProps);
 
-    if (data) {
-        for (const key in data) {
-            if (Object.prototype.hasOwnProperty.call(data, key)) {
-                if (Array.isArray(key)) {
-                    setElementAttributes(element, key);
-                }
-                element.dataset[key] = data[key];                
-            }
-        }
-    }
+    // set attributes on elements
+    setElementAttributes(element, elProps);
 
-    if (attributes || attrs) {
-        if (!attributes) {
-            attributes = attrs;
-        }
+    // set textContent for element
+    setElementTextContent(element, elProps);
 
-        if (typeof attributes === 'function') {
-            const attrsObj = attributes();
-            setElementAttributes(element, { ...attrsObj });
-            return;
-        }
+    // register DOM event handlers
+    setElementEventHandlers(element, elProps);
 
-        if (typeof attributes === 'object') {
-            (debug() && console.log(attributes));
-            for (const key in attributes) {
-                if (typeof key === 'object') {
-                    setElementAttributes(element, key);
-                    // return;
-                }
-                if (Object.prototype.hasOwnProperty.call(attributes, key)) {
-                    if (key in element) {
-                        element.setAttribute(`${key}`, attributes[key]);
-                    }                                        
-                }
-            }
-            return;
-        }        
+    // attach element children
+    // setElementChildren(element, elProps);
 
-        attributes.forEach(attribute => {
-            element.setAttribute(attribute);
-        });
-    }    
-}
-
-function setElementTextContent(element, { text }) {
-    if (text && text !== '') {
-        element.appendChild(
-            document.createTextNode(text)
-        );
-    }
-}
-
-function setElementEventHandlers(element, { events = {} }) {
-    if (events) {
-        for (const event in events) {
-            if (Object.prototype.hasOwnProperty.call(events, event)) {
-                element.addEventListener(`${event}`, events[event], false);              
-            }
-        }
-    }
+    return element;
 }
 
 function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
         props.children.map(child => {
-            // const childProps = child();
-            // const childElement = document.createElement(childProps.element);
             const childInstance = registerElement(child);
             const [childElement, childProps] = createElement(childInstance);
             (debug() && (
@@ -313,30 +293,67 @@ function bootstrap(elementCreatorFunction) {
     // create required element instances
     const instance = registerElement(elementCreatorFunction);
 
-    (debug() && console.log('Element instance: ', instance));
+    if (typeof instance.element === 'string') {
+        (debug() && console.log('Element instance: ', instance));
 
-    const [ element, props ] = createElement(instance);
+        const [ element, props ] = createElement(instance);
 
-    // set element properties
-    setElementProperties(element, props);
+        // set element properties
+        setElementProperties(element, props);
 
-    // set attributes on elements
-    setElementAttributes(element, props);
+        // set attributes on elements
+        setElementAttributes(element, props);
 
-    // set textContent for elements
-    setElementTextContent(element, props);
+        // set textContent for elements
+        setElementTextContent(element, props);
 
-    // register DOM event handlers
-    setElementEventHandlers(element, props);
+        // register DOM event handlers
+        setElementEventHandlers(element, props);
 
-    // attach element children
-    setElementChildren(element, props);
+        // attach element children
+        setElementChildren(element, props);
 
-    // TODO: register hooks
+        // TODO: register hooks
+        // ...
+    }
     
+    const { element } = instance;
+
     return {
         element
     };
+}
+
+function registerHooks(element, hooks = {}) {
+    if (!element._vanillapod_hooks) {
+        (debug() && console.log(`Registering hooks for ${element}`));
+        element._vanillapod_hooks = hooks;
+        return;
+    }
+
+    (debug() && console.log(`Hooks already registered for ${element}`));
+}
+
+function registerHook(element, hook) {
+    const hooks = element._vanillapod_hooks;
+
+    if (!hooks[hook]) {
+        hooks[hook] = hook;
+    }
+}
+
+function triggerHook(element, hookName, ...args) {
+    const hooks = element._vanillapod_hooks;
+
+    if (hooks) {
+        if (hookName && hooks[hookName]) {
+            (debug() && console.log(`Triggering hook ${hookName} for ${element}`));
+            hooks[hookName](args);
+        }
+        return;
+    }
+
+    (debug() && console.log(`No hooks registered for ${element}`));
 }
 
 // mount to DOM
@@ -344,6 +361,9 @@ function mount(root, ...args) {
     args.forEach(arg => {
         const elementCreatorFunction = arg;
         const { element } = bootstrap(elementCreatorFunction);
+        const hooks = element._vanillapod_hooks;
+
+        debug() && console.log('hooks', hooks);
 
         if (root) {
             root.appendChild(element);
@@ -352,7 +372,26 @@ function mount(root, ...args) {
 
         const body = document.querySelector('body');
         body.appendChild(element);
+
+        if (hooks && hooks['mount']) {
+            debug() && console.log('hooks', hooks);
+
+            triggerHook(element, 'mount');
+        }
     });
 }
 
-export { debug, elementHelper, mount, registerElement, setElementAttributes, setElementEventHandlers, setElementTextContent };
+function createDocumentFragment(props = {}) {
+    const fragment = document.createDocumentFragment();
+
+    setElementProperties(fragment, props);
+    setElementTextContent(fragment, props);
+    setElementEventHandlers(fragment, props);
+
+    return [
+        fragment,
+        props
+    ];
+}
+
+export { createDocumentFragment, createElement, debug, elementHelper, mount, registerElement, registerHook, registerHooks, setElementAttributes, setElementChildren, setElementEventHandlers, setElementTextContent, triggerHook, version };

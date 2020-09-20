@@ -1,5 +1,9 @@
 import error from './error.js';
 import debug from './debug.js';
+import setElementAttributes from './attributes';
+import setElementTextContent from './text';
+// import setElementChildren from './children';
+import setElementEventHandlers from './events';
 
 const validProps = {
     element: null,
@@ -114,49 +118,25 @@ export function setElementProperties(element, { props, properties }) {
     }
 }
 
-// A helper one can use to create elements within components
-//
-// Example:
-// 
-// import { elementHelper } from 'vanillapod/element';
-//
-// export default function foobar() {
-//     function attrs() {
-//         return {
-//             classList: ['foo', 'bar'],
-//             data: {
-//                 foo: 'bar',
-//                 hello: ['world', 'hello']
-//             },
-//             attributes: {
-//                 value: 'foo'
-//             }
-//         }
-//     };
-//
-//     return helper(
-//         'div',
-//         'hello there',
-//         attrs,
-//         {
-//             click(e) { console.log(target) }
-//         },
-//         [ bar ]
-//     );
-// }
-//
-export function elementHelper(
-    element='',
-    text='',
-    attributes=function(){},
-    events={},
-    children=[]
-) {
-    return {
-        element,
-        text,
-        ...attributes(),
-        events,
-        children
-    };
+export function elementHelper(props) {
+    const [ element, elProps ] = createElement(props);
+
+    console.log('elementHelper: elProps', elProps);
+
+    // set element properties
+    setElementProperties(element, elProps);
+
+    // set attributes on elements
+    setElementAttributes(element, elProps);
+
+    // set textContent for element
+    setElementTextContent(element, elProps);
+
+    // register DOM event handlers
+    setElementEventHandlers(element, elProps);
+
+    // attach element children
+    // setElementChildren(element, elProps);
+
+    return element;
 }

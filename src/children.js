@@ -1,5 +1,5 @@
 import debug from './debug.js';
-import { createElement, registerElement, setElementProperties } from './element.js';
+import { createElement, registerElement, setElementProperties, elementHelper } from './element.js';
 import setElementAttributes from './attributes.js';
 import setElementEventHandlers from './events.js';
 import setElementTextContent from './text.js';
@@ -7,8 +7,6 @@ import setElementTextContent from './text.js';
 export default function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
         props.children.map(child => {
-            // const childProps = child();
-            // const childElement = document.createElement(childProps.element);
             const childInstance = registerElement(child);
             const [childElement, childProps] = createElement(childInstance);
             (debug() && (
