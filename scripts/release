@@ -12,7 +12,7 @@ let published = false;
 
 exec('git push --tags', (error) => {
     if (error) {
-        console.error(`⛔ Couldn't push tags to ${repository}!`);
+        console.error(`⛔ Couldn't push tags to ${repository}! \n ${error}`);
         return;
     }
 
@@ -20,7 +20,7 @@ exec('git push --tags', (error) => {
 });
 exec('yarn publish', (error) => {
     if (error) {
-        console.error('⛔ Couldn\'t publish package to npm registry!');
+        console.error(`⛔ Couldn't publish package to npm registry! \n ${error}`);
         return;
     }
 
@@ -30,7 +30,8 @@ exec('yarn publish', (error) => {
 });
 exec('git push', (error) => {
     if (error) {
-        console.error(`⛔ Couldn\'t push changes to ${repository}`);
+        console.error(`⛔ Couldn't push changes to ${repository}! \n ${error}`);
+        return;
     }
 
     console.log(`✅ Successfully pushed changes to ${repository}`);
