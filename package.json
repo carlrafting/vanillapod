@@ -24,7 +24,7 @@
     "build": "rollup -c",
     "clean": "rm -rf ./dist/**.js",
     "preversion": "yarn test",
-    "postversion": "git push --tags && yarn publish . && git push && echo \"Successfully released version $npm_package_version!\""
+    "postversion": "./scripts/release"
   },
   "name": "vanillapod",
   "version": "0.8.3",
