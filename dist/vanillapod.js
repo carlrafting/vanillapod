@@ -254,6 +254,44 @@ function elementHelper(props) {
     return element;
 }
 
+function registerHooks(element, { hooks = {} }) {
+    if (!hooks) {
+        return;
+    }
+
+    const key = '_vanillapod_hooks';
+
+    if (!element[key]) {
+        (debug() && console.log(`Registering hooks for ${element}`));
+        element[key] = hooks;
+        return;
+    }
+
+    (debug() && console.log(`Hooks already registered for ${element}`));
+}
+
+function registerHook(element, hook) {
+    const hooks = element._vanillapod_hooks;
+
+    if (!hooks[hook]) {
+        hooks[hook] = hook;
+    }
+}
+
+function triggerHook(element, hookName, ...args) {
+    const hooks = element._vanillapod_hooks;
+
+    if (hooks) {
+        if (hookName && hooks[hookName]) {
+            (debug() && console.log(`Triggering hook ${hookName} for ${element}`));
+            hooks[hookName](args);
+        }
+        return;
+    }
+
+    (debug() && console.log(`No hooks registered for ${element}`));
+}
+
 function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
         props.children.map(child => {
@@ -278,6 +316,10 @@ function setElementChildren(element, props) {
             );
             setElementEventHandlers(
                 childElement,
+                childProps
+            );
+            registerHooks(
+                childElement, 
                 childProps
             );
             if (childProps.children) {
@@ -313,8 +355,8 @@ function bootstrap(elementCreatorFunction) {
         // attach element children
         setElementChildren(element, props);
 
-        // TODO: register hooks
-        // ...
+        // register hooks
+        registerHooks(element, props);
     }
     
     const { element } = instance;
@@ -324,38 +366,6 @@ function bootstrap(elementCreatorFunction) {
     };
 }
 
-function registerHooks(element, hooks = {}) {
-    if (!element._vanillapod_hooks) {
-        (debug() && console.log(`Registering hooks for ${element}`));
-        element._vanillapod_hooks = hooks;
-        return;
-    }
-
-    (debug() && console.log(`Hooks already registered for ${element}`));
-}
-
-function registerHook(element, hook) {
-    const hooks = element._vanillapod_hooks;
-
-    if (!hooks[hook]) {
-        hooks[hook] = hook;
-    }
-}
-
-function triggerHook(element, hookName, ...args) {
-    const hooks = element._vanillapod_hooks;
-
-    if (hooks) {
-        if (hookName && hooks[hookName]) {
-            (debug() && console.log(`Triggering hook ${hookName} for ${element}`));
-            hooks[hookName](args);
-        }
-        return;
-    }
-
-    (debug() && console.log(`No hooks registered for ${element}`));
-}
-
 // mount to DOM
 function mount(root, ...args) {
     args.forEach(arg => {
@@ -363,19 +373,18 @@ function mount(root, ...args) {
         const { element } = bootstrap(elementCreatorFunction);
         const hooks = element._vanillapod_hooks;
 
-        debug() && console.log('hooks', hooks);
-
         if (root) {
             root.appendChild(element);
-            return;
         }
 
-        const body = document.querySelector('body');
-        body.appendChild(element);
+        if (!root) {
+            const body = document.querySelector('body');
+            body.appendChild(element);
+        }        
+
+        debug() && console.log('hooks', hooks);
 
         if (hooks && hooks['mount']) {
-            debug() && console.log('hooks', hooks);
-
             triggerHook(element, 'mount');
         }
     });

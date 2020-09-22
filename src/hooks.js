@@ -1,9 +1,15 @@
 import debug from './debug.js';
 
-function registerHooks(element, hooks = {}) {
-    if (!element._vanillapod_hooks) {
+function registerHooks(element, { hooks = {} }) {
+    if (!hooks) {
+        return;
+    }
+
+    const key = '_vanillapod_hooks';
+
+    if (!element[key]) {
         (debug() && console.log(`Registering hooks for ${element}`));
-        element._vanillapod_hooks = hooks;
+        element[key] = hooks;
         return;
     }
 

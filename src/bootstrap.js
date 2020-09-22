@@ -4,6 +4,7 @@ import setElementAttributes from './attributes.js';
 import setElementTextContent from './text.js';
 import setElementChildren from './children.js';
 import setElementEventHandlers from './events.js';
+import { registerHooks } from './hooks.js';
 
 export default function bootstrap(elementCreatorFunction) {
     // create required element instances
@@ -29,8 +30,8 @@ export default function bootstrap(elementCreatorFunction) {
         // attach element children
         setElementChildren(element, props);
 
-        // TODO: register hooks
-        // ...
+        // register hooks
+        registerHooks(element, props);
     }
     
     const { element } = instance;

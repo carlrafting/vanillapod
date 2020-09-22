@@ -377,68 +377,19 @@ var vanillapod = (function (exports) {
     return element;
   }
 
-  function setElementChildren(element, props) {
-    if (props.children && props.children.length > 0) {
-      props.children.map(function (child) {
-        var childInstance = registerElement(child);
+  function registerHooks(element, _ref) {
+    var _ref$hooks = _ref.hooks,
+        hooks = _ref$hooks === void 0 ? {} : _ref$hooks;
 
-        var _createElement = createElement(childInstance),
-            _createElement2 = _slicedToArray(_createElement, 2),
-            childElement = _createElement2[0],
-            childProps = _createElement2[1];
-
-        debug() && console.log('childInstance', childInstance) && console.log('childElement', childElement) && console.log('childProps', childProps);
-        setElementProperties(childElement, childProps);
-        setElementAttributes(childElement, childProps);
-        setElementTextContent(childElement, childProps);
-        setElementEventHandlers(childElement, childProps);
-
-        if (childProps.children) {
-          setElementChildren(childElement, childProps);
-        }
-
-        element.appendChild(childElement);
-      });
-    }
-  }
-
-  function bootstrap(elementCreatorFunction) {
-    // create required element instances
-    var instance = registerElement(elementCreatorFunction);
-
-    if (typeof instance.element === 'string') {
-      debug() && console.log('Element instance: ', instance);
-
-      var _createElement = createElement(instance),
-          _createElement2 = _slicedToArray(_createElement, 2),
-          _element = _createElement2[0],
-          props = _createElement2[1]; // set element properties
-
-
-      setElementProperties(_element, props); // set attributes on elements
-
-      setElementAttributes(_element, props); // set textContent for elements
-
-      setElementTextContent(_element, props); // register DOM event handlers
-
-      setElementEventHandlers(_element, props); // attach element children
-
-      setElementChildren(_element, props); // TODO: register hooks
-      // ...
+    if (!hooks) {
+      return;
     }
 
-    var element = instance.element;
-    return {
-      element: element
-    };
-  }
+    var key = '_vanillapod_hooks';
 
-  function registerHooks(element) {
-    var hooks = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    if (!element._vanillapod_hooks) {
+    if (!element[key]) {
       debug() && console.log("Registering hooks for ".concat(element));
-      element._vanillapod_hooks = hooks;
+      element[key] = hooks;
       return;
     }
 
@@ -473,6 +424,64 @@ var vanillapod = (function (exports) {
     debug() && console.log("No hooks registered for ".concat(element));
   }
 
+  function setElementChildren(element, props) {
+    if (props.children && props.children.length > 0) {
+      props.children.map(function (child) {
+        var childInstance = registerElement(child);
+
+        var _createElement = createElement(childInstance),
+            _createElement2 = _slicedToArray(_createElement, 2),
+            childElement = _createElement2[0],
+            childProps = _createElement2[1];
+
+        debug() && console.log('childInstance', childInstance) && console.log('childElement', childElement) && console.log('childProps', childProps);
+        setElementProperties(childElement, childProps);
+        setElementAttributes(childElement, childProps);
+        setElementTextContent(childElement, childProps);
+        setElementEventHandlers(childElement, childProps);
+        registerHooks(childElement, childProps);
+
+        if (childProps.children) {
+          setElementChildren(childElement, childProps);
+        }
+
+        element.appendChild(childElement);
+      });
+    }
+  }
+
+  function bootstrap(elementCreatorFunction) {
+    // create required element instances
+    var instance = registerElement(elementCreatorFunction);
+
+    if (typeof instance.element === 'string') {
+      debug() && console.log('Element instance: ', instance);
+
+      var _createElement = createElement(instance),
+          _createElement2 = _slicedToArray(_createElement, 2),
+          _element = _createElement2[0],
+          props = _createElement2[1]; // set element properties
+
+
+      setElementProperties(_element, props); // set attributes on elements
+
+      setElementAttributes(_element, props); // set textContent for elements
+
+      setElementTextContent(_element, props); // register DOM event handlers
+
+      setElementEventHandlers(_element, props); // attach element children
+
+      setElementChildren(_element, props); // register hooks
+
+      registerHooks(_element, props);
+    }
+
+    var element = instance.element;
+    return {
+      element: element
+    };
+  }
+
   function mount(root) {
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
@@ -485,18 +494,19 @@ var vanillapod = (function (exports) {
           element = _bootstrap.element;
 
       var hooks = element._vanillapod_hooks;
-      debug() && console.log('hooks', hooks);
 
       if (root) {
         root.appendChild(element);
-        return;
       }
 
-      var body = document.querySelector('body');
-      body.appendChild(element);
+      if (!root) {
+        var body = document.querySelector('body');
+        body.appendChild(element);
+      }
+
+      debug() && console.log('hooks', hooks);
 
       if (hooks && hooks['mount']) {
-        debug() && console.log('hooks', hooks);
         triggerHook(element, 'mount');
       }
     });

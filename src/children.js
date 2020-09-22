@@ -3,6 +3,7 @@ import { createElement, registerElement, setElementProperties, elementHelper } f
 import setElementAttributes from './attributes.js';
 import setElementEventHandlers from './events.js';
 import setElementTextContent from './text.js';
+import { registerHooks } from './hooks.js';
 
 export default function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
@@ -28,6 +29,10 @@ export default function setElementChildren(element, props) {
             );
             setElementEventHandlers(
                 childElement,
+                childProps
+            );
+            registerHooks(
+                childElement, 
                 childProps
             );
             if (childProps.children) {

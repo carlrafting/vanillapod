@@ -9,19 +9,18 @@ export default function mount(root, ...args) {
         const { element } = bootstrap(elementCreatorFunction);
         const hooks = element._vanillapod_hooks;
 
-        debug() && console.log('hooks', hooks);
-
         if (root) {
             root.appendChild(element);
-            return;
         }
 
-        const body = document.querySelector('body');
-        body.appendChild(element);
+        if (!root) {
+            const body = document.querySelector('body');
+            body.appendChild(element);
+        }        
+
+        debug() && console.log('hooks', hooks);
 
         if (hooks && hooks['mount']) {
-            debug() && console.log('hooks', hooks);
-
             triggerHook(element, 'mount');
         }
     });
