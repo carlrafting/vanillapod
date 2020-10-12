@@ -166,7 +166,7 @@ mount(null, container);
 
 ### Children
 
-You can specify children of your component by specifying a `children` key in the `props` object that gets passed to `elementHelper` in your component.
+You can specify children of your component by specifying a `children` array key in the component properties. You can use the `setElementChildren` method when using the explicit approach.
 
 ```javascript
 // script.js
@@ -179,19 +179,11 @@ const heading = () => ({
 });
 
 function myComponent() {
-    const props = {
+    return {
         element: 'div',
         children: [
             heading
         ]
-    };
-
-    const element = elementHelper(props);
-
-    setElementChildren(element, props);
-
-    return {
-        element
     };
 }
 
@@ -202,11 +194,41 @@ function myComponent() {
 
 ### Attributes
 
-...
+```js
+
+// ...
+
+function myComponent() {
+    return {
+        // ...
+        attributes: {
+            hidden: ''
+        },
+        // ...
+    };
+}
+```
+
+Use `setElementAttributes` for explicit components.
 
 ### Properties
 
-...
+```js
+
+// ...
+
+function myComponent() {
+    return {
+        // ...
+        properties: {
+            id: 'myComponent'
+        },
+        // ...
+    };
+}
+```
+
+Use `setElementProperties` for explicit components.
 
 ### Events
 
@@ -215,32 +237,22 @@ It's possible to attach event handlers to your component, by defining event hand
 ```javascript
 // script.js
 
-// imports
-// ...
-
-// heading child component
 // ...
 
 function myComponent() {
-    const props = {
-        // ...
-        events: {
-            click: onClick
-        }
-    }
-
     const onClick = (e) => {
         console.log('Click event fired!')
     }
 
-    // ...
-
     return {
-        // ...            
+        // ...
+        events: {
+            click: onClick
+        },
+        // ...
     };
 }
 
-// mounting
 // ...
 ```
 
@@ -250,7 +262,26 @@ function myComponent() {
 
 ### Lifecycle Methods (Hooks)
 
-...
+```js
+function myComponent() {
+    // ...
+
+    return {
+        // ...
+        hooks: {
+            before() {
+                console.log('myComponent before mount hook');
+            },
+            mount() {
+                console.log('myComponent on mount hook');
+            }
+        },
+        // ...
+    };
+}
+```
+
+Use `registerHooks` method for explicit component approach.
 
 ## ES5 
 
