@@ -1,8 +1,10 @@
 import debug from './debug.js';
-import { createElement, registerElement, setElementProperties } from './element.js';
+import { createElement, registerElement } from './element.js';
+import setElementProperties from './properties.js';
 import setElementAttributes from './attributes.js';
 import setElementEventHandlers from './events.js';
 import setElementTextContent from './text.js';
+import { registerHooks } from './hooks.js';
 
 export default function setElementChildren(element, { children }) {
     if (children && children.length > 0) {
@@ -28,6 +30,10 @@ export default function setElementChildren(element, { children }) {
             );
             setElementEventHandlers(
                 childElement,
+                childProps
+            );
+            registerHooks(
+                childElement, 
                 childProps
             );
             if (childProps.children) {

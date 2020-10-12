@@ -1,5 +1,9 @@
 import error from './error.js';
 import debug from './debug.js';
+import setElementProperties from './properties';
+import setElementAttributes from './attributes';
+import setElementTextContent from './text';
+import setElementEventHandlers from './events';
 
 const validProps = {
     element: null,
@@ -8,17 +12,22 @@ const validProps = {
     classList: [],
     classNames: [],
     attributes: {},
+    attrs: {},
     properties: {},
     props: {},
-    attrs: {},
     children: [],
     text: null,
     events: {},
+    on: {},
     hooks: {}
 };
 
 /**
- * make sure props passed in to register is correct
+ * validateProps
+ * 
+ * make sure props passed in to registerElement are correct
+ * 
+ * @param {object} props - props to validate 
  */
 function validateProps(props) {
     for (const key in props) {
@@ -35,7 +44,11 @@ function validateProps(props) {
 }
 
 /**
+ * createElement
+ * 
  * creates DOM element
+ * 
+ * @param {object} props - props from vanillapod component
  */
 export function createElement(props) {
     (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
@@ -43,6 +56,7 @@ export function createElement(props) {
     if (props.el || props.element) {
         if (!props.el) {
             props.el = props.element;
+            props.element = null;
         }
 
         let element;
@@ -52,7 +66,7 @@ export function createElement(props) {
             element = document.createElement(props.el);
             (debug() && console.log('Created element: ', element));
         } else {
-            // in this case props.el is probably a DOM element
+            // in this case props.el is probably already a DOM element
             element = props.el;
         }
 
@@ -70,7 +84,11 @@ export function createElement(props) {
 }
 
 /** 
+ * registerElement
+ * 
  * register a new element instance 
+ * 
+ * @param {function} elementCreatorFunction - function for vanillapod component
  */
 export function registerElement(elementCreatorFunction) {
     if (typeof elementCreatorFunction === 'function') {
@@ -94,69 +112,29 @@ export function registerElement(elementCreatorFunction) {
 }
 
 /**
- * not to be confused with props variable in createElement, 
- * might have to rename that later...
+ * elementHelper
  * 
- * setElementProperties just sets whatever properties you specify 
- * inside a components props or properties key.
+ * a helper responsible for creating DOM elements and setting attributes, 
+ * -properties, text content & event handlers.
+ * 
+ * @param {object} props - props from vanillapod component 
  */
-export function setElementProperties(element, { props, properties }) {
-    if (props || properties) {
-        if (!props) {
-            props = properties;
-        }
+export function elementHelper(props) {
+    const [ element, elProps ] = createElement(props);
 
-        for (const key in props) {
-            if (Object.prototype.hasOwnProperty.call(props, key)) {
-                element[key] = props[key];
-            }
-        }
-    }
-}
+    console.log('elementHelper: elProps', elProps);
 
-// A helper one can use to create elements within components
-//
-// Example:
-// 
-// import { elementHelper } from 'vanillapod/element';
-//
-// export default function foobar() {
-//     function attrs() {
-//         return {
-//             classList: ['foo', 'bar'],
-//             data: {
-//                 foo: 'bar',
-//                 hello: ['world', 'hello']
-//             },
-//             attributes: {
-//                 value: 'foo'
-//             }
-//         }
-//     };
-//
-//     return helper(
-//         'div',
-//         'hello there',
-//         attrs,
-//         {
-//             click(e) { console.log(target) }
-//         },
-//         [ bar ]
-//     );
-// }
-//
-export function elementHelper(
-    element='',
-    text='',
-    attributes=function(){},
-    events={},
-    children=[]
-) {
-    return {
-        element,
-        text,
-        ...attributes(),
-        events,
-        children
-    };
+    // set element properties
+    setElementProperties(element, elProps);
+
+    // set attributes on elements
+    setElementAttributes(element, elProps);
+
+    // set textContent for element
+    setElementTextContent(element, elProps);
+
+    // register DOM event handlers
+    setElementEventHandlers(element, elProps);
+
+    return element;
 }
