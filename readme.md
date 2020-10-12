@@ -49,106 +49,118 @@ The goal of vanillapod is to enhance vanilla JavaScript with a component based a
 
 ## Getting Started
 
-### Components
+You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES2015 modules in browsers that support it.
 
-You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES2015 modules in browsers that support it. The first step to get started is defining your component.
+To import vanillapod methods without a bundler, you need to point to the script file inside the `dist` directory.
+
+```js
+// import without bundler
+
+import { mount } from './node_modules/vanillapod/dist/vanillapod.js';
+```
+
+### Implicit Components
+
+The first step to get started is defining your component.
 
 ```javascript
-    // script.js
+// script.js
 
-    function myComponent() {
-        return {
-            element: 'h1',
-            text: 'This is my first vanillapod component!'
-        };
-    }
+function myComponent() {
+    return {
+        element: 'h1',
+        text: 'This is my first vanillapod component!'
+    };
+}
 ```
+
+The implicit approach of defining components is useful in the beginning of development of a component.
+
+### Explicit Components
 
 While this works perfectly fine for rendering something to the screen. it's not very flexible. That's why vanillapod provides a helper for rendering elements inside a component.
 
 ```javascript
-    // script.js
+// script.js
 
-    // import with a bundler
-    import { elementHelper } from 'vanillapod';
+import { elementHelper } from 'vanillapod';
 
-    // import without bundler
-    import { elementHelper } from './node_modules/vanillapod/dist/vanillapod.js';
-
-    function myComponent() {
-        const props = {
-            element: 'h1',
-            text: 'This is my first vanillapod component!'
-        }
-
-        const element = elementHelper(props);
-
-        return {
-            element
-        };
+function myComponent() {
+    const props = {
+        element: 'h1',
+        text: 'This is my first vanillapod component!'
     }
+
+    const element = elementHelper(props);
+
+    return {
+        element
+    };
+}
 ```
+
+The explicit approach gives you more flexibility of what a component can do. The only requirement of a component using the explicit approach is that is should return an object with a `element` property. You can create elements using the `elementHelper` method. 
 
 ### Mounting
 
 After you've defined your component it's time to mount it to the DOM, in other words render the html. You can specify a root element you want to mount inside, and pass it to `mount` as the first argument.
 
 ```javascript
-    // script.js 
+// script.js 
 
-    import { elementHelper, mount } from 'vanillapod';
+import { elementHelper, mount } from 'vanillapod';
 
-    // myComponent
-    // ...
+// myComponent
+// ...
 
-    const root = document.getElementById('root');
+const root = document.getElementById('root');
 
-    mount(root, myComponent);
+mount(root, myComponent);
 ```
 
 It's also possible to mount multiple components at the same time.
 
 ```javascript
-    // script.js 
+// script.js 
 
-    // ...
+// ...
 
-    function anotherComponent() {
-        return {
-            element: 'div',
-            classList: ['another-component'],
-            text: 'this is a second component'
-        };
-    }
+function anotherComponent() {
+    return {
+        element: 'div',
+        classList: ['another-component'],
+        text: 'this is a second component'
+    };
+}
 
-    function thirdComponent() {
-        return {
-            element: 'div',
-            classList: ['third-component'],
-            text: 'this is a third component'
-        };
-    }
+function thirdComponent() {
+    return {
+        element: 'div',
+        classList: ['third-component'],
+        text: 'this is a third component'
+    };
+}
 
-    // ...
+// ...
 
-    // you can specify multiple components to mount simultaneously
-    mount(
-        root,
-        myComponent,
-        anotherComponent,
-        thirdComponent
-    );
+// you can specify multiple components to mount simultaneously
+mount(
+    root,
+    myComponent,
+    anotherComponent,
+    thirdComponent
+);
 
 ```
 
 You can pass null as the first argument to mount inside the documents `body` element.
 
 ```javascript
-    // ...
+// ...
 
-    mount(null, container);
+mount(null, container);
 
-    // ...
+// ...
 ```
 
 ### Children
@@ -156,34 +168,34 @@ You can pass null as the first argument to mount inside the documents `body` ele
 You can specify children of your component by specifying a `children` key in the `props` object that gets passed to `elementHelper` in your component.
 
 ```javascript
-    // script.js
+// script.js
 
-    import { elementHelper, mount, setElementChildren } from 'vanillapod';
+import { elementHelper, mount, setElementChildren } from 'vanillapod';
 
-    const heading = () => ({
-        element: 'h1',
-        text: 'This is my first vanillapod component!'
-    });
+const heading = () => ({
+    element: 'h1',
+    text: 'This is my first vanillapod component!'
+});
 
-     function myComponent() {
-        const props = {
-            element: 'div',
-            children: [
-                heading
-            ]
-        };
+function myComponent() {
+    const props = {
+        element: 'div',
+        children: [
+            heading
+        ]
+    };
 
-        const element = elementHelper(props);
+    const element = elementHelper(props);
 
-        setElementChildren(element, props);
+    setElementChildren(element, props);
 
-        return {
-            element
-        };
-    }
+    return {
+        element
+    };
+}
 
-    // mounting
-    // ...
+// mounting
+// ...
 
 ```
 
@@ -200,35 +212,35 @@ You can specify children of your component by specifying a `children` key in the
 It's possible to attach event handlers to your component, by defining event handler functions in a `events` key on the `props` object that gets passed to `elementHelper` in your component. The event name is the same as what you'd normally pass to [`element.addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
 
 ```javascript
-    // script.js
+// script.js
 
-    // imports
-    // ...
+// imports
+// ...
 
-    // heading child component
-    // ...
+// heading child component
+// ...
 
-    function myComponent() {
-        const props = {
-            // ...
-            events: {
-                click: onClick
-            }
-        }
-
-        const onClick = (e) => {
-            console.log('Click event fired!')
-        }
-
+function myComponent() {
+    const props = {
         // ...
-
-        return {
-            // ...            
-        };
+        events: {
+            click: onClick
+        }
     }
 
-    // mounting
+    const onClick = (e) => {
+        console.log('Click event fired!')
+    }
+
     // ...
+
+    return {
+        // ...            
+    };
+}
+
+// mounting
+// ...
 ```
 
 ### Passing data to child components
@@ -244,41 +256,41 @@ It's possible to attach event handlers to your component, by defining event hand
 There is a ES5 bundle available for targeting older browsers that doesn't have support for ES2015 modules. All vanillapod methods are namespaced under `vanillapod`. Here is how you use the ES5 bundle.
 
 ```html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>vanillapod ES5</title>
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vanillapod ES5</title>
+</head>
+<body>
 
-    <div id="root">
-        <h1>vanillapod ES5 Example</h1>
-    </div>
+<div id="root">
+    <h1>vanillapod ES5 Example</h1>
+</div>
 
-    <script src="./node_modules/vanillapod/dist/vanillapod.es5.min.js"></script>
-    <script src="script.js"></script>
+<script src="./node_modules/vanillapod/dist/vanillapod.es5.min.js"></script>
+<script src="script.js"></script>
 
-    </body>
-    </html>
+</body>
+</html>
 ```
 
 ```javascript
-    // script.js
+// script.js
 
-    function myComponent() {
-        return {
-            element: 'div',
-            text: 'Hello World'
-        };
-    }
+function myComponent() {
+    return {
+        element: 'div',
+        text: 'Hello World'
+    };
+}
 
-    if (window.vanillapod) {
-        vanillapod.mount(null, myComponent);
-    } else {
-        console.error('Something went wrong!');
-    }
+if (window.vanillapod) {
+    vanillapod.mount(null, myComponent);
+} else {
+    console.error('Something went wrong!');
+}
 ```
 
 ## Debugging
@@ -287,15 +299,15 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 
 ```javascript
 
-    // yourscript.js
+// yourscript.js
 
-    import { debug } from 'vanillapod';
+import { debug } from 'vanillapod';
 
-    debug(true);
+debug(true);
 
-    // to read debug value, call debug().
+// to read debug value, call debug().
 
-    debug() // returns true
+debug() // returns true
 
 ```
 
@@ -327,4 +339,4 @@ You can check out an example of how to build a [ToDo app with vanillapod here](h
 - [x] showcase how to set properties
 - [ ] make it possible to debug components visually with debug method?
 - [ ] router component would be nice!
-- [ ] write documentation for implicit vs explicit approach
+- [x] write documentation for implicit vs explicit approach
