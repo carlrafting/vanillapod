@@ -28,7 +28,7 @@
     "postversion": "./scripts/release"
   },
   "name": "vanillapod",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "main": "./dist/vanillapod.es5.js",
   "module": "./dist/vanillapod.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
