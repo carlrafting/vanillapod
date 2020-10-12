@@ -1,16 +1,26 @@
-import mount from './mount.js';
-import debug from './debug.js';
+import mount from './mount';
+import unmount from './unmount';
+import debug from './debug';
+import setElementProperties from './properties';
 import setElementAttributes from './attributes';
-import { registerElement } from './element';
+import { registerElement, createElement } from './element';
 import setElementTextContent from './text';
 import setElementEventHandlers from './events';
+import setElementChildren from './children';
+import createDocumentFragment from './fragment';
 
 export { 
-    mount, 
-    debug, 
-    setElementAttributes, 
-    registerElement, 
+    mount,
+    unmount,
+    debug,
+    setElementProperties,
+    setElementAttributes,
+    registerElement,
+    createElement,
     setElementTextContent,
-    setElementEventHandlers
+    setElementEventHandlers,
+    setElementChildren,
+    createDocumentFragment
 };
+export { registerHooks, registerHook, triggerHook } from './hooks';
 export { elementHelper } from './element';

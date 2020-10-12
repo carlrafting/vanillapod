@@ -1,14 +1,20 @@
 import debug from './debug.js';
-import { createElement, registerElement, setElementProperties } from './element.js';
+import { createElement, registerElement } from './element.js';
+import setElementProperties from './properties.js';
 import setElementAttributes from './attributes.js';
 import setElementEventHandlers from './events.js';
 import setElementTextContent from './text.js';
+import { registerHooks } from './hooks.js';
 
+/**
+ * setElementChildren
+ * 
+ * @param {HTMLElement} element - element to attach children to
+ * @param {object} props - vanillapod component props
+ */
 export default function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
         props.children.map(child => {
-            // const childProps = child();
-            // const childElement = document.createElement(childProps.element);
             const childInstance = registerElement(child);
             const [childElement, childProps] = createElement(childInstance);
             (debug() && (
@@ -30,6 +36,10 @@ export default function setElementChildren(element, props) {
             );
             setElementEventHandlers(
                 childElement,
+                childProps
+            );
+            registerHooks(
+                childElement, 
                 childProps
             );
             if (childProps.children) {

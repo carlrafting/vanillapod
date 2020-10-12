@@ -1,5 +1,170 @@
+/**
+ * vanillapod.js 
+ * v0.8.3 
+ */
 var vanillapod = (function (exports) {
   'use strict';
+
+  var version = "0.8.3";
+
+  /**
+   * debug
+   * 
+   * @param {boolean} value - enable or disable debug output
+   */
+  function debug() {
+    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    if (!value) {
+      return window.VANILLAPOD_DEBUG;
+    }
+
+    return window.VANILLAPOD_DEBUG = value;
+  }
+
+  var errors = [];
+  /**
+   * error
+   * 
+   * throw standard error:
+   * error(new Error('This is my Error message'));
+   * 
+   * throw reference error:
+   * error(new ReferenceError('This is my ReferenceError message'))
+   * 
+   * throw custom exception:
+   * function CustomException() {}
+   * error(new CustomException('This is my CustomException message'))
+   * 
+   * @param {Error} exception - throw error when debug is enabled, otherwise store in errors array
+   */
+
+  var error = (function (exception) {
+    if (debug()) {
+      throw exception;
+    }
+
+    errors[exception] = {
+      exception: exception
+    };
+    return;
+  });
+
+  /**
+   * checkType
+   * 
+   * A more reliable way of checking type of values.
+   * 
+   * @param {*} value - value to check type of
+   */
+
+  function checkType() {
+    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var sliceStart = 8;
+    var sliceEnd = -1;
+    return Object.prototype.toString.call(value).slice(sliceStart, sliceEnd).toLowerCase();
+  }
+  /**
+   * 
+   * @param {HTMLElement} parent 
+   * @param {function} callback 
+   */
+
+  function traverseChildNodes() {
+    var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+    if (!parent) {
+      error(new Error("Expected parent parameter to be set, was ".concat(parent)));
+    }
+
+    var childCount = parent.childNodes.length;
+    var elementHasChildren = childCount > 0;
+
+    if (elementHasChildren) {
+      parent.childNodes.forEach(function (child) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          var childHasChildNodes = child.childNodes.length > 0;
+
+          if (childHasChildNodes) {
+            traverseChildNodes(child, function (childChild) {
+              callback(childChild);
+            });
+          }
+
+          callback(child);
+        }
+      });
+    }
+  }
+
+  // element property to store hooks
+
+  var key = '_vanillapod_hooks';
+
+  function registerHooks(element, _ref) {
+    var _ref$hooks = _ref.hooks,
+        hooks = _ref$hooks === void 0 ? {} : _ref$hooks;
+
+    if (!hooks) {
+      return;
+    }
+
+    if (!element[key]) {
+      debug() && console.log("Registering hooks for ".concat(element));
+      element[key] = hooks;
+      return;
+    }
+
+    debug() && console.log("Hooks already registered for ".concat(element));
+  }
+
+  function registerHook(element, hook) {
+    var hooks = element[key];
+
+    if (!hooks[hook]) {
+      hooks[hook] = hook;
+    }
+  }
+
+  function triggerHook(element, hookName) {
+    var hooks = element[key];
+
+    if (hooks) {
+      if (hookName && hooks[hookName]) {
+        debug() && console.log("Triggering hook ".concat(hookName, " for ").concat(element));
+
+        for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+          args[_key - 2] = arguments[_key];
+        }
+
+        hooks[hookName](args);
+      }
+
+      return;
+    }
+
+    debug() && console.log("No hooks registered for ".concat(element));
+  }
+
+  function triggerChildrenHooks(el) {
+    var hookName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+    if (hookName === '') {
+      // TODO: throw some kind of error?
+      return;
+    }
+
+    traverseChildNodes(el, function (child) {
+      var childHooks = child._vanillapod_hooks;
+
+      if (childHooks && Object.keys(childHooks).length > 0) {
+        if (childHooks && childHooks.before) {
+          triggerHook(child, hookName);
+        }
+      }
+    });
+  }
 
   function _typeof(obj) {
     "@babel/helpers - typeof";
@@ -122,41 +287,142 @@ var vanillapod = (function (exports) {
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  function debug() {
-    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  /**
+   * setElementProperties
+   * 
+   * @param {HTMLElement} element - element to set properties on
+   * @param {object} props - properties to set on element 
+   */
+  function setElementProperties(element, _ref) {
+    var props = _ref.props,
+        properties = _ref.properties;
 
-    if (!value) {
-      return window.VANILLAPOD_DEBUG;
+    if (props || properties) {
+      if (!props) {
+        props = properties;
+        properties = {};
+      }
+
+      for (var key in props) {
+        if (Object.prototype.hasOwnProperty.call(props, key)) {
+          element[key] = props[key];
+        }
+      }
     }
-
-    return window.VANILLAPOD_DEBUG = value;
   }
 
-  //
-  // usage:
-  //
-  // import error from 'error';
-  //
-  // throw standard error
-  // error(new Error('This is my Error message'));
-  //
-  // throw reference error
-  // error(new ReferenceError('This is my ReferenceError message'))
-  //
-  // throw custom exception
-  // function CustomException() {}
-  // error(new CustomException('This is my CustomException message'))
+  /**
+   * setElementAttributes
+   * 
+   * @param {HTMLElement} element - HTMLElement to set attributes on
+   * @param {object} attributes - attributes to set on element 
+   */
 
-  var errors = [];
-  var error = (function (exception) {
-    if (debug()) {
-      throw exception;
+  function setElementAttributes(element, _ref) {
+    var attributes = _ref.attributes,
+        attrs = _ref.attrs,
+        classList = _ref.classList,
+        classNames = _ref.classNames,
+        data = _ref.data;
+    debug() && console.log("Setting attributes for ".concat(element));
+
+    if (classList || classNames) {
+      if (!classList) {
+        classList = classNames;
+        classNames = [];
+      }
+
+      classList.forEach(function (className) {
+        element.classList.add(className);
+      });
     }
 
-    errors[exception] = {
-      exception: exception
-    };
-  });
+    if (data) {
+      for (var key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          if (Array.isArray(key)) {
+            setElementAttributes(element, key);
+          }
+
+          element.dataset[key] = data[key];
+        }
+      }
+    }
+
+    if (attrs || attributes) {
+      if (!attrs) {
+        attrs = attributes;
+        attributes = null;
+      }
+
+      if (typeof attrs === 'function') {
+        var attrsObj = attrs();
+        setElementAttributes(element, _objectSpread2({}, attrsObj));
+        return;
+      }
+
+      if (_typeof(attrs) === 'object') {
+        debug() && console.log(attrs);
+
+        for (var _key in attrs) {
+          if (_typeof(_key) === 'object') {
+            setElementAttributes(element, _key); // return;
+          }
+
+          if (Object.prototype.hasOwnProperty.call(attrs, _key)) {
+            if (_key in element) {
+              element.setAttribute("".concat(_key), attrs[_key]);
+            }
+          }
+        }
+
+        return;
+      }
+
+      attrs.forEach(function (attribute) {
+        element.setAttribute(attribute);
+      });
+    }
+  }
+
+  /**
+   * setElementTextContent
+   * 
+   * @param {HTMLElement} element - element to set text content on
+   * @param {string} text - text content for element 
+   */
+  function setElementTextContent(element, _ref) {
+    var text = _ref.text;
+
+    if (text && text !== '') {
+      element.appendChild(document.createTextNode(text));
+    }
+  }
+
+  /**
+   * setElementEventHandlers
+   * 
+   * @param {HTMLElement} element - element to set event handlers on
+   * @param {object} events - events to set on element 
+   */
+  function setElementEventHandlers(element, _ref) {
+    var events = _ref.events,
+        on = _ref.on;
+
+    if (on || events) {
+      if (!on) {
+        on = events; // reset events object since we're using `on` instead... 
+
+        events = {};
+      }
+
+      for (var event in on) {
+        if (Object.prototype.hasOwnProperty.call(on, event)) {
+          element.addEventListener("".concat(event), on[event], false);
+        }
+      }
+    }
+  }
 
   var validProps = {
     element: null,
@@ -165,16 +431,21 @@ var vanillapod = (function (exports) {
     classList: [],
     classNames: [],
     attributes: {},
+    attrs: {},
     properties: {},
     props: {},
-    attrs: {},
     children: [],
     text: null,
     events: {},
+    on: {},
     hooks: {}
   };
   /**
-   * make sure props passed in to register is correct
+   * validateProps
+   * 
+   * make sure props passed in to registerElement are correct
+   * 
+   * @param {object} props - props to validate 
    */
 
   function validateProps(props) {
@@ -187,7 +458,11 @@ var vanillapod = (function (exports) {
     return true;
   }
   /**
+   * createElement
+   * 
    * creates DOM element
+   * 
+   * @param {object} props - props from vanillapod component
    */
 
 
@@ -197,6 +472,7 @@ var vanillapod = (function (exports) {
     if (props.el || props.element) {
       if (!props.el) {
         props.el = props.element;
+        props.element = null;
       }
 
       var element;
@@ -206,7 +482,7 @@ var vanillapod = (function (exports) {
         element = document.createElement(props.el);
         debug() && console.log('Created element: ', element);
       } else {
-        // in this case props.el is probably a DOM element
+        // in this case props.el is probably already a DOM element
         element = props.el;
       }
 
@@ -220,7 +496,11 @@ var vanillapod = (function (exports) {
     error(new Error("No element specified on ".concat(props)));
   }
   /** 
+   * registerElement
+   * 
    * register a new element instance 
+   * 
+   * @param {function} elementCreatorFunction - function for vanillapod component
    */
 
   function registerElement(elementCreatorFunction) {
@@ -242,166 +522,42 @@ var vanillapod = (function (exports) {
     error(new Error("".concat(elementCreatorFunction, " is not a function")));
   }
   /**
-   * not to be confused with props variable in createElement, 
-   * might have to rename that later...
+   * elementHelper
    * 
-   * setElementProperties just sets whatever properties you specify 
-   * inside a components props or properties key.
+   * a helper responsible for creating DOM elements and setting attributes, 
+   * -properties, text content & event handlers.
+   * 
+   * @param {object} props - props from vanillapod component 
    */
 
-  function setElementProperties(element, _ref) {
-    var props = _ref.props,
-        properties = _ref.properties;
+  function elementHelper(props) {
+    var _createElement = createElement(props),
+        _createElement2 = _slicedToArray(_createElement, 2),
+        element = _createElement2[0],
+        elProps = _createElement2[1];
 
-    if (props || properties) {
-      if (!props) {
-        props = properties;
-      }
+    console.log('elementHelper: elProps', elProps); // set element properties
 
-      for (var key in props) {
-        if (Object.prototype.hasOwnProperty.call(props, key)) {
-          element[key] = props[key];
-        }
-      }
-    }
-  } // A helper one can use to create elements within components
-  //
-  // Example:
-  // 
-  // import { elementHelper } from 'vanillapod/element';
-  //
-  // export default function foobar() {
-  //     function attrs() {
-  //         return {
-  //             classList: ['foo', 'bar'],
-  //             data: {
-  //                 foo: 'bar',
-  //                 hello: ['world', 'hello']
-  //             },
-  //             attributes: {
-  //                 value: 'foo'
-  //             }
-  //         }
-  //     };
-  //
-  //     return helper(
-  //         'div',
-  //         'hello there',
-  //         attrs,
-  //         {
-  //             click(e) { console.log(target) }
-  //         },
-  //         [ bar ]
-  //     );
-  // }
-  //
+    setElementProperties(element, elProps); // set attributes on elements
 
-  function elementHelper() {
-    var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-    var events = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-    var children = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
-    return _objectSpread2(_objectSpread2({
-      element: element,
-      text: text
-    }, attributes()), {}, {
-      events: events,
-      children: children
-    });
+    setElementAttributes(element, elProps); // set textContent for element
+
+    setElementTextContent(element, elProps); // register DOM event handlers
+
+    setElementEventHandlers(element, elProps);
+    return element;
   }
 
-  function setElementAttributes(element, _ref) {
-    var attributes = _ref.attributes,
-        attrs = _ref.attrs,
-        classList = _ref.classList,
-        classNames = _ref.classNames,
-        data = _ref.data;
-    debug() && console.log("Setting attributes for ".concat(element));
-
-    if (classList || classNames) {
-      if (!classList) {
-        classList = classNames;
-      }
-
-      classList.forEach(function (className) {
-        element.classList.add(className);
-      });
-    }
-
-    if (data) {
-      for (var key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-          if (Array.isArray(key)) {
-            setElementAttributes(element, key);
-          }
-
-          element.dataset[key] = data[key];
-        }
-      }
-    }
-
-    if (attributes || attrs) {
-      if (!attributes) {
-        attributes = attrs;
-      }
-
-      if (typeof attributes === 'function') {
-        var attrsObj = attributes();
-        setElementAttributes(element, _objectSpread2({}, attrsObj));
-        return;
-      }
-
-      if (_typeof(attributes) === 'object') {
-        debug() && console.log(attributes);
-
-        for (var _key in attributes) {
-          if (_typeof(_key) === 'object') {
-            setElementAttributes(element, _key); // return;
-          }
-
-          if (Object.prototype.hasOwnProperty.call(attributes, _key)) {
-            if (_key in element) {
-              element.setAttribute("".concat(_key), attributes[_key]);
-            }
-          }
-        }
-
-        return;
-      }
-
-      attributes.forEach(function (attribute) {
-        element.setAttribute(attribute);
-      });
-    }
-  }
-
-  function setElementTextContent(element, _ref) {
-    var text = _ref.text;
-
-    if (text && text !== '') {
-      element.appendChild(document.createTextNode(text));
-    }
-  }
-
-  function setElementEventHandlers(element, _ref) {
-    var _ref$events = _ref.events,
-        events = _ref$events === void 0 ? {} : _ref$events;
-
-    if (events) {
-      for (var event in events) {
-        if (Object.prototype.hasOwnProperty.call(events, event)) {
-          element.addEventListener("".concat(event), events[event], false);
-        }
-      }
-    }
-  }
+  /**
+   * setElementChildren
+   * 
+   * @param {HTMLElement} element - element to attach children to
+   * @param {object} props - vanillapod component props
+   */
 
   function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
       props.children.map(function (child) {
-        // const childProps = child();
-        // const childElement = document.createElement(childProps.element);
         var childInstance = registerElement(child);
 
         var _createElement = createElement(childInstance),
@@ -414,6 +570,7 @@ var vanillapod = (function (exports) {
         setElementAttributes(childElement, childProps);
         setElementTextContent(childElement, childProps);
         setElementEventHandlers(childElement, childProps);
+        registerHooks(childElement, childProps);
 
         if (childProps.children) {
           setElementChildren(childElement, childProps);
@@ -424,31 +581,12 @@ var vanillapod = (function (exports) {
     }
   }
 
-  function bootstrap(elementCreatorFunction) {
-    // create required element instances
-    var instance = registerElement(elementCreatorFunction);
-    debug() && console.log('Element instance: ', instance);
-
-    var _createElement = createElement(instance),
-        _createElement2 = _slicedToArray(_createElement, 2),
-        element = _createElement2[0],
-        props = _createElement2[1]; // set element properties
-
-
-    setElementProperties(element, props); // set attributes on elements
-
-    setElementAttributes(element, props); // set textContent for elements
-
-    setElementTextContent(element, props); // register DOM event handlers
-
-    setElementEventHandlers(element, props); // attach element children
-
-    setElementChildren(element, props); // TODO: register hooks
-
-    return {
-      element: element
-    };
-  }
+  /**
+   * mount
+   * 
+   * @param {HTMLElement} root - parent element to mount elements to
+   * @param {*} args - components to mount  
+   */
 
   function mount(root) {
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -456,28 +594,90 @@ var vanillapod = (function (exports) {
     }
 
     args.forEach(function (arg) {
-      var elementCreatorFunction = arg;
-
-      var _bootstrap = bootstrap(elementCreatorFunction),
-          element = _bootstrap.element;
-
-      if (root) {
-        root.appendChild(element);
-        return;
+      if (checkType(arg) !== 'function') {
+        error(new Error('arg must be a function'));
       }
 
-      var body = document.querySelector('body');
-      body.appendChild(element);
+      var elementCreatorFunction = arg;
+      var instance = registerElement(elementCreatorFunction);
+      var el = instance.el,
+          element = instance.element;
+
+      if (!el) {
+        el = element;
+        element = null;
+      } // if el is a string, use implicit render approach
+
+
+      if (checkType(el) === 'string') {
+        el = elementHelper(instance);
+        setElementChildren(el, instance);
+        registerHooks(el, instance);
+      }
+
+      var hooks = el._vanillapod_hooks; // trigger children before hooks
+
+      triggerChildrenHooks(el, 'before'); // trigger element before hook
+
+      if (hooks && hooks.before) {
+        triggerHook(el, 'before');
+      } // mount element to root or document body element
+
+
+      if (root) {
+        root.insertBefore(el, null);
+      }
+
+      if (!root) {
+        var body = document.querySelector('body');
+        body.insertBefore(el, body.lastChild);
+      } // trigger element mount hook
+
+
+      if (hooks && hooks.mount) {
+        triggerHook(el, 'mount');
+      } // trigger children mount hooks
+
+
+      triggerChildrenHooks(el, 'mount');
     });
   }
 
+  function unmount() {
+    error(new Error('unmount yet to be implemented!'));
+  }
+
+  /**
+   * createDocumentFragment
+   *  
+   * @param {object} props - props from vanillapod component
+   */
+
+  function createDocumentFragment() {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var fragment = document.createDocumentFragment();
+    setElementProperties(fragment, props);
+    setElementTextContent(fragment, props);
+    setElementEventHandlers(fragment, props);
+    return [fragment, props];
+  }
+
+  exports.createDocumentFragment = createDocumentFragment;
+  exports.createElement = createElement;
   exports.debug = debug;
   exports.elementHelper = elementHelper;
   exports.mount = mount;
   exports.registerElement = registerElement;
+  exports.registerHook = registerHook;
+  exports.registerHooks = registerHooks;
   exports.setElementAttributes = setElementAttributes;
+  exports.setElementChildren = setElementChildren;
   exports.setElementEventHandlers = setElementEventHandlers;
+  exports.setElementProperties = setElementProperties;
   exports.setElementTextContent = setElementTextContent;
+  exports.triggerHook = triggerHook;
+  exports.unmount = unmount;
+  exports.version = version;
 
   return exports;
 
