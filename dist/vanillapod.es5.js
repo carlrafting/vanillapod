@@ -1,11 +1,11 @@
 /**
  * vanillapod.js 
- * v0.8.3 
+ * v0.9.0 
  */
 var vanillapod = (function (exports) {
   'use strict';
 
-  var version = "0.8.3";
+  var version = "0.9.0";
 
   /**
    * debug
@@ -548,16 +548,11 @@ var vanillapod = (function (exports) {
     return element;
   }
 
-  /**
-   * setElementChildren
-   * 
-   * @param {HTMLElement} element - element to attach children to
-   * @param {object} props - vanillapod component props
-   */
+  function setElementChildren(element, _ref) {
+    var children = _ref.children;
 
-  function setElementChildren(element, props) {
-    if (props.children && props.children.length > 0) {
-      props.children.map(function (child) {
+    if (children && children.length > 0) {
+      children.map(function (child) {
         var childInstance = registerElement(child);
 
         var _createElement = createElement(childInstance),

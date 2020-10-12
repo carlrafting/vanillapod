@@ -1,8 +1,8 @@
 /**
  * vanillapod.js 
- * v0.8.3 
+ * v0.9.0 
  */
-var version = "0.8.3";
+var version = "0.9.0";
 
 /**
  * debug
@@ -412,15 +412,9 @@ function elementHelper(props) {
     return element;
 }
 
-/**
- * setElementChildren
- * 
- * @param {HTMLElement} element - element to attach children to
- * @param {object} props - vanillapod component props
- */
-function setElementChildren(element, props) {
-    if (props.children && props.children.length > 0) {
-        props.children.map(child => {
+function setElementChildren(element, { children }) {
+    if (children && children.length > 0) {
+        children.map(child => {
             const childInstance = registerElement(child);
             const [childElement, childProps] = createElement(childInstance);
             (debug() && (
