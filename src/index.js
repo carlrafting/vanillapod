@@ -1,5 +1,7 @@
 import mount from './mount';
+import unmount from './unmount';
 import debug from './debug';
+import setElementProperties from './properties';
 import setElementAttributes from './attributes';
 import { registerElement, createElement } from './element';
 import setElementTextContent from './text';
@@ -9,7 +11,9 @@ import createDocumentFragment from './fragment';
 
 export { 
     mount,
+    unmount,
     debug,
+    setElementProperties,
     setElementAttributes,
     registerElement,
     createElement,

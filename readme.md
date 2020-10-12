@@ -2,6 +2,8 @@
 
 Lightweight library for building vanilla JavaScript components...
 
+__NOTE: ⚠ vanillapod is not used in production at the moment, and is missing some essential features.__
+
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -9,6 +11,7 @@ Lightweight library for building vanilla JavaScript components...
 
 
 - [Install](#install)
+- [Background](#background)
 - [Goal: Enhanche Vanilla JavaScript](#goal-enhanche-vanilla-javascript)
 - [Getting Started](#getting-started)
   - [Components](#components)
@@ -36,9 +39,13 @@ $ npm install vanillapod
 $ yarn add vanillapod
 ```
 
+## Background
+
+Vanillapods main goal is to be a learning experience and to produce something useful, if not for anyone else, at least for me. It's inspired to attempt creating a UI library, by Juha Lindstedts [RE:DOM](https://redom.js.org/) and later on Chris Ferdinandis [Reef.js](https://reefjs.com/). Hopefully it will not be too similair to those libraries (why should it exist otherwise?), but rather use those libraries to learn different approaches to solve common problems. Vanillapod is not used in production as of this time, so if you're looking for something more battle-tested, check out the libraries i mentioned above. 
+
 ## Goal: Enhanche Vanilla JavaScript
 
-The goal of vanillapod is to enhance vanilla JavaScript with components. Vanillapod provides several helpers to make the interaction with the DOM a bit more pleasant (hopefully).
+The goal of vanillapod is to enhance vanilla JavaScript with a component based architecture. Vanillapod provides several helpers to make the interaction with the DOM a bit more pleasant (hopefully).
 
 ## Getting Started
 
@@ -295,7 +302,6 @@ If anything is not going as expected, you can always turn on debugging. vanillap
 ## Example App
 
 You can check out an example of how to build a [ToDo app with vanillapod here](https://github.com/carlrafting/vanillapod-example).
-    
 
 ## ToDo
 
@@ -320,3 +326,5 @@ You can check out an example of how to build a [ToDo app with vanillapod here](h
 - [x] only throw errors when debug is true
 - [x] showcase how to set properties
 - [ ] make it possible to debug components visually with debug method?
+- [ ] router component would be nice!
+- [ ] write documentation for implicit vs explicit approach

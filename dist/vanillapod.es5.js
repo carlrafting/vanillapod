@@ -7,6 +7,165 @@ var vanillapod = (function (exports) {
 
   var version = "0.8.3";
 
+  /**
+   * debug
+   * 
+   * @param {boolean} value - enable or disable debug output
+   */
+  function debug() {
+    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    if (!value) {
+      return window.VANILLAPOD_DEBUG;
+    }
+
+    return window.VANILLAPOD_DEBUG = value;
+  }
+
+  var errors = [];
+  /**
+   * error
+   * 
+   * throw standard error:
+   * error(new Error('This is my Error message'));
+   * 
+   * throw reference error:
+   * error(new ReferenceError('This is my ReferenceError message'))
+   * 
+   * throw custom exception:
+   * function CustomException() {}
+   * error(new CustomException('This is my CustomException message'))
+   * 
+   * @param {Error} exception - throw error when debug is enabled, otherwise store in errors array
+   */
+
+  var error = (function (exception) {
+    if (debug()) {
+      throw exception;
+    }
+
+    errors[exception] = {
+      exception: exception
+    };
+    return;
+  });
+
+  /**
+   * checkType
+   * 
+   * A more reliable way of checking type of values.
+   * 
+   * @param {*} value - value to check type of
+   */
+
+  function checkType() {
+    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var sliceStart = 8;
+    var sliceEnd = -1;
+    return Object.prototype.toString.call(value).slice(sliceStart, sliceEnd).toLowerCase();
+  }
+  /**
+   * 
+   * @param {HTMLElement} parent 
+   * @param {function} callback 
+   */
+
+  function traverseChildNodes() {
+    var parent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
+    if (!parent) {
+      error(new Error("Expected parent parameter to be set, was ".concat(parent)));
+    }
+
+    var childCount = parent.childNodes.length;
+    var elementHasChildren = childCount > 0;
+
+    if (elementHasChildren) {
+      parent.childNodes.forEach(function (child) {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          var childHasChildNodes = child.childNodes.length > 0;
+
+          if (childHasChildNodes) {
+            traverseChildNodes(child, function (childChild) {
+              callback(childChild);
+            });
+          }
+
+          callback(child);
+        }
+      });
+    }
+  }
+
+  // element property to store hooks
+
+  var key = '_vanillapod_hooks';
+
+  function registerHooks(element, _ref) {
+    var _ref$hooks = _ref.hooks,
+        hooks = _ref$hooks === void 0 ? {} : _ref$hooks;
+
+    if (!hooks) {
+      return;
+    }
+
+    if (!element[key]) {
+      debug() && console.log("Registering hooks for ".concat(element));
+      element[key] = hooks;
+      return;
+    }
+
+    debug() && console.log("Hooks already registered for ".concat(element));
+  }
+
+  function registerHook(element, hook) {
+    var hooks = element[key];
+
+    if (!hooks[hook]) {
+      hooks[hook] = hook;
+    }
+  }
+
+  function triggerHook(element, hookName) {
+    var hooks = element[key];
+
+    if (hooks) {
+      if (hookName && hooks[hookName]) {
+        debug() && console.log("Triggering hook ".concat(hookName, " for ").concat(element));
+
+        for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+          args[_key - 2] = arguments[_key];
+        }
+
+        hooks[hookName](args);
+      }
+
+      return;
+    }
+
+    debug() && console.log("No hooks registered for ".concat(element));
+  }
+
+  function triggerChildrenHooks(el) {
+    var hookName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+    if (hookName === '') {
+      // TODO: throw some kind of error?
+      return;
+    }
+
+    traverseChildNodes(el, function (child) {
+      var childHooks = child._vanillapod_hooks;
+
+      if (childHooks && Object.keys(childHooks).length > 0) {
+        if (childHooks && childHooks.before) {
+          triggerHook(child, hookName);
+        }
+      }
+    });
+  }
+
   function _typeof(obj) {
     "@babel/helpers - typeof";
 
@@ -128,41 +287,36 @@ var vanillapod = (function (exports) {
     throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  function debug() {
-    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  /**
+   * setElementProperties
+   * 
+   * @param {HTMLElement} element - element to set properties on
+   * @param {object} props - properties to set on element 
+   */
+  function setElementProperties(element, _ref) {
+    var props = _ref.props,
+        properties = _ref.properties;
 
-    if (!value) {
-      return window.VANILLAPOD_DEBUG;
+    if (props || properties) {
+      if (!props) {
+        props = properties;
+        properties = {};
+      }
+
+      for (var key in props) {
+        if (Object.prototype.hasOwnProperty.call(props, key)) {
+          element[key] = props[key];
+        }
+      }
     }
-
-    return window.VANILLAPOD_DEBUG = value;
   }
 
-  //
-  // usage:
-  //
-  // import error from 'error';
-  //
-  // throw standard error
-  // error(new Error('This is my Error message'));
-  //
-  // throw reference error
-  // error(new ReferenceError('This is my ReferenceError message'))
-  //
-  // throw custom exception
-  // function CustomException() {}
-  // error(new CustomException('This is my CustomException message'))
-
-  var errors = [];
-  var error = (function (exception) {
-    if (debug()) {
-      throw exception;
-    }
-
-    errors[exception] = {
-      exception: exception
-    };
-  });
+  /**
+   * setElementAttributes
+   * 
+   * @param {HTMLElement} element - HTMLElement to set attributes on
+   * @param {object} attributes - attributes to set on element 
+   */
 
   function setElementAttributes(element, _ref) {
     var attributes = _ref.attributes,
@@ -175,6 +329,7 @@ var vanillapod = (function (exports) {
     if (classList || classNames) {
       if (!classList) {
         classList = classNames;
+        classNames = [];
       }
 
       classList.forEach(function (className) {
@@ -194,28 +349,29 @@ var vanillapod = (function (exports) {
       }
     }
 
-    if (attributes || attrs) {
-      if (!attributes) {
-        attributes = attrs;
+    if (attrs || attributes) {
+      if (!attrs) {
+        attrs = attributes;
+        attributes = null;
       }
 
-      if (typeof attributes === 'function') {
-        var attrsObj = attributes();
+      if (typeof attrs === 'function') {
+        var attrsObj = attrs();
         setElementAttributes(element, _objectSpread2({}, attrsObj));
         return;
       }
 
-      if (_typeof(attributes) === 'object') {
-        debug() && console.log(attributes);
+      if (_typeof(attrs) === 'object') {
+        debug() && console.log(attrs);
 
-        for (var _key in attributes) {
+        for (var _key in attrs) {
           if (_typeof(_key) === 'object') {
             setElementAttributes(element, _key); // return;
           }
 
-          if (Object.prototype.hasOwnProperty.call(attributes, _key)) {
+          if (Object.prototype.hasOwnProperty.call(attrs, _key)) {
             if (_key in element) {
-              element.setAttribute("".concat(_key), attributes[_key]);
+              element.setAttribute("".concat(_key), attrs[_key]);
             }
           }
         }
@@ -223,12 +379,18 @@ var vanillapod = (function (exports) {
         return;
       }
 
-      attributes.forEach(function (attribute) {
+      attrs.forEach(function (attribute) {
         element.setAttribute(attribute);
       });
     }
   }
 
+  /**
+   * setElementTextContent
+   * 
+   * @param {HTMLElement} element - element to set text content on
+   * @param {string} text - text content for element 
+   */
   function setElementTextContent(element, _ref) {
     var text = _ref.text;
 
@@ -237,14 +399,26 @@ var vanillapod = (function (exports) {
     }
   }
 
+  /**
+   * setElementEventHandlers
+   * 
+   * @param {HTMLElement} element - element to set event handlers on
+   * @param {object} events - events to set on element 
+   */
   function setElementEventHandlers(element, _ref) {
-    var _ref$events = _ref.events,
-        events = _ref$events === void 0 ? {} : _ref$events;
+    var events = _ref.events,
+        on = _ref.on;
 
-    if (events) {
-      for (var event in events) {
-        if (Object.prototype.hasOwnProperty.call(events, event)) {
-          element.addEventListener("".concat(event), events[event], false);
+    if (on || events) {
+      if (!on) {
+        on = events; // reset events object since we're using `on` instead... 
+
+        events = {};
+      }
+
+      for (var event in on) {
+        if (Object.prototype.hasOwnProperty.call(on, event)) {
+          element.addEventListener("".concat(event), on[event], false);
         }
       }
     }
@@ -257,16 +431,21 @@ var vanillapod = (function (exports) {
     classList: [],
     classNames: [],
     attributes: {},
+    attrs: {},
     properties: {},
     props: {},
-    attrs: {},
     children: [],
     text: null,
     events: {},
+    on: {},
     hooks: {}
   };
   /**
-   * make sure props passed in to register is correct
+   * validateProps
+   * 
+   * make sure props passed in to registerElement are correct
+   * 
+   * @param {object} props - props to validate 
    */
 
   function validateProps(props) {
@@ -279,7 +458,11 @@ var vanillapod = (function (exports) {
     return true;
   }
   /**
+   * createElement
+   * 
    * creates DOM element
+   * 
+   * @param {object} props - props from vanillapod component
    */
 
 
@@ -289,6 +472,7 @@ var vanillapod = (function (exports) {
     if (props.el || props.element) {
       if (!props.el) {
         props.el = props.element;
+        props.element = null;
       }
 
       var element;
@@ -298,7 +482,7 @@ var vanillapod = (function (exports) {
         element = document.createElement(props.el);
         debug() && console.log('Created element: ', element);
       } else {
-        // in this case props.el is probably a DOM element
+        // in this case props.el is probably already a DOM element
         element = props.el;
       }
 
@@ -312,7 +496,11 @@ var vanillapod = (function (exports) {
     error(new Error("No element specified on ".concat(props)));
   }
   /** 
+   * registerElement
+   * 
    * register a new element instance 
+   * 
+   * @param {function} elementCreatorFunction - function for vanillapod component
    */
 
   function registerElement(elementCreatorFunction) {
@@ -334,29 +522,14 @@ var vanillapod = (function (exports) {
     error(new Error("".concat(elementCreatorFunction, " is not a function")));
   }
   /**
-   * not to be confused with props variable in createElement, 
-   * might have to rename that later...
+   * elementHelper
    * 
-   * setElementProperties just sets whatever properties you specify 
-   * inside a components props or properties key.
+   * a helper responsible for creating DOM elements and setting attributes, 
+   * -properties, text content & event handlers.
+   * 
+   * @param {object} props - props from vanillapod component 
    */
 
-  function setElementProperties(element, _ref) {
-    var props = _ref.props,
-        properties = _ref.properties;
-
-    if (props || properties) {
-      if (!props) {
-        props = properties;
-      }
-
-      for (var key in props) {
-        if (Object.prototype.hasOwnProperty.call(props, key)) {
-          element[key] = props[key];
-        }
-      }
-    }
-  }
   function elementHelper(props) {
     var _createElement = createElement(props),
         _createElement2 = _slicedToArray(_createElement, 2),
@@ -371,58 +544,16 @@ var vanillapod = (function (exports) {
 
     setElementTextContent(element, elProps); // register DOM event handlers
 
-    setElementEventHandlers(element, elProps); // attach element children
-    // setElementChildren(element, elProps);
-
+    setElementEventHandlers(element, elProps);
     return element;
   }
 
-  function registerHooks(element, _ref) {
-    var _ref$hooks = _ref.hooks,
-        hooks = _ref$hooks === void 0 ? {} : _ref$hooks;
-
-    if (!hooks) {
-      return;
-    }
-
-    var key = '_vanillapod_hooks';
-
-    if (!element[key]) {
-      debug() && console.log("Registering hooks for ".concat(element));
-      element[key] = hooks;
-      return;
-    }
-
-    debug() && console.log("Hooks already registered for ".concat(element));
-  }
-
-  function registerHook(element, hook) {
-    var hooks = element._vanillapod_hooks;
-
-    if (!hooks[hook]) {
-      hooks[hook] = hook;
-    }
-  }
-
-  function triggerHook(element, hookName) {
-    var hooks = element._vanillapod_hooks;
-
-    if (hooks) {
-      if (hookName && hooks[hookName]) {
-        debug() && console.log("Triggering hook ".concat(hookName, " for ").concat(element));
-
-        for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-          args[_key - 2] = arguments[_key];
-        }
-
-        hooks[hookName](args);
-      }
-
-      return;
-    }
-
-    debug() && console.log("No hooks registered for ".concat(element));
-  }
+  /**
+   * setElementChildren
+   * 
+   * @param {HTMLElement} element - element to attach children to
+   * @param {object} props - vanillapod component props
+   */
 
   function setElementChildren(element, props) {
     if (props.children && props.children.length > 0) {
@@ -450,37 +581,12 @@ var vanillapod = (function (exports) {
     }
   }
 
-  function bootstrap(elementCreatorFunction) {
-    // create required element instances
-    var instance = registerElement(elementCreatorFunction);
-
-    if (typeof instance.element === 'string') {
-      debug() && console.log('Element instance: ', instance);
-
-      var _createElement = createElement(instance),
-          _createElement2 = _slicedToArray(_createElement, 2),
-          _element = _createElement2[0],
-          props = _createElement2[1]; // set element properties
-
-
-      setElementProperties(_element, props); // set attributes on elements
-
-      setElementAttributes(_element, props); // set textContent for elements
-
-      setElementTextContent(_element, props); // register DOM event handlers
-
-      setElementEventHandlers(_element, props); // attach element children
-
-      setElementChildren(_element, props); // register hooks
-
-      registerHooks(_element, props);
-    }
-
-    var element = instance.element;
-    return {
-      element: element
-    };
-  }
+  /**
+   * mount
+   * 
+   * @param {HTMLElement} root - parent element to mount elements to
+   * @param {*} args - components to mount  
+   */
 
   function mount(root) {
     for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -488,29 +594,64 @@ var vanillapod = (function (exports) {
     }
 
     args.forEach(function (arg) {
+      if (checkType(arg) !== 'function') {
+        error(new Error('arg must be a function'));
+      }
+
       var elementCreatorFunction = arg;
+      var instance = registerElement(elementCreatorFunction);
+      var el = instance.el,
+          element = instance.element;
 
-      var _bootstrap = bootstrap(elementCreatorFunction),
-          element = _bootstrap.element;
+      if (!el) {
+        el = element;
+        element = null;
+      } // if el is a string, use implicit render approach
 
-      var hooks = element._vanillapod_hooks;
+
+      if (checkType(el) === 'string') {
+        el = elementHelper(instance);
+        setElementChildren(el, instance);
+        registerHooks(el, instance);
+      }
+
+      var hooks = el._vanillapod_hooks; // trigger children before hooks
+
+      triggerChildrenHooks(el, 'before'); // trigger element before hook
+
+      if (hooks && hooks.before) {
+        triggerHook(el, 'before');
+      } // mount element to root or document body element
+
 
       if (root) {
-        root.appendChild(element);
+        root.insertBefore(el, null);
       }
 
       if (!root) {
         var body = document.querySelector('body');
-        body.appendChild(element);
-      }
+        body.insertBefore(el, body.lastChild);
+      } // trigger element mount hook
 
-      debug() && console.log('hooks', hooks);
 
-      if (hooks && hooks['mount']) {
-        triggerHook(element, 'mount');
-      }
+      if (hooks && hooks.mount) {
+        triggerHook(el, 'mount');
+      } // trigger children mount hooks
+
+
+      triggerChildrenHooks(el, 'mount');
     });
   }
+
+  function unmount() {
+    error(new Error('unmount yet to be implemented!'));
+  }
+
+  /**
+   * createDocumentFragment
+   *  
+   * @param {object} props - props from vanillapod component
+   */
 
   function createDocumentFragment() {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -532,8 +673,10 @@ var vanillapod = (function (exports) {
   exports.setElementAttributes = setElementAttributes;
   exports.setElementChildren = setElementChildren;
   exports.setElementEventHandlers = setElementEventHandlers;
+  exports.setElementProperties = setElementProperties;
   exports.setElementTextContent = setElementTextContent;
   exports.triggerHook = triggerHook;
+  exports.unmount = unmount;
   exports.version = version;
 
   return exports;

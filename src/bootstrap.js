@@ -1,42 +1,54 @@
 import debug from './debug.js';
-import { registerElement, createElement, setElementProperties } from './element.js';
+import { registerElement, createElement } from './element.js';
+import setElementProperties from './properties';
 import setElementAttributes from './attributes.js';
 import setElementTextContent from './text.js';
 import setElementChildren from './children.js';
 import setElementEventHandlers from './events.js';
 import { registerHooks } from './hooks.js';
 
+/**
+ * bootstrap
+ * 
+ * @param {function} elementCreatorFunction - function responsible for creating component element
+ */
 export default function bootstrap(elementCreatorFunction) {
     // create required element instances
     const instance = registerElement(elementCreatorFunction);
 
-    if (typeof instance.element === 'string') {
+    const { el, element } = instance;
+
+    if (typeof element === 'string' || typeof el === 'string') {
         (debug() && console.log('Element instance: ', instance));
 
-        const [ element, props ] = createElement(instance);
+        const [ createdElement, props ] = createElement(instance);
 
         // set element properties
-        setElementProperties(element, props);
+        setElementProperties(createdElement, props);
 
         // set attributes on elements
-        setElementAttributes(element, props);
+        setElementAttributes(createdElement, props);
 
         // set textContent for elements
-        setElementTextContent(element, props);
+        setElementTextContent(createdElement, props);
 
         // register DOM event handlers
-        setElementEventHandlers(element, props);
+        setElementEventHandlers(createdElement, props);
 
         // attach element children
-        setElementChildren(element, props);
+        setElementChildren(createdElement, props);
 
         // register hooks
-        registerHooks(element, props);
+        registerHooks(createdElement, props);
+
+        return {
+            element: createdElement,
+            el: createdElement
+        };
     }
     
-    const { element } = instance;
-
     return {
-        element
+        element,
+        el
     };
 }

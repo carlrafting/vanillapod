@@ -1,17 +1,24 @@
 import debug from './debug.js';
 
+/**
+ * setElementAttributes
+ * 
+ * @param {HTMLElement} element - HTMLElement to set attributes on
+ * @param {object} attributes - attributes to set on element 
+ */
 export default function setElementAttributes(element, { 
     attributes, 
     attrs, 
     classList, 
     classNames,
-    data 
+    data
 }) {
     (debug() && console.log(`Setting attributes for ${element}`));
 
     if (classList || classNames) {
         if (!classList) {
             classList = classNames;
+            classNames = [];
         }
         classList.forEach(className => {
             element.classList.add(className);
@@ -29,35 +36,36 @@ export default function setElementAttributes(element, {
         }
     }
 
-    if (attributes || attrs) {
-        if (!attributes) {
-            attributes = attrs;
+    if (attrs || attributes) {
+        if (!attrs) {
+            attrs = attributes;
+            attributes = null;
         }
 
-        if (typeof attributes === 'function') {
-            const attrsObj = attributes();
+        if (typeof attrs === 'function') {
+            const attrsObj = attrs();
             setElementAttributes(element, { ...attrsObj });
             return;
         }
 
-        if (typeof attributes === 'object') {
-            (debug() && console.log(attributes));
-            for (const key in attributes) {
+        if (typeof attrs === 'object') {
+            (debug() && console.log(attrs));
+            for (const key in attrs) {
                 if (typeof key === 'object') {
                     setElementAttributes(element, key);
                     // return;
                 }
-                if (Object.prototype.hasOwnProperty.call(attributes, key)) {
+                if (Object.prototype.hasOwnProperty.call(attrs, key)) {
                     if (key in element) {
-                        element.setAttribute(`${key}`, attributes[key]);
+                        element.setAttribute(`${key}`, attrs[key]);
                     }                                        
                 }
             }
             return;
         }        
 
-        attributes.forEach(attribute => {
+        attrs.forEach(attribute => {
             element.setAttribute(attribute);
         });
-    }    
+    }
 }
