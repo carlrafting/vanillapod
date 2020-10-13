@@ -1,11 +1,11 @@
 /**
  * vanillapod.js 
- * v0.9.0 
+ * v0.9.1 
  */
 var vanillapod = (function (exports) {
   'use strict';
 
-  var version = "0.9.0";
+  var version = "0.9.1";
 
   /**
    * debug
