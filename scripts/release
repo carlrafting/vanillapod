@@ -3,9 +3,6 @@
 const { version, repository } = require('../package.json');
 const { exec } = require('child_process');
 
-// git push --tags && yarn publish . && git push && echo \"Successfully released version $npm_package_version!\"
-// exec(`git push --tags && yarn publish . && git push && echo 'Successfully released version ${version}!'`);
-
 console.log('Releasing new version...');
 
 let published = false;
@@ -18,6 +15,7 @@ exec('git push --tags', (error) => {
 
     console.log(`✅ Successfully pushed tags to ${repository}`);
 });
+
 exec('yarn publish', (error) => {
     if (error) {
         console.error(`⛔ Couldn't publish package to npm registry! \n ${error}`);
@@ -28,6 +26,7 @@ exec('yarn publish', (error) => {
 
     console.log('✅ Successfully published new version on npm!');
 });
+
 exec('git push', (error) => {
     if (error) {
         console.error(`⛔ Couldn't push changes to ${repository}! \n ${error}`);
