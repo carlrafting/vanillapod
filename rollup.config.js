@@ -2,13 +2,12 @@ import { terser } from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
-import { version } from './package.json';
+import { name, version } from './package.json';
 
-const bundleName = 'vanillapod';
-const input = './vanillapod.js';
+const input = `./${name}.js`;
 const banner = 
 `/**
- * vanillapod.js 
+ * ${name}.js 
  * v${version} 
  */`;
 
@@ -21,11 +20,11 @@ export default [
         output: [
             {
                 banner,
-                file: './dist/vanillapod.js',
+                file: `./dist/${name}.js`,
                 format: 'es'
             },
             {
-                file: './dist/vanillapod.min.js',
+                file: `./dist/${name}.min.js`,
                 format: 'es',
                 plugins: [
                     terser()
@@ -43,14 +42,14 @@ export default [
         output: [
             {
                 banner,
-                file: './dist/vanillapod.es5.js',
-                name: bundleName,
+                file: `./dist/${name}.es5.js`,
+                name,
                 format: 'iife'
             },
             {
-                file: './dist/vanillapod.es5.min.js',
+                file: `./dist/${name}.es5.min.js`,
                 format: 'iife',
-                name: bundleName,
+                name,
                 plugins: [
                     terser()
                 ] 
