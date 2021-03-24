@@ -16,7 +16,7 @@ exec('git push --tags', (error) => {
     console.log(`✅ Successfully pushed tags to ${repository}`);
 });
 
-exec('yarn publish', (error) => {
+exec('npm publish', (error) => {
     if (error) {
         console.error(`⛔ Couldn't publish package to npm registry! \n ${error}`);
         return;
