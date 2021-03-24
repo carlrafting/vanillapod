@@ -9,7 +9,7 @@ module.exports = {
     // bail: 0,
 
     // The directory where Jest should store its cached dependency information
-    // cacheDirectory: "C:\\Users\\carl\\AppData\\Local\\Temp\\jest",
+    // cacheDirectory: "",
 
     // Automatically clear mock calls and instances between every test
     // clearMocks: false,
