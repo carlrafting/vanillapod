@@ -1,6 +1,5 @@
-/* global test, expect */
-
-import { mount } from '../dist/vanillapod';
+import { test, expect } from 'vitest';
+import mount from '../src/mount';
 
 test('should mount one component correctly', () => {
     function component() {
@@ -45,4 +44,10 @@ test('should mount multiple components correctly', () => {
 
     expect(body).toContainElement(firstElement);
     expect(body).toContainElement(secondElement);
+});
+
+test('should be able to mount explicit component correctly', () => {
+    function explicit() {
+        
+    }
 });
