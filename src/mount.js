@@ -11,13 +11,17 @@ import setElementChildren from './children.js';
  * @param {*} args - components to mount  
  */
 export default function mount(root, ...args) {
-    args.forEach(arg => {
-        if (checkType(arg) !== 'function') {
-            error(new Error('arg must be a function'));
-        }
+    let index = 0;
+    let vanillapodComponent;
+    let props;
+    const argsLength = args.length;
 
-        const elementCreatorFunction = arg;
-        const instance = registerElement(elementCreatorFunction);
+    for (; index < argsLength; index++) {
+        const arg = args[index];
+
+        checkType(arg) === 'array' ? ([vanillapodComponent, props] = arg) : (vanillapodComponent = arg);
+
+        const instance = registerElement(vanillapodComponent, props);
         let { el, element } = instance;
 
         if (!el) {
@@ -60,5 +64,5 @@ export default function mount(root, ...args) {
 
         // trigger children mount hooks
         triggerChildrenHooks(el, 'mount');
-    });
+    }
 }

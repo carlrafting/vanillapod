@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest';
 import mount from '../src/mount';
+import { elementHelper } from '../src/element';
 
 test('should mount one component correctly', () => {
     function component() {
@@ -35,19 +36,52 @@ test('should mount multiple components correctly', () => {
         };
     }
 
-    const body = document.querySelector('body');
-
-    mount(body, first, second);
+    mount(document.body, first, second);
 
     const firstElement = document.getElementById('first');
     const secondElement = document.getElementById('second');
 
-    expect(body).toContainElement(firstElement);
-    expect(body).toContainElement(secondElement);
+    expect(document.body).toContainElement(firstElement);
+    expect(document.body).toContainElement(secondElement);
 });
 
 test('should be able to mount explicit component correctly', () => {
     function explicit() {
-        
+        const el = elementHelper({
+            element: 'h1',
+            text: 'Hello World!'
+        });
+
+        return {
+            el
+        };
     }
+
+    mount(document.body, explicit);
+
+    const el = document.querySelector('h1');
+
+    expect(document.body).toContainElement(el);
+    expect(el).toHaveTextContent('Hello World!');
+    expect(el.nodeName).toEqual('H1');
+});
+
+test('should be able to pass props to component when mounting', () => {
+    function h1({ message }) {
+        return {
+            el: 'h1',
+            text: message
+        };
+    }
+
+    mount(
+        document.body,
+        [
+            h1, 
+            { message: 'Hello World!' }
+        ]
+    );
+
+    const el = document.querySelector('h1'); 
+    expect(el).toHaveTextContent('Hello World!');
 });

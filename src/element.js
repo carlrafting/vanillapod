@@ -51,7 +51,7 @@ function validateProps(props) {
  * @param {object} props - props from vanillapod component
  */
 export function createElement(props) {
-    (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
+    (debug() && console.log(`Creating ${props.element || props.el} for ${props.vanillapodComponent}`));
 
     if (props.el || props.element) {
         if (!props.el) {
@@ -88,41 +88,43 @@ export function createElement(props) {
  * 
  * register a new element instance 
  * 
- * @param {function} elementCreatorFunction - function for vanillapod component
+ * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
+ * 
+ * @param {function} vanillapodComponent - function for vanillapod component
  */
-export function registerElement(elementCreatorFunction) {
-    if (typeof elementCreatorFunction === 'function') {
-        (debug() && console.log(`Registering ${elementCreatorFunction}...`));
+export function registerElement(vanillapodComponent, vanillapodComponentProps) {
+    if (typeof vanillapodComponent === 'function') {
+        (debug() && console.log(`Registering ${vanillapodComponent}...`));
 
-        const props = elementCreatorFunction();
+        const props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
 
         if (typeof props !== 'object') {
-            error(new Error(`${elementCreatorFunction} must return an object`));
+            error(new Error(`${vanillapodComponent} must return an object`));
         }
         
         if (validateProps(props)) {
             return {
-                elementCreatorFunction,
+                vanillapodComponent,
                 ...props
             };
         }
     }
     
-    error(new Error(`${elementCreatorFunction} is not a function`));
+    error(new Error(`${vanillapodComponent} is not a function`));
 }
 
 /**
  * elementHelper
  * 
  * a helper responsible for creating DOM elements and setting attributes, 
- * -properties, text content & event handlers.
+ * properties, text content & event handlers.
  * 
  * @param {object} props - props from vanillapod component 
  */
 export function elementHelper(props) {
     const [ element, elProps ] = createElement(props);
 
-    console.log('elementHelper: elProps', elProps);
+    (debug() && console.log('elementHelper: elProps', elProps));
 
     // set element properties
     setElementProperties(element, elProps);
