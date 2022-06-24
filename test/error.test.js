@@ -1,6 +1,6 @@
-/* global test, expect */
-
-import { error, debug } from '../dist/vanillapod';
+import { test, expect } from 'vitest';
+import debug from '../src/debug';
+import error from '../src/error';
 
 test('error with debug enabled', () => {
     debug(true);

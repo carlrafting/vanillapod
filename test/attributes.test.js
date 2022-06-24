@@ -1,5 +1,4 @@
-/*global test, expect, beforeEach*/
-
+import { test, expect, beforeEach } from 'vitest';
 import { setElementAttributes } from '../dist/vanillapod';
 
 let element;
