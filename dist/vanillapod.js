@@ -17,8 +17,6 @@ function debug(value=false) {
     return window.VANILLAPOD_DEBUG = value;
 }
 
-let errors = [];
-
 /**
  * error
  * 
@@ -38,8 +36,6 @@ var error = (exception) => {
     if (debug()) {
         throw exception;
     }
-
-    errors[exception] = { exception };
 
     return;
 };
@@ -324,7 +320,7 @@ function validateProps(props) {
  * @param {object} props - props from vanillapod component
  */
 function createElement(props) {
-    (debug() && console.log(`Creating ${props.element || props.el} for ${props.elementCreatorFunction}`));
+    (debug() && console.log(`Creating ${props.element || props.el} for ${props.vanillapodComponent}`));
 
     if (props.el || props.element) {
         if (!props.el) {
@@ -361,41 +357,43 @@ function createElement(props) {
  * 
  * register a new element instance 
  * 
- * @param {function} elementCreatorFunction - function for vanillapod component
+ * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
+ * 
+ * @param {function} vanillapodComponent - function for vanillapod component
  */
-function registerElement(elementCreatorFunction) {
-    if (typeof elementCreatorFunction === 'function') {
-        (debug() && console.log(`Registering ${elementCreatorFunction}...`));
+function registerElement(vanillapodComponent, vanillapodComponentProps) {
+    if (typeof vanillapodComponent === 'function') {
+        (debug() && console.log(`Registering ${vanillapodComponent}...`));
 
-        const props = elementCreatorFunction();
+        const props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
 
         if (typeof props !== 'object') {
-            error(new Error(`${elementCreatorFunction} must return an object`));
+            error(new Error(`${vanillapodComponent} must return an object`));
         }
         
         if (validateProps(props)) {
             return {
-                elementCreatorFunction,
+                vanillapodComponent,
                 ...props
             };
         }
     }
     
-    error(new Error(`${elementCreatorFunction} is not a function`));
+    error(new Error(`${vanillapodComponent} is not a function`));
 }
 
 /**
  * elementHelper
  * 
  * a helper responsible for creating DOM elements and setting attributes, 
- * -properties, text content & event handlers.
+ * properties, text content & event handlers.
  * 
  * @param {object} props - props from vanillapod component 
  */
 function elementHelper(props) {
     const [ element, elProps ] = createElement(props);
 
-    console.log('elementHelper: elProps', elProps);
+    (debug() && console.log('elementHelper: elProps', elProps));
 
     // set element properties
     setElementProperties(element, elProps);
@@ -458,13 +456,17 @@ function setElementChildren(element, { children }) {
  * @param {*} args - components to mount  
  */
 function mount(root, ...args) {
-    args.forEach(arg => {
-        if (checkType(arg) !== 'function') {
-            error(new Error('arg must be a function'));
-        }
+    let index = 0;
+    let vanillapodComponent;
+    let props;
+    const argsLength = args.length;
 
-        const elementCreatorFunction = arg;
-        const instance = registerElement(elementCreatorFunction);
+    for (; index < argsLength; index++) {
+        const arg = args[index];
+
+        checkType(arg) === 'array' ? ([vanillapodComponent, props] = arg) : (vanillapodComponent = arg);
+
+        const instance = registerElement(vanillapodComponent, props);
         let { el, element } = instance;
 
         if (!el) {
@@ -507,11 +509,7 @@ function mount(root, ...args) {
 
         // trigger children mount hooks
         triggerChildrenHooks(el, 'mount');
-    });
-}
-
-function unmount() {
-    error(new Error('unmount yet to be implemented!'));
+    }
 }
 
 /**
@@ -532,4 +530,4 @@ function createDocumentFragment(props = {}) {
     ];
 }
 
-export { createDocumentFragment, createElement, debug, elementHelper, mount, registerElement, registerHook, registerHooks, setElementAttributes, setElementChildren, setElementEventHandlers, setElementProperties, setElementTextContent, triggerHook, unmount, version };
+export { createDocumentFragment, createElement, debug, elementHelper, mount, registerElement, registerHook, registerHooks, setElementAttributes, setElementChildren, setElementEventHandlers, setElementProperties, setElementTextContent, triggerHook, version };

@@ -7,6 +7,116 @@ var vanillapod = (function (exports) {
 
   var version = "0.9.2";
 
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+
+    return target;
+  }
+
+  function _typeof(obj) {
+    "@babel/helpers - typeof";
+
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, _typeof(obj);
+  }
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+    if (_i == null) return;
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+
+    var _s, _e;
+
+    try {
+      for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
   /**
    * debug
    * 
@@ -22,7 +132,6 @@ var vanillapod = (function (exports) {
     return window.VANILLAPOD_DEBUG = value;
   }
 
-  var errors = [];
   /**
    * error
    * 
@@ -43,10 +152,6 @@ var vanillapod = (function (exports) {
     if (debug()) {
       throw exception;
     }
-
-    errors[exception] = {
-      exception: exception
-    };
     return;
   });
 
@@ -164,127 +269,6 @@ var vanillapod = (function (exports) {
         }
       }
     });
-  }
-
-  function _typeof(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
-  function _slicedToArray(arr, i) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-  }
-
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-
-  function _iterableToArrayLimit(arr, i) {
-    if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"] != null) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -467,7 +451,7 @@ var vanillapod = (function (exports) {
 
 
   function createElement(props) {
-    debug() && console.log("Creating ".concat(props.element || props.el, " for ").concat(props.elementCreatorFunction));
+    debug() && console.log("Creating ".concat(props.element || props.el, " for ").concat(props.vanillapodComponent));
 
     if (props.el || props.element) {
       if (!props.el) {
@@ -500,32 +484,34 @@ var vanillapod = (function (exports) {
    * 
    * register a new element instance 
    * 
-   * @param {function} elementCreatorFunction - function for vanillapod component
+   * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
+   * 
+   * @param {function} vanillapodComponent - function for vanillapod component
    */
 
-  function registerElement(elementCreatorFunction) {
-    if (typeof elementCreatorFunction === 'function') {
-      debug() && console.log("Registering ".concat(elementCreatorFunction, "..."));
-      var props = elementCreatorFunction();
+  function registerElement(vanillapodComponent, vanillapodComponentProps) {
+    if (typeof vanillapodComponent === 'function') {
+      debug() && console.log("Registering ".concat(vanillapodComponent, "..."));
+      var props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
 
       if (_typeof(props) !== 'object') {
-        error(new Error("".concat(elementCreatorFunction, " must return an object")));
+        error(new Error("".concat(vanillapodComponent, " must return an object")));
       }
 
       if (validateProps(props)) {
         return _objectSpread2({
-          elementCreatorFunction: elementCreatorFunction
+          vanillapodComponent: vanillapodComponent
         }, props);
       }
     }
 
-    error(new Error("".concat(elementCreatorFunction, " is not a function")));
+    error(new Error("".concat(vanillapodComponent, " is not a function")));
   }
   /**
    * elementHelper
    * 
    * a helper responsible for creating DOM elements and setting attributes, 
-   * -properties, text content & event handlers.
+   * properties, text content & event handlers.
    * 
    * @param {object} props - props from vanillapod component 
    */
@@ -536,7 +522,7 @@ var vanillapod = (function (exports) {
         element = _createElement2[0],
         elProps = _createElement2[1];
 
-    console.log('elementHelper: elProps', elProps); // set element properties
+    debug() && console.log('elementHelper: elProps', elProps); // set element properties
 
     setElementProperties(element, elProps); // set attributes on elements
 
@@ -584,17 +570,17 @@ var vanillapod = (function (exports) {
    */
 
   function mount(root) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
+    var index = 0;
+    var vanillapodComponent;
+    var props;
+    var argsLength = arguments.length <= 1 ? 0 : arguments.length - 1;
 
-    args.forEach(function (arg) {
-      if (checkType(arg) !== 'function') {
-        error(new Error('arg must be a function'));
-      }
+    for (; index < argsLength; index++) {
+      var _arg, _arg2;
 
-      var elementCreatorFunction = arg;
-      var instance = registerElement(elementCreatorFunction);
+      var arg = index + 1 < 1 || arguments.length <= index + 1 ? undefined : arguments[index + 1];
+      checkType(arg) === 'array' ? (_arg = arg, _arg2 = _slicedToArray(_arg, 2), vanillapodComponent = _arg2[0], props = _arg2[1], _arg) : vanillapodComponent = arg;
+      var instance = registerElement(vanillapodComponent, props);
       var el = instance.el,
           element = instance.element;
 
@@ -635,11 +621,7 @@ var vanillapod = (function (exports) {
 
 
       triggerChildrenHooks(el, 'mount');
-    });
-  }
-
-  function unmount() {
-    error(new Error('unmount yet to be implemented!'));
+    }
   }
 
   /**
@@ -671,9 +653,10 @@ var vanillapod = (function (exports) {
   exports.setElementProperties = setElementProperties;
   exports.setElementTextContent = setElementTextContent;
   exports.triggerHook = triggerHook;
-  exports.unmount = unmount;
   exports.version = version;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
   return exports;
 
-}({}));
+})({});
