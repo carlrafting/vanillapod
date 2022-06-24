@@ -164,6 +164,23 @@ mount(null, container);
 // ...
 ```
 
+It's possible to pass props to components when mounting.
+
+```javascript
+
+function Header({ text }) {
+    return {
+        element: 'header'
+        text,
+    }
+}
+
+mount(
+    document.body,
+    [Header, { text: 'Hello World!' }]
+)
+```
+
 ### Children
 
 You can specify children of your component by specifying a `children` array key in the component properties. You can use the `setElementChildren` method when using the explicit approach.
