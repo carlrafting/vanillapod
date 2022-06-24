@@ -21,12 +21,12 @@
   "scripts": {
     "toc": "doctoc readme.md",
     "pretest": "npm run build",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "build": "rollup -c",
     "clean": "rm -rf ./dist/**.js",
-    "preversion": "npm test",
-    "postversion": "./scripts/release"
+    "preversion": "npm test"
   },
   "name": "vanillapod",
   "version": "0.10.0",
