@@ -96,14 +96,14 @@ export function checkType(value=null) {
  */
 export function traverseChildNodes(parent=null, callback=() => {}) {
     if (!parent) {
-        error(new Error(`Expected parent parameter to be set, was ${parent}`));
+        return error(new Error(`Expected parent parameter to be set, was ${parent}`));
     }
 
     const childCount = parent.childNodes.length;
     const elementHasChildren = childCount > 0;
 
     if (elementHasChildren) {
-        parent.childNodes.forEach(child => {
+        for (const child of parent.childNodes) {
             if (child.nodeType === Node.ELEMENT_NODE) {
                 const childHasChildNodes = child.childNodes.length > 0;
                 if (childHasChildNodes) {
@@ -113,7 +113,7 @@ export function traverseChildNodes(parent=null, callback=() => {}) {
                 }
 
                 callback(child);
-            }                
-        });
+            }
+        }
     }
 }

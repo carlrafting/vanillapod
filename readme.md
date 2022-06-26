@@ -4,32 +4,6 @@ Lightweight library for building vanilla JavaScript components...
 
 __NOTE: ⚠ vanillapod is not used in production at the moment, and is missing some essential features.__
 
-## Table of Contents
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
-- [Install](#install)
-- [Background](#background)
-- [Goal: Enhanche Vanilla JavaScript](#goal-enhanche-vanilla-javascript)
-- [Getting Started](#getting-started)
-  - [Implicit Components](#implicit-components)
-  - [Explicit Components](#explicit-components)
-  - [Mounting](#mounting)
-  - [Children](#children)
-  - [Attributes](#attributes)
-  - [Properties](#properties)
-  - [Events](#events)
-  - [Passing data to child components](#passing-data-to-child-components)
-  - [Lifecycle Methods (Hooks)](#lifecycle-methods-hooks)
-- [ES5](#es5)
-- [Debugging](#debugging)
-- [Example App](#example-app)
-- [ToDo](#todo)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 ## Install
 
 ```bash
@@ -50,7 +24,7 @@ The goal of vanillapod is to enhance vanilla JavaScript with a component based a
 
 ## Getting Started
 
-You can use vanillapod regardless of using a bundler (Webpack, parcel or rollup), or using ES2015 modules in browsers that support it.
+You can use vanillapod regardless of using a bundler (Webpack, parcel, rollup or vite), or using ES2015 modules in browsers that support it.
 
 To import vanillapod methods without a bundler, you need to point to the script file inside the `dist` directory.
 
@@ -80,6 +54,15 @@ The implicit approach of defining components is useful in the beginning of devel
 ### Explicit Components
 
 While this works perfectly fine for rendering something to the screen. it's not very flexible. That's why vanillapod provides a helper for rendering elements inside a component.
+
+Here are the methods available for working with explicit components:
+
+- [setElementEventHandlers](./src/events.js)
+- [setElementAttributes](./src/attributes.js)
+- [setElementProperties](./src/properties.js)
+- [setElementTextContent](./src/text.js)
+- [setElementChildren](./src/children.js)
+- [createDocumentFragment](./src/fragment.js)
 
 ```javascript
 // script.js
@@ -164,21 +147,35 @@ mount(null, container);
 // ...
 ```
 
-It's possible to pass props to components when mounting.
+It's possible to pass props/data to components when mounting.
 
 ```javascript
 
 function Header({ text }) {
     return {
-        element: 'header'
+        element: 'header',
         text,
-    }
+    };
 }
 
 mount(
     document.body,
-    [Header, { text: 'Hello World!' }]
-)
+    [
+        Header, 
+        { text: 'Hello World!' }
+    ]
+);
+```
+
+It's not necessary to mount a functional component, you can mount objects directly instead.
+
+```js
+mount(
+    document.querySelector('#app'),
+    { element: 'h1', text: 'This is not a functional component!' },
+    { element: 'p', text: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus quaerat magnam ratione consequuntur, tempora ipsa sapiente reiciendis eligendi maiores cum blanditiis odit architecto dolorem exercitationem facere. Tempore pariatur magni nemo.' }
+);
+
 ```
 
 ### Children
@@ -275,7 +272,58 @@ function myComponent() {
 
 ### Passing data to child components
 
-...
+```js
+import { mount, createDocumentFragment } from 'vanillapod/vanillapod';
+
+function List({ tasks }) {
+    return {
+        element: 'ul',
+        children: tasks.map(item => () => ({
+            element: 'li',
+            text: item
+        }))
+    };
+}
+
+function Header({ text }) {
+    return {
+        element: 'header',
+        text,
+    };
+}
+
+function App() {
+    const tasks = [
+        'first',
+        'second',
+        'third'
+    ];
+
+    const children = [
+        [
+            Header,
+            { text: 'hello world!' }
+        ],
+        [
+            List,
+            { tasks }
+        ]
+    ];
+
+    const [ el ] = createDocumentFragment();
+
+    return {
+        el,
+        children
+    };
+}
+
+mount(
+    document.querySelector('#app'), 
+    App
+);
+
+```
 
 ### Lifecycle Methods (Hooks)
 
@@ -299,6 +347,30 @@ function myComponent() {
 ```
 
 Use `registerHooks` method for explicit component approach.
+
+## Potential Pitfalls
+
+There are a few things that might create unexpected results...
+
+### Events on document fragments
+
+Since document fragments do not behave like a usual element (doesn't render any element in the DOM), events attached to it will not work. You can work around this by attaching events on another element or on the window object.
+
+```js
+import { mount } from 'vanillapod/vanillapod';
+
+function Fragment() {
+    const [el] = createDocumentFragment();
+
+    window.addEventListener('click', () => console.log('clicked!'));
+
+    return {
+        el
+    };
+}
+
+mount(null, Fragment);
+```
 
 ## ES5 
 
@@ -347,7 +419,6 @@ if (window.vanillapod) {
 If anything is not going as expected, you can always turn on debugging. vanillapod.js will then output what it's doing along the way. To turn on debugging, do the following:
 
 ```javascript
-
 // yourscript.js
 
 import { debug } from 'vanillapod';

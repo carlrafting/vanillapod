@@ -21,10 +21,10 @@ export { errors };
  */
 export default (exception) => {
     if (debug()) {
-        throw exception;
+        if (exception) {
+            throw exception;
+        }
     }
 
-    errors[exception] = { exception };
-
-    return;
+    errors.push({ exception });
 };

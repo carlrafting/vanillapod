@@ -48,7 +48,7 @@ function validateProps(props) {
  * 
  * creates DOM element
  * 
- * @param {object} props - props from vanillapod component
+ * @param {object} props - props from vanillapod component instance
  */
 export function createElement(props) {
     (debug() && console.log(`Creating ${props.element || props.el} for ${props.vanillapodComponent}`));
@@ -71,7 +71,7 @@ export function createElement(props) {
         }
 
         if (!element) {
-            error(new Error(`element is ${element}`));
+            return error(new Error(`element is ${element}`));
         }
 
         return [
@@ -80,13 +80,13 @@ export function createElement(props) {
         ];
     }
     
-    error(new Error(`No element specified on ${props}`));
+    return error(new Error(`No element specified on ${props}`));
 }
 
 /** 
  * registerElement
  * 
- * register a new element instance 
+ * register a new vanillapodComponent instance 
  * 
  * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
  * 
@@ -98,8 +98,8 @@ export function registerElement(vanillapodComponent, vanillapodComponentProps) {
 
         const props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
 
-        if (typeof props !== 'object') {
-            error(new Error(`${vanillapodComponent} must return an object`));
+        if (typeof props !== 'object' || props === undefined) {
+            return error(new Error(`${vanillapodComponent} must return an object`));
         }
         
         if (validateProps(props)) {
@@ -110,7 +110,7 @@ export function registerElement(vanillapodComponent, vanillapodComponentProps) {
         }
     }
     
-    error(new Error(`${vanillapodComponent} is not a function`));
+    return error(new Error(`${vanillapodComponent} is not a function`));
 }
 
 /**

@@ -1,6 +1,5 @@
-/node_modules/
-/dev/
+node_modules
 *.code-workspace
-/.nyc_output/
-/coverage/
-
+.nyc_output
+coverage
+sandbox

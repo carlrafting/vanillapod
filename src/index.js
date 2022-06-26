@@ -8,6 +8,7 @@ import setElementEventHandlers from './events';
 import setElementChildren from './children';
 import createDocumentFragment from './fragment';
 
+export { errors } from './error';
 export { registerElement, createElement } from './element';
 export { 
     mount,

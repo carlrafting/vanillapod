@@ -1,8 +1,10 @@
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import babel from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
-import { name, version } from './package.json';
+import pkg from './package.json' assert { type: 'json' };
+
+const { name, version } = pkg;
 
 const input = `./${name}.js`;
 const banner = 
