@@ -1,11 +1,11 @@
 /**
  * vanillapod.js 
- * v0.11.0 
+ * v0.12.0 
  */
 var vanillapod = (function (exports) {
   'use strict';
 
-  var version = "0.11.0";
+  var version = "0.12.0";
 
   function _iterableToArrayLimit(arr, i) {
     var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
