@@ -3,3 +3,6 @@ example
 *.log
 /coverage
 /.nyc_output
+/sandbox
+/scripts
+*.code-workspace
