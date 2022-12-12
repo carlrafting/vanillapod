@@ -1,8 +1,8 @@
 /**
  * vanillapod.js 
- * v0.11.0 
+ * v0.11.1 
  */
-var version = "0.11.0";
+var version = "0.11.1";
 
 /**
  * debug
