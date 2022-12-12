@@ -25,7 +25,8 @@
     "coverage": "vitest run --coverage",
     "build": "rollup -c --bundleConfigAsCjs",
     "clean": "rm -rf ./dist/**.js",
-    "preversion": "npm test"
+    "preversion": "npm test",
+    "postversion": "npm run build"
   },
   "name": "vanillapod",
   "version": "0.10.1",
