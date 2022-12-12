@@ -26,7 +26,8 @@
     "build": "rollup -c --bundleConfigAsCjs",
     "clean": "rm -rf ./dist/**.js",
     "preversion": "npm test",
-    "version": "npm run build && git add -A dist"
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "name": "vanillapod",
   "version": "0.11.0",
