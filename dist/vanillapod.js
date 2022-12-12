@@ -1,8 +1,8 @@
 /**
  * vanillapod.js 
- * v0.10.1 
+ * v0.11.0 
  */
-var version = "0.10.1";
+var version = "0.11.0";
 
 /**
  * debug
@@ -16,6 +16,8 @@ function debug(value=false) {
 
     return window.VANILLAPOD_DEBUG = value;
 }
+
+let errors = [];
 
 /**
  * error
@@ -34,10 +36,12 @@ function debug(value=false) {
  */
 var error = (exception) => {
     if (debug()) {
-        throw exception;
+        if (exception) {
+            throw exception;
+        }
     }
 
-    return;
+    errors.push({ exception });
 };
 
 /**
@@ -59,35 +63,6 @@ function checkType(value=null) {
             .slice(sliceStart, sliceEnd)
             .toLowerCase()
     );
-}
-
-/**
- * 
- * @param {HTMLElement} parent 
- * @param {function} callback 
- */
-function traverseChildNodes(parent=null, callback=() => {}) {
-    if (!parent) {
-        error(new Error(`Expected parent parameter to be set, was ${parent}`));
-    }
-
-    const childCount = parent.childNodes.length;
-    const elementHasChildren = childCount > 0;
-
-    if (elementHasChildren) {
-        parent.childNodes.forEach(child => {
-            if (child.nodeType === Node.ELEMENT_NODE) {
-                const childHasChildNodes = child.childNodes.length > 0;
-                if (childHasChildNodes) {
-                    traverseChildNodes(child, (childChild) => {
-                        callback(childChild);
-                    });
-                }
-
-                callback(child);
-            }                
-        });
-    }
 }
 
 // const defaultHooks = {};
@@ -129,22 +104,6 @@ function triggerHook(element, hookName, ...args) {
     }
 
     (debug() && console.log(`No hooks registered for ${element}`));
-}
-
-function triggerChildrenHooks(el, hookName='') {
-    if (hookName === '') {
-        // TODO: throw some kind of error?
-        return;
-    }
-
-    traverseChildNodes(el, (child) => {
-        const childHooks = child._vanillapod_hooks;
-        if (childHooks && Object.keys(childHooks).length > 0) {
-            if (childHooks && childHooks.before) {
-                triggerHook(child, hookName);
-            }
-        }
-    });
 }
 
 /**
@@ -317,7 +276,7 @@ function validateProps(props) {
  * 
  * creates DOM element
  * 
- * @param {object} props - props from vanillapod component
+ * @param {object} props - props from vanillapod component instance
  */
 function createElement(props) {
     (debug() && console.log(`Creating ${props.element || props.el} for ${props.vanillapodComponent}`));
@@ -340,7 +299,7 @@ function createElement(props) {
         }
 
         if (!element) {
-            error(new Error(`element is ${element}`));
+            return error(new Error(`element is ${element}`));
         }
 
         return [
@@ -349,13 +308,13 @@ function createElement(props) {
         ];
     }
     
-    error(new Error(`No element specified on ${props}`));
+    return error(new Error(`No element specified on ${props}`));
 }
 
 /** 
  * registerElement
  * 
- * register a new element instance 
+ * register a new vanillapodComponent instance 
  * 
  * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
  * 
@@ -367,8 +326,8 @@ function registerElement(vanillapodComponent, vanillapodComponentProps) {
 
         const props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
 
-        if (typeof props !== 'object') {
-            error(new Error(`${vanillapodComponent} must return an object`));
+        if (typeof props !== 'object' || props === undefined) {
+            return error(new Error(`${vanillapodComponent} must return an object`));
         }
         
         if (validateProps(props)) {
@@ -379,7 +338,7 @@ function registerElement(vanillapodComponent, vanillapodComponentProps) {
         }
     }
     
-    error(new Error(`${vanillapodComponent} is not a function`));
+    return error(new Error(`${vanillapodComponent} is not a function`));
 }
 
 /**
@@ -408,6 +367,84 @@ function elementHelper(props) {
     setElementEventHandlers(element, elProps);
 
     return element;
+}
+
+/**
+ * mount
+ * 
+ * @param {HTMLElement} root - parent element to mount elements to
+ * @param {*} args - components to mount
+ */
+function mount(root, ...args) {
+    let index = 0;
+    let vanillapodComponent;
+    let props = {};
+    const argsLength = args.length;
+
+    for (; index < argsLength; (index += 1)) {
+        const arg = args[index];
+
+        checkType(arg) === 'array' && ([vanillapodComponent, props] = arg);
+        checkType(arg) === 'function' && (vanillapodComponent = arg);
+        checkType(arg) === 'object' && (vanillapodComponent = () => arg);
+
+        if (!vanillapodComponent) {
+            return error(new Error('Could not determine component format'));
+        }
+
+        const instance = registerElement(vanillapodComponent, props);
+
+        if (!instance) {
+            return error(new Error(`Could not create instance for ${vanillapodComponent}`));
+        }
+
+        let { el, element } = instance;
+
+        if (!el) {
+            el = element;
+            element = null;
+            // delete instance.element;
+        }
+
+        // if el is a string, use implicit render approach
+        if (checkType(el) === 'string') {
+            el = elementHelper(instance);
+        }
+
+        if (instance.children && instance.children.length > 0) {
+            mount(el, ...instance.children);
+        }
+
+        registerHooks(el, instance);
+
+        const hooks = el._vanillapod_hooks;
+        
+        // trigger children before hooks
+        // triggerChildrenHooks(el, 'before');
+
+        // trigger element before hook
+        if (hooks && hooks.before) {
+            triggerHook(el, 'before');
+        }
+
+        // mount element to root
+        if (root) {
+            root.insertBefore(el, null);
+        }
+
+        // mount element to document body
+        if (!root && document.body) {
+            document.body.insertBefore(el, document.body.lastChild);
+        }        
+
+        // trigger element mount hook
+        if (hooks && hooks.mount) {
+            triggerHook(el, 'mount');
+        }
+        
+        // trigger children mount hooks
+        // triggerChildrenHooks(el, 'mount');
+    }
 }
 
 function setElementChildren(element, { children }) {
@@ -450,69 +487,6 @@ function setElementChildren(element, { children }) {
 }
 
 /**
- * mount
- * 
- * @param {HTMLElement} root - parent element to mount elements to
- * @param {*} args - components to mount  
- */
-function mount(root, ...args) {
-    let index = 0;
-    let vanillapodComponent;
-    let props;
-    const argsLength = args.length;
-
-    for (; index < argsLength; index++) {
-        const arg = args[index];
-
-        checkType(arg) === 'array' ? ([vanillapodComponent, props] = arg) : (vanillapodComponent = arg);
-
-        const instance = registerElement(vanillapodComponent, props);
-        let { el, element } = instance;
-
-        if (!el) {
-            el = element;
-            element = null;
-        }
-
-        // if el is a string, use implicit render approach
-        if (checkType(el) === 'string') {
-            el = elementHelper(instance);
-            setElementChildren(el, instance);
-            registerHooks(el, instance);
-        }
-
-        const hooks = el._vanillapod_hooks;
-        
-        // trigger children before hooks
-        triggerChildrenHooks(el, 'before');
-
-        // trigger element before hook
-        if (hooks && hooks.before) {
-            triggerHook(el, 'before');
-        }
-
-        // mount element to root or document body element
-
-        if (root) {
-            root.insertBefore(el, null);
-        }
-
-        if (!root) {
-            const body = document.querySelector('body');
-            body.insertBefore(el, body.lastChild);
-        }        
-
-        // trigger element mount hook
-        if (hooks && hooks.mount) {
-            triggerHook(el, 'mount');
-        }
-
-        // trigger children mount hooks
-        triggerChildrenHooks(el, 'mount');
-    }
-}
-
-/**
  * createDocumentFragment
  *  
  * @param {object} props - props from vanillapod component
@@ -530,4 +504,4 @@ function createDocumentFragment(props = {}) {
     ];
 }
 
-export { createDocumentFragment, createElement, debug, elementHelper, mount, registerElement, registerHook, registerHooks, setElementAttributes, setElementChildren, setElementEventHandlers, setElementProperties, setElementTextContent, triggerHook, version };
+export { createDocumentFragment, createElement, debug, elementHelper, errors, mount, registerElement, registerHook, registerHooks, setElementAttributes, setElementChildren, setElementEventHandlers, setElementProperties, setElementTextContent, triggerHook, version };
