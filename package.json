@@ -15,20 +15,22 @@
     "eslint-plugin-jest-dom": "^3.9.4",
     "eslint-plugin-testing-library": "^5.9.1",
     "happy-dom": "^5.4.0",
-    "rollup": "^3.7.3",
-    "vitest": "^0.15.2"
+    "rollup": "^3.7.4",
+    "vitest": "^0.25.8"
   },
   "scripts": {
-    "toc": "doctoc readme.md",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "build": "rollup -c --bundleConfigAsCjs",
     "clean": "rm -rf ./dist/**.js",
     "preversion": "npm test",
-    "version": "npm run build && git add -A dist",
+    "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
+  "workspaces": [
+    "./examples/*"
+  ],
   "name": "vanillapod",
   "version": "0.11.2",
   "main": "./dist/vanillapod.es5.js",
