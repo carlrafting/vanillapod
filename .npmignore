@@ -1,8 +1,9 @@
 test
-example
+examples
 *.log
-/coverage
-/.nyc_output
-/sandbox
-/scripts
+coverage
+.nyc_output
+sandbox
+scripts
+src
 *.code-workspace
