@@ -1,0 +1,8 @@
+{
+  "name": "todo-example",
+  "devDependencies": {
+    "modern-css-reset": "^1.4.0",
+    "vite": "^4.0.0"
+  },
+  "type": "module"
+}
