@@ -1,24 +1,27 @@
 {
   "devDependencies": {
-    "@babel/core": "^7.20.5",
+    "@babel/core": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-terser": "^0.4.0",
-    "@testing-library/dom": "^8.19.0",
+    "@testing-library/dom": "^8.20.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/user-event": "^12.8.3",
+    "@vitest/coverage-c8": "^0.29.2",
+    "@vitest/ui": "^0.29.2",
     "c8": "^7.13.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-jest-dom": "^3.9.4",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-testing-library": "^5.9.1",
-    "happy-dom": "^5.4.0",
+    "eslint-plugin-testing-library": "^5.10.2",
+    "happy-dom": "^8.9.0",
     "prettier": "^2.8.4",
-    "rollup": "^3.17.3",
-    "vitest": "^0.29.1"
+    "rollup": "^3.18.0",
+    "vitest": "^0.29.2"
   },
   "scripts": {
     "test": "vitest run --dom",
@@ -37,14 +40,16 @@
     "sandbox/ministore",
     "sandbox/pubsub",
     "sandbox/reactive",
-    "sandbox/signals"
+    "sandbox/signals",
+    "sandbox/html",
+    "sandbox/unmount",
+    "sandbox/fibonacci"
   ],
   "name": "vanillapod",
   "version": "0.11.2",
   "main": "./dist/vanillapod.es5.js",
   "module": "./dist/vanillapod.js",
   "type": "module",
-  "exports": "./dist/vanillapod.js",
   "repository": "https://github.com/carlrafting/vanillapod.git",
   "author": "Carl Räfting <carl.rafting@gmail.com>",
   "license": "MIT"

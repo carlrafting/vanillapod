@@ -61,21 +61,18 @@ Here are the methods available for working with explicit components:
 - [setElementAttributes](./src/attributes.js)
 - [setElementProperties](./src/properties.js)
 - [setElementTextContent](./src/text.js)
-- [setElementChildren](./src/children.js)
+- [createElement](./src/element.js#L92)
 - [createDocumentFragment](./src/fragment.js)
 
 ```javascript
 // script.js
 
-import { elementHelper } from 'vanillapod';
+import { createElement } from 'vanillapod';
 
 function myComponent() {
-    const props = {
-        element: 'h1',
+    const element = createElement('h1', {
         text: 'This is my first vanillapod component!'
-    }
-
-    const element = elementHelper(props);
+    });
 
     return {
         element
@@ -83,7 +80,17 @@ function myComponent() {
 }
 ```
 
-The explicit approach gives you more flexibility of what a component can do. The only requirement of a component using the explicit approach is that is should return an object with a `element` property. You can create elements using the `elementHelper` method. 
+The explicit approach gives you more flexibility of what a component can do. The only requirement of a component using the explicit approach is that is should return an object with a `element` property. You can create elements using the `createElement` method. 
+
+### createElement
+
+createElement is the method for creating all of the different DOM elements. It expects a `element` string value and returns all the props that vanillpod expects from components. There are several aliases for createElement, to make the experience of using createElement as smooth as possible.
+
+These are the three different alias methods for createElement:
+
+- [`h`](./src/element.js#L126)
+- [`e`](./src/element.js#L127)
+- [`html`](./src/element.js#L128)
 
 ### Mounting
 
@@ -92,10 +99,15 @@ After you've defined your component it's time to mount it to the DOM, in other w
 ```javascript
 // script.js 
 
-import { elementHelper, mount } from 'vanillapod';
+import { createElement, mount } from 'vanillapod';
 
-// myComponent
-// ...
+function myComponent() {
+    return {
+        element: createElement('h1', {
+            text: 'This is my first vanillapod component!'
+        });
+    };
+}
 
 const root = document.getElementById('root');
 
@@ -107,7 +119,17 @@ It's also possible to mount multiple components at the same time.
 ```javascript
 // script.js 
 
-// ...
+import { createElement, mount } from 'vanillapod';
+
+function myComponent() {
+    const element = createElement('h1', {
+        text: 'This is my first vanillapod component!'
+    });
+
+    return {
+        element
+    };
+}
 
 function anotherComponent() {
     return {
@@ -142,7 +164,12 @@ You can pass null as the first argument to mount inside the documents `body` ele
 ```javascript
 // ...
 
-mount(null, container);
+mount(
+    null,
+    myComponent,
+    anotherComponent,
+    thirdComponent
+);
 
 // ...
 ```
@@ -150,6 +177,7 @@ mount(null, container);
 It's possible to pass props/data to components when mounting.
 
 ```javascript
+import { mount } from 'vanillapod';
 
 function Header({ text }) {
     return {
@@ -170,6 +198,8 @@ mount(
 It's not necessary to mount a functional component, you can mount objects directly instead.
 
 ```js
+import { mount } from 'vanillapod';
+
 mount(
     document.querySelector('#app'),
     { element: 'h1', text: 'This is not a functional component!' },
@@ -178,14 +208,54 @@ mount(
 
 ```
 
+It's possible to mount not just elements, but any kind of node.
+
+```js
+import { mount } from 'vanillapod';
+
+
+const comment = document.createComment('comment!');
+const fragment = document.createDocumentFragment();
+const text = document.createTextNode('text!');
+
+mount(
+    document.querySelector('#app'),
+    comment,
+    fragment,
+    text
+);
+
+```
+
+### Unmounting
+
+```js
+import { mount, unmount } from 'vanillapod';
+
+const component = { el: 'h1', text: 'Unmount me right now!' };
+
+mount(
+    document.querySelector('#app'),
+    component
+);
+
+setTimeout(() => unmount(
+    root,
+    component
+), 5000);
+
+```
+
+...
+
 ### Children
 
-You can specify children of your component by specifying a `children` array key in the component properties. You can use the `setElementChildren` method when using the explicit approach.
+You can specify children of your component by specifying a `children` array key in the component properties.
 
 ```javascript
 // script.js
 
-import { elementHelper, mount, setElementChildren } from 'vanillapod';
+import { mount } from 'vanillapod';
 
 const heading = () => ({
     element: 'h1',
@@ -201,8 +271,7 @@ function myComponent() {
     };
 }
 
-// mounting
-// ...
+mount(null, myComponent);
 
 ```
 
@@ -246,7 +315,7 @@ Use `setElementProperties` for explicit components.
 
 ### Events
 
-It's possible to attach event handlers to your component, by defining event handler functions in a `events` key on the `props` object that gets passed to `elementHelper` in your component. The event name is the same as what you'd normally pass to [`element.addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
+It's possible to attach event handlers to your component, by defining event handler functions in a `events` key on the `props` object that gets passed to `createElement` in your component. The event name is the same as what you'd normally pass to [`element.addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
 
 ```javascript
 // script.js
@@ -371,6 +440,10 @@ function Fragment() {
 
 mount(null, Fragment);
 ```
+
+### Hooks for data updates, Events for DOM changes
+
+...
 
 ## ES5 
 

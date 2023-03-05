@@ -68,7 +68,7 @@ body {
 
 #app li label {
     flex-grow: 1;
-    margin-left: .5rem;
+    /* margin-left: .5rem; */
     padding-block: 1rem;
     word-break: break-all;
 }

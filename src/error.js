@@ -1,30 +1,36 @@
 import debug from './debug.js';
 
-let errors = [];
+const errors = new Set();
 
-export { errors };
-
-/**
- * error
- * 
- * throw standard error:
- * error(new Error('This is my Error message'));
- * 
- * throw reference error:
- * error(new ReferenceError('This is my ReferenceError message'))
- * 
- * throw custom exception:
- * function CustomException() {}
- * error(new CustomException('This is my CustomException message'))
- * 
- * @param {Error} exception - throw error when debug is enabled, otherwise store in errors array
- */
-export default (exception) => {
+export function createError(message = '', exception = Error) {
     if (debug()) {
-        if (exception) {
-            throw exception;
+        if (message !== '') {
+            throw new exception(message);
         }
     }
 
-    errors.push({ exception });
-};
+    errors.add({ exception: message, type: exception });
+}
+
+export function logErrors() {
+    for (const err of [...errors]) {
+        console.log(err);
+    }
+}
+
+function captureErrors(fn) {
+    try {
+        fn();
+    } catch (err) {
+        console.log('catch block', err);
+    }
+}
+
+/* captureErrors(() => {
+    // debug(true);
+    createError('Something went wrong!');
+    createError('Something went wrong again!');
+    createError('Some reference error', ReferenceError);
+    logErrors();
+});
+ */

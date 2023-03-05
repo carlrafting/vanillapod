@@ -1,5 +1,5 @@
 import debug from './debug.js';
-import { traverseChildNodes } from './utils.js';
+import { createError } from './error.js';
 
 // const defaultHooks = {};
 
@@ -12,12 +12,12 @@ function registerHooks(element, { hooks = {} }) {
     }
 
     if (!element[key]) {
-        (debug() && console.log(`Registering hooks for ${element}`));
+        debug() && console.log(`Registering hooks for ${element}`);
         element[key] = hooks;
         return;
     }
 
-    (debug() && console.log(`Hooks already registered for ${element}`));
+    debug() && console.log(`Hooks already registered for ${element}`);
 }
 
 function registerHook(element, hook) {
@@ -33,34 +33,14 @@ function triggerHook(element, hookName, ...args) {
 
     if (hooks) {
         if (hookName && hooks[hookName]) {
-            (debug() && console.log(`Triggering hook ${hookName} for ${element}`));
-            hooks[hookName](args);
+            debug() &&
+                console.log(`Triggering hook ${hookName} for ${element}`);
+            hooks[hookName](...args);
         }
         return;
     }
 
-    (debug() && console.log(`No hooks registered for ${element}`));
+    createError(`No hook named '${hookName}' registered for ${element}`);
 }
 
-function triggerChildrenHooks(el, hookName='') {
-    if (hookName === '') {
-        // TODO: throw some kind of error?
-        return;
-    }
-
-    traverseChildNodes(el, (child) => {
-        const childHooks = child._vanillapod_hooks;
-        if (childHooks && Object.keys(childHooks).length > 0) {
-            if (childHooks && childHooks.before) {
-                triggerHook(child, hookName);
-            }
-        }
-    });
-}
-
-export { 
-    triggerHook, 
-    registerHooks, 
-    registerHook,
-    triggerChildrenHooks 
-};
+export { triggerHook, registerHooks, registerHook };

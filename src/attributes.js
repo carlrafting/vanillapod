@@ -2,27 +2,25 @@ import debug from './debug.js';
 
 /**
  * setElementAttributes
- * 
+ *
  * @param {HTMLElement} element - HTMLElement to set attributes on
- * @param {object} attributes - attributes to set on element 
+ * @param {object} attributes - attributes to set on element
  */
-export default function setElementAttributes(element, { 
-    attributes, 
-    attrs, 
-    classList, 
-    classNames,
-    data
-}) {
-    (debug() && console.log(`Setting attributes for ${element}`));
+export default function setElementAttributes(
+    element,
+    { attributes, attrs, classList, classNames, data }
+) {
+    debug() && console.log(`Setting attributes for ${element}`);
 
     if (classList || classNames) {
         if (!classList) {
             classList = classNames;
             classNames = [];
         }
-        classList.forEach(className => {
+
+        for (const className of classList) {
             element.classList.add(className);
-        });
+        }
     }
 
     if (data) {
@@ -31,7 +29,7 @@ export default function setElementAttributes(element, {
                 if (Array.isArray(key)) {
                     setElementAttributes(element, key);
                 }
-                element.dataset[key] = data[key];                
+                element.dataset[key] = data[key];
             }
         }
     }
@@ -49,23 +47,26 @@ export default function setElementAttributes(element, {
         }
 
         if (typeof attrs === 'object') {
-            (debug() && console.log(attrs));
+            debug() && console.log(attrs);
             for (const key in attrs) {
                 if (typeof key === 'object') {
                     setElementAttributes(element, key);
                     // return;
                 }
                 if (Object.prototype.hasOwnProperty.call(attrs, key)) {
-                    if (key in element) {
-                        element.setAttribute(`${key}`, attrs[key]);
-                    }                                        
+                    // NOTE: the following if statement prevents from setting for example a 'for' attribute
+                    // the reason is most likely because we are checking for a property
+                    // on the element object and not a html attribute
+                    // if (key in element) {
+                    element.setAttribute(key, attrs[key]);
+                    // }
                 }
             }
             return;
-        }        
+        }
 
-        attrs.forEach(attribute => {
+        for (const attribute of attrs) {
             element.setAttribute(attribute);
-        });
+        }
     }
 }

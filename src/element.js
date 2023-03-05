@@ -1,4 +1,4 @@
-import error from './error.js';
+import { createError } from './error.js';
 import debug from './debug.js';
 import setElementProperties from './properties';
 import setElementAttributes from './attributes';
@@ -19,23 +19,16 @@ const validProps = {
     text: null,
     events: {},
     on: {},
-    hooks: {}
+    hooks: {},
 };
 
-/**
- * validateProps
- * 
- * make sure props passed in to registerElement are correct
- * 
- * @param {object} props - props to validate 
- */
 function validateProps(props) {
     for (const key in props) {
-        if (!Object.prototype.hasOwnProperty.call(validProps, key)) {
-            error(
-                new Error(
-                    `${key} is not a valid property name. Try one of the following instead: ` + Object.keys(validProps)
-                )
+        if (!Object.hasOwn(validProps, key)) {
+            createError(
+                `${key} is not a valid property name. Try one of the following instead: ${Object.keys(
+                    validProps
+                )}`
             );
         }
     }
@@ -43,100 +36,88 @@ function validateProps(props) {
     return true;
 }
 
-/**
- * createElement
- * 
- * creates DOM element
- * 
- * @param {object} props - props from vanillapod component instance
- */
-export function createElement(props) {
-    (debug() && console.log(`Creating ${props.element || props.el} for ${props.vanillapodComponent}`));
-
-    if (props.el || props.element) {
-        if (!props.el) {
-            props.el = props.element;
-            props.element = null;
-        }
-
-        let element;
-
-        if (typeof props.el === 'string') {
-            (debug() && console.log('Creating element...'));
-            element = document.createElement(props.el);
-            (debug() && console.log('Created element: ', element));
-        } else {
-            // in this case props.el is probably already a DOM element
-            element = props.el;
-        }
-
-        if (!element) {
-            return error(new Error(`element is ${element}`));
-        }
-
-        return [
-            element,
-            props
-        ];
-    }
-    
-    return error(new Error(`No element specified on ${props}`));
-}
-
-/** 
- * registerElement
- * 
- * register a new vanillapodComponent instance 
- * 
- * TODO: should this be called createComponentInstance or something similar? refactor to separate file?
- * 
- * @param {function} vanillapodComponent - function for vanillapod component
- */
-export function registerElement(vanillapodComponent, vanillapodComponentProps) {
+export function createComponentInstance(
+    vanillapodComponent,
+    vanillapodComponentProps
+) {
     if (typeof vanillapodComponent === 'function') {
-        (debug() && console.log(`Registering ${vanillapodComponent}...`));
+        debug() && console.log(`Registering ${vanillapodComponent}...`);
 
-        const props = vanillapodComponentProps ? vanillapodComponent(vanillapodComponentProps) : vanillapodComponent();
+        let props = vanillapodComponentProps
+            ? vanillapodComponent(vanillapodComponentProps)
+            : vanillapodComponent();
 
         if (typeof props !== 'object' || props === undefined) {
-            return error(new Error(`${vanillapodComponent} must return an object`));
+            return createError(`${vanillapodComponent} must return an object`);
         }
-        
+
         if (validateProps(props)) {
             return {
                 vanillapodComponent,
-                ...props
+                ...props,
             };
         }
     }
-    
-    return error(new Error(`${vanillapodComponent} is not a function`));
+
+    return createError(`${vanillapodComponent} is not a function`);
 }
 
-/**
- * elementHelper
- * 
- * a helper responsible for creating DOM elements and setting attributes, 
- * properties, text content & event handlers.
- * 
- * @param {object} props - props from vanillapod component 
- */
-export function elementHelper(props) {
-    const [ element, elProps ] = createElement(props);
+export function createElement(element, ...args /* props = {} */) {
+    let props = {};
 
-    (debug() && console.log('elementHelper: elProps', elProps));
+    for (const arg of args) {
+        if (Array.isArray(arg)) {
+            props.children = arg;
+            break;
+        }
+        if (typeof arg === 'function') {
+            props = typeof arg() === 'object' && arg();
+            break;
+        }
+        props = arg;
+    }
+
+    // console.log(props);
+
+    if (!element) {
+        return createError(`element is ${element}`);
+    }
+
+    if (typeof element === 'string') {
+        // (debug() && console.log(`Creating ${element} for ${props.vanillapodComponent}`));
+        debug() && console.log('Creating element...');
+        element = document.createElement(element);
+        debug() && console.log('Created element: ', element);
+    }
 
     // set element properties
-    setElementProperties(element, elProps);
+    setElementProperties(element, props);
 
     // set attributes on elements
-    setElementAttributes(element, elProps);
+    setElementAttributes(element, props);
 
     // set textContent for element
-    setElementTextContent(element, elProps);
+    setElementTextContent(element, props);
 
     // register DOM event handlers
-    setElementEventHandlers(element, elProps);
+    setElementEventHandlers(element, props);
 
-    return element;
+    debug() &&
+        console.log(
+            'createElement: props',
+            props,
+            'createElement: element',
+            element
+        );
+
+    return {
+        ...props,
+        element,
+        el: element,
+    };
 }
+
+// aliases for createElement
+export const h = createElement;
+export const e = createElement;
+export const html = createElement;

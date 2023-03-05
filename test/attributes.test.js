@@ -16,7 +16,7 @@ test('set element data', () => {
     expect(result).toBe(data.foo);
 });
 
-test('set element classList', () => {
+test('set element classList with array', () => {
     const classList = [
         'foo',
         'bar'
@@ -26,7 +26,7 @@ test('set element classList', () => {
     expect(element).toHaveClass(classList[1]);
 });
 
-test('set element attributes', () => {
+test('set element attributes with function', () => {
     const attrs = () => ({
         data: {
             hello: 'world'
@@ -36,4 +36,16 @@ test('set element attributes', () => {
     setElementAttributes(element, { attrs });
     expect(element).toHaveClass(attrs().classList[0]);
     expect(element).toHaveClass(attrs().classList[1]);
+});
+
+test('set element attributes with object', () => {
+    const attrs = {
+        data: {
+            hello: 'world'
+        },
+        classList: ['foo', 'bar']
+    };
+    setElementAttributes(element, { ...attrs });
+    expect(element).toHaveClass(attrs.classList[0]);
+    expect(element).toHaveClass(attrs.classList[1]);
 });
