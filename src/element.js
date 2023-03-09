@@ -1,9 +1,9 @@
 import { createError } from './error.js';
 import debug from './debug.js';
-import setElementProperties from './properties';
-import setElementAttributes from './attributes';
-import setElementTextContent from './text';
-import setElementEventHandlers from './events';
+import setElementProperties from './properties.js';
+import setElementAttributes from './attributes.js';
+import setElementTextContent from './text.js';
+import setElementEventHandlers from './events.js';
 
 const validProps = {
     element: null,
