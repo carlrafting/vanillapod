@@ -43,7 +43,8 @@
     "sandbox/signals",
     "sandbox/html",
     "sandbox/unmount",
-    "sandbox/fibonacci"
+    "sandbox/fibonacci",
+    "sandbox/dom"
   ],
   "name": "vanillapod",
   "version": "0.11.2",
