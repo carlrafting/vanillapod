@@ -1,40 +1,40 @@
 import {
-    createElement,
+    createMountable,
     div,
     p as $p,
     h1,
     button as $button,
     render,
-} from 'vanillapod/src/dom';
-import { createSignal } from 'vanillapod/src/state';
+} from 'vanillapod/dom';
+import { createSignal, createEffect } from 'vanillapod/state';
 
 console.time('dom');
 
 const root = document.querySelector('#app');
 
-const nested = createElement(
+const nested = createMountable(
     'div',
     { className: 'hero' },
-    createElement('h1', 'Hi Again!')
+    createMountable('h1', 'Hi Again!')
 );
-const p = createElement('p', 'Hello World!');
-const list = createElement(
+const p = createMountable('p', 'Hello World!');
+const list = createMountable(
     'ul',
-    createElement('li', 'One'),
-    createElement('li', 'Two'),
-    createElement('li', 'Three')
+    createMountable('li', 'One'),
+    createMountable('li', 'Two'),
+    createMountable('li', 'Three')
 );
-const elWithProps = createElement(
+const elWithProps = createMountable(
     'div',
     { className: 'red green yellow', id: 'el-with-props' },
     'An element with props!'
 );
-const textInput = createElement('input', {
+const textInput = createMountable('input', {
     id: 'text-input',
     value: 'Write Something!',
     type: 'text',
 });
-const button = createElement(
+const button = createMountable(
     'button',
     {
         id: 'button',
@@ -67,17 +67,20 @@ function ComponentHasProps({ text }) {
 }
 
 function ComponentWithSignals() {
-    const [text, setText, createTextFx] = createSignal('');
+    const [text, setText] = createSignal('');
     const id = 'signal-paragraph';
-    createTextFx(() => console.log(text()));
+    createEffect(() => console.log(text()));
     return $p(
         text(),
         { id },
-        $button('Update Signal', {
-            onClick() {
-                setText('Hello Signals!');
+        $button(
+            {
+                onClick() {
+                    setText('Hello Signals!');
+                },
             },
-        })
+            'Update Signal'
+        )
     );
 }
 
@@ -91,10 +94,18 @@ render(
     button,
     div({ id: 'helper' }, 'Helper Method'),
     div({ id: 'foobar' }, '123'),
+    div(
+        { id: 'multiple-prop-defs' },
+        'Merge Multiple Property Definitions',
+        {
+            style: 'background-color:green;',
+        },
+        { style: 'padding:.5rem' }
+    ),
     MyComponent,
     [ComponentHasProps, { text: 'This component has props!' }],
     ComponentWithSignals,
-    createElement(
+    createMountable(
         document.getElementById('test'),
         { id: 'test-overridden' },
         'Enhanced'
