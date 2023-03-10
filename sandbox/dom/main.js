@@ -66,21 +66,17 @@ function ComponentHasProps({ text }) {
     );
 }
 
-function ComponentWithSignals() {
-    const [text, setText] = createSignal('');
-    const id = 'signal-paragraph';
-    createEffect(() => console.log(text()));
-    return $p(
-        text(),
-        { id },
-        $button(
-            {
-                onClick() {
-                    setText('Hello Signals!');
-                },
+function ButtonWithSignals() {
+    const [text, setText] = createSignal('Update Signal');
+    // createEffect(() => alert(text()));
+    return $button(
+        {
+            onClick(e) {
+                setText('Hello Signals!');
+                e.target.textContent = text(); // quick & dirty solution until i figure out something better
             },
-            'Update Signal'
-        )
+        },
+        text()
     );
 }
 
@@ -104,7 +100,7 @@ render(
     ),
     MyComponent,
     [ComponentHasProps, { text: 'This component has props!' }],
-    ComponentWithSignals,
+    ButtonWithSignals,
     createMountable(
         document.getElementById('test'),
         { id: 'test-overridden' },

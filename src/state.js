@@ -44,17 +44,16 @@ export const createStore = ministore;
 const context = [];
 
 export function signal(value) {
-    const s = store(value);
     const listeners = new Set();
     const subscribe = (running) => {
         listeners.add(running);
         running.dependencies.add(running);
     };
     const read = () => {
-        const running = [...context][context.length - 1];
+        const running = context[context.length - 1];
         // console.log({ running });
         if (running) subscribe(running);
-        return s.read();
+        return value;
     };
     const notify = () => {
         for (const l of [...listeners]) {
@@ -62,7 +61,7 @@ export function signal(value) {
         }
     };
     const write = (nextValue) => {
-        s.dispatch(nextValue);
+        value = nextValue;
         notify();
     };
     return [read, write];
@@ -75,7 +74,7 @@ export const makeSignal = signal;
 function cleanup(running) {
     for (const dep of running.dependencies) {
         console.log({ dep });
-        dep.delete(running);
+        dep.dependencies.delete(running);
     }
     running.dependencies.clear();
 }
