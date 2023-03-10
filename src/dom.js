@@ -6,23 +6,34 @@ const log = (...output) => console.log(...output);
 
 const eventHandlers = new Set();
 
-export function createElement(element, ...params) {
+// function merge() {}
+
+export function createMountable(element, ...params) {
     const template = document.createElement('template');
     if (typeof element === 'string') {
         element = document.createElement(element);
     }
     if (params.length > 0) {
+        let prevProps = null;
         for (const param of params) {
             if (typeof param === 'string') {
                 const text = document.createTextNode(param);
                 element.append(text);
             }
             if (typeof param === 'object' && !(param instanceof Node)) {
-                const props = param;
+                // merge props if there are multiple props definitions
+                // does not work if the same key exists on multiple prop definitions
+                const props =
+                    prevProps !== null
+                        ? structuredClone({ ...prevProps, ...param })
+                        : { ...param };
+                if (prevProps === null) {
+                    prevProps = props;
+                }
                 const indexOfStart = 0;
                 const eventKey = 'on';
                 for (const [key, value] of Object.entries(props)) {
-                    console.log({ key, value });
+                    // log({ key, value });
                     // if (key in element) {
                     element[key] = value;
                     // }
@@ -36,11 +47,11 @@ export function createElement(element, ...params) {
                             event: [normalizedEvent, value],
                         });
                         // continue;
-                        console.log({
+                        /* console.log({
                             normalizedEvent,
                             indexOfStart,
                             sliceStart,
-                        });
+                        }); */
                     }
                 }
             }
@@ -49,7 +60,7 @@ export function createElement(element, ...params) {
                 try {
                     element.append(param);
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
             }
         }
@@ -126,29 +137,34 @@ function cleanupElements() {
     createError(`dom: can't cleanup elements Set: ${elements.size > 0}`);
 }
 
-for (const el of elements) {
-    dom.set(el, (...params) => {
-        const memo = createMemo((...params) => createElement(el, ...params));
-        return memo(...params);
-        // return createElement(el, ...params);
-    });
+function createDOMMethods(done = null) {
+    for (const el of elements) {
+        dom.set(el, (...params) => {
+            const memo = createMemo((...params) =>
+                createMountable(el, ...params)
+            );
+            return memo(...params);
+            // return createElement(el, ...params);
+        });
+    }
+    if (done && typeof done === 'function') done();
 }
 
-cleanupElements();
+createDOMMethods(() => cleanupElements());
 
-console.log({ dom });
+// log({ dom });
 
-console.log(dom.get('div')('Hello There'));
+// log(dom.get('div')('Hello There'));
 
 function createRoot(root = null) {
     if (root instanceof Node) {
         for (const { element, event } of eventHandlers) {
             const [name, fn] = event;
-            console.log(element, event);
+            // log(element, event);
             root.addEventListener(name, (e) => {
-                console.log({ e, target: e.target, element });
+                // log({ e, target: e.target, element });
                 if (e.target === element) {
-                    console.log('match!');
+                    // log('match!');
                     fn(e);
                 }
             });
