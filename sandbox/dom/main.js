@@ -68,11 +68,10 @@ function ComponentHasProps({ text }) {
 
 function ComponentWithSignals() {
     const [text, setText] = createSignal('');
-    const id = 'signal-paragraph';
     createEffect(() => console.log(text()));
     return $p(
         text(),
-        { id },
+        { id: 'signal-paragraph' },
         $button(
             {
                 onClick() {
@@ -109,7 +108,8 @@ render(
         document.getElementById('test'),
         { id: 'test-overridden' },
         'Enhanced'
-    )
+    ),
+    null
 );
 
 console.timeEnd('dom');
