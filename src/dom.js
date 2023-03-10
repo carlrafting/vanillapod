@@ -136,11 +136,6 @@ for (const el of elements) {
 
 cleanupElements();
 
-const el =
-    (el) =>
-    (...params) =>
-        dom.get(el)(...params);
-
 console.log({ dom });
 
 console.log(dom.get('div')('Hello There'));
@@ -188,6 +183,10 @@ export function render(root, ...mountables) {
         root.append(...results);
         createRoot(root);
     });
+}
+
+function el(el) {
+    return (...params) => dom.get(el)(...params);
 }
 
 export const div = el('div');
