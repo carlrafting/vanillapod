@@ -50,6 +50,10 @@
   "version": "0.11.2",
   "main": "./dist/vanillapod.es5.js",
   "module": "./dist/vanillapod.js",
+  "exports": {
+    ".": "./dist/vanillapod.js",
+    "./*": "./src/*.js"
+  },
   "type": "module",
   "repository": "https://github.com/carlrafting/vanillapod.git",
   "author": "Carl Räfting <carl.rafting@gmail.com>",
