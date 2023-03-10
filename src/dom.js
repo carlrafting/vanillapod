@@ -190,7 +190,9 @@ export function render(root, ...mountables) {
                 results.push(component(props));
                 continue;
             }
-            results.push(mountable);
+            if (mountable || mountable !== null) {
+                results.push(mountable);
+            }
         }
         // console.log([...mountables]);
         if (done && typeof done === 'function') done(...results);
