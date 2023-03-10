@@ -69,12 +69,16 @@ function ComponentHasProps({ text }) {
 function ComponentWithSignals() {
     const [text, setText, createTextFx] = createSignal('');
     const id = 'signal-paragraph';
-    const button = $button('Click Here!');
-    const el = $p(text(), { id }, button);
-    console.log({ button, el: el.childNodes });
-    createTextFx(() => (el.textContent = text()));
-    button.addEventListener('click', () => setText(() => 'Hello Signals!'));
-    return el;
+    createTextFx(() => console.log(text()));
+    return $p(
+        text(),
+        { id },
+        $button('Update Signal', {
+            onClick() {
+                setText('Hello Signals!');
+            },
+        })
+    );
 }
 
 render(
