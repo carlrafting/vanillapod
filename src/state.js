@@ -12,6 +12,9 @@ export function ministore(initialValue) {
     }
 
     function read() {
+        const running = [...listeners][listeners.size - 1];
+        console.log({ running });
+        /* running && */ subscribe(running);
         return value;
     }
 
