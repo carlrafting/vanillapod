@@ -16,7 +16,7 @@ export function ministore(initialValue) {
     }
 
     function dispatch(action) {
-        value = action(value);
+        value = typeof action === 'function' ? action(value) : action;
         notifyListeners();
     }
 
