@@ -132,7 +132,7 @@ function cleanupElements() {
             elements.delete(el);
         }
         elements.clear();
-        log('cleanupElements', elements);
+        // log('cleanupElements', elements);
     }
     createError(`dom: can't cleanup elements Set: ${elements.size > 0}`);
 }
@@ -177,8 +177,8 @@ export function render(root, ...mountables) {
     if (typeof root === 'function') {
         root = root();
     }
+    const results = [];
     const loop = (done = null) => {
-        const results = [];
         for (let mountable of mountables) {
             if (checkType(mountable) === 'function') {
                 results.push(mountable());
@@ -197,8 +197,25 @@ export function render(root, ...mountables) {
     };
     loop((...results) => {
         root.append(...results);
+        // console.log({ root });
         createRoot(root);
     });
+    return function destroy(position = null) {
+        const rootChildren = root.querySelectorAll('*');
+        if (position === null) {
+            // console.log({ root });
+            for (const child of rootChildren) {
+                child.remove();
+            }
+            return;
+        }
+        for (let index = 0; index < rootChildren.length; index++) {
+            if (index === position) {
+                const mountable = rootChildren[index];
+                mountable.remove();
+            }
+        }
+    };
 }
 
 function el(el) {
