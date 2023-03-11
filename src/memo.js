@@ -8,7 +8,7 @@ export function memo(fn = () => {}) {
     }
     return (...args) => {
         const key = JSON.stringify(args);
-        console.log('memo: key', key);
+        // console.log('memo: key', key);
         if (cache.has(key)) {
             // console.log('memo: getting cached value');
             return cache.get(key);

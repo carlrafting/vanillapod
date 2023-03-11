@@ -80,7 +80,7 @@ function ButtonWithSignals() {
     );
 }
 
-render(
+/* const destroy = */ render(
     () => root,
     nested,
     p,
@@ -107,5 +107,7 @@ render(
         'Enhanced'
     )
 );
+
+// destroy();
 
 console.timeEnd('dom');
