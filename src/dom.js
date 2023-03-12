@@ -169,6 +169,7 @@ function createRoot(root = null) {
                 }
             });
         }
+        eventHandlers.clear();
     }
     createError('dom: Expected root to be an instance of NodePrototype');
 }
@@ -219,7 +220,7 @@ export function render(root, ...mountables) {
 }
 
 function el(el) {
-    return (...params) => dom.get(el)(...params);
+    return (props, ...params) => dom.get(el)(props, ...params);
 }
 
 export const div = el('div');

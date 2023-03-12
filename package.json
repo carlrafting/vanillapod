@@ -52,7 +52,11 @@
   "module": "./dist/vanillapod.js",
   "exports": {
     ".": "./dist/vanillapod.js",
-    "./*": "./src/*.js"
+    "./state": "./src/state.js",
+    "./memo": "./src/memo.js",
+    "./dom": "./src/dom.js",
+    "./error": "./src/error.js",
+    "./debug": "./src/debug.js"
   },
   "type": "module",
   "repository": "https://github.com/carlrafting/vanillapod.git",
