@@ -105,7 +105,8 @@ function ButtonWithSignals() {
         document.getElementById('test'),
         { id: 'test-overridden' },
         'Enhanced'
-    )
+    ),
+    null
 );
 
 // destroy();
