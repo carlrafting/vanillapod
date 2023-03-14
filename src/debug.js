@@ -22,7 +22,8 @@ function createDebug(name = '') {
             VANILLAPOD_DEBUG = false;
         },
         log(...output) {
-            console.log(new Date().toISOString(), name, method, ...output);
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(timestamp, name, method, ...output);
         },
     });
 }
