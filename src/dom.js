@@ -15,9 +15,20 @@ export function createMountable(element, ...params) {
     if (typeof element === 'string') {
         element = document.createElement(element);
     }
+    if (!element || element === null) {
+        element = document.createDocumentFragment();
+    }
     if (params.length > 0) {
         let prevProps = null;
         for (const param of params) {
+            if (checkType(param) === 'array') {
+                const [component, props] = param;
+                console.log({ component });
+                element.append(component(props));
+            }
+            if (typeof param === 'function') {
+                element.append(param());
+            }
             if (typeof param === 'string') {
                 const text = document.createTextNode(param);
                 element.append(text);
@@ -110,6 +121,7 @@ const elements = new Set([
     'menu',
     'pre',
     // 3. Inline Text Semantics
+    'span',
     // 4. Image And Multimedia
     // 5. Embedded content
     // 6. SVG
@@ -145,8 +157,8 @@ function createDOMMethods(done = null) {
             const memo = createMemo((...params) =>
                 createMountable(el, ...params)
             );
-            return memo(...params);
-            // return createMountable(el, ...params);
+            // return memo(...params); // using memo  creates issues when creating multiple elements with data from an array
+            return createMountable(el, ...params);
         });
     }
     if (done && typeof done === 'function') done();
@@ -259,5 +271,7 @@ export const textarea = el('textarea');
 export const button = el('button');
 export const select = el('select');
 export const option = el('option');
+export const span = el('span');
+export const br = () => document.createElement('br');
 
 console.timeEnd('dom/internal');
