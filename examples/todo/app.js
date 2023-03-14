@@ -1,210 +1,92 @@
 import 'modern-css-reset';
 import './app.css';
+import { createSignal } from '../../src/state';
+import debug from '../../src/debug';
 import {
-    mount,
-    createDocumentFragment,
-    triggerHook,
-    registerHooks,
-    debug,
-    h,
-    createSignal,
-} from '../../src/index.js';
+    createMountable,
+    form,
+    input,
+    label,
+    li,
+    render,
+    ul,
+    br,
+    button,
+    header,
+    span,
+} from '../../src/dom';
 
 debug(true);
 
-function List({ tasks }) {
-    return {
-        element: 'ul',
-        children: tasks.map((item, index) => ({
-            element: 'li',
-            children: [
-                {
-                    el: 'input',
-                    props: { checked: item.completed, id: 'task-'.concat(index), type: 'checkbox' },
-                },
-                {
-                    el: 'label',
-                    props: { htmlFor: 'task-'.concat(index) },
-                    text: item.value,
-                },
-            ],
-        })),
-    };
-}
+const [tasks, setTasks] = createSignal([
+    { value: 'first', completed: false },
+    { value: 'second', completed: true },
+    { value: 'third', completed: false },
+]);
 
-function Form({ tasks }) {
-    return {
-        element: 'form',
-        on: {
-            change({ target }) {
-                if (target.type === 'checkbox') {
-                    triggerHook(window, 'change', target);
-                }
-            },
-            submit(event) {
-                const input = document.querySelector('#input-text');
-                event.preventDefault();
+const read = () => JSON.parse(localStorage.getItem('tasks'));
+const save = () => localStorage.setItem('tasks', JSON.stringify(tasks));
 
-                if (input.value && input.value !== '') {
-                    tasks.push({ value: input.value, completed: false });
-                    triggerHook(window, 'update', { value: input.value });
-                    input.value = '';
-                    return;
-                }
-
-                triggerHook(window, 'error', {
-                    message: 'Field can not be blank!',
-                });
-            },
-        },
-        children: [
-            [
-                List,
-                {
-                    tasks,
-                },
-            ],
-            {
-                el: 'label',
-                props: { htmlFor: 'input-text' },
-                text: 'Task Description',
-            },
-            { el: 'br' },
-            { el: 'input', props: { id: 'input-text', type: 'text' } },
-            { el: 'button', text: 'Add New Task' },
-        ],
-    };
-}
-
-function Header({ h1, count }) {
-    const clearCompleted = () => {
-        if (confirm('Are you sure you want to clear all completed tasks?')) {
-            triggerHook(window, 'clear', 'completed');
-        }
-    };
-    const clearAll = () => {
-        if (confirm('Are you sure you want to clear ALL tasks?')) {
-            triggerHook(window, 'clear', 'all');
-        }
-    };
-
-    return h('header', {
-        children: [
-            () => ({ element: h1 }),
-            { element: 'span', text: count() },
-            {
-                element: 'button',
-                text: 'Clear All Tasks',
-                on: { click: clearAll },
-            },
-            {
-                element: 'button',
-                text: 'Clear Completed Tasks',
-                on: { click: clearCompleted },
-            },
-        ],
-    });
-}
-
-function App({ data }) {
+function Header() {
     const h1 = document.body.querySelector('h1');
 
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || data;
+    const clearCompleted = () => {
+        if (confirm('Are you sure you want to clear all completed tasks?')) {
+            console.log('clearCompleted');
+        }
+    };
 
-    const updateList = (item, index) => ({
-        element: 'li',
-        children: [
-            {
-                el: 'input',
-                attrs: { id: 'task-'.concat(index), type: 'checkbox' },
-                props: { checked: item.completed },
-            },
-            {
-                el: 'label',
-                attrs: { for: 'task-'.concat(index) },
-                text: item.value,
-            },
-        ],
-    });
-
-    const save = () => localStorage.setItem('tasks', JSON.stringify(tasks));
+    const clearAll = () => {
+        if (confirm('Are you sure you want to clear ALL tasks?')) {
+            console.log('clearAll');
+        }
+    };
 
     const count = () =>
-        `${tasks.length} ${tasks.length > 1 ? 'tasks' : 'task'}`;
+        `${tasks().length} ${tasks().length > 1 ? 'tasks' : 'task'}`;
 
-    const children = [
-        [
-            Header,
-            {
-                h1,
-                count,
-                tasks,
-            },
-        ],
-        [
-            Form,
-            {
-                tasks,
-            },
-        ],
-    ];
+    return header(
+        h1,
+        span(count()),
+        button({ onClick: clearAll }, 'Clear All Tasks'),
+        button({ onClick: clearCompleted }, 'Clear Completed Tasks')
+    );
+}
 
-    const [el] = createDocumentFragment();
+function List() {
+    return ul(
+        ...tasks().map((item, index) => {
+            console.log({ item });
+            return li(
+                input({
+                    checked: item.completed,
+                    id: `task-${index}`,
+                    type: 'checkbox',
+                }),
+                label({ htmlFor: `task-${index}` }, item.value)
+            );
+        })
+    );
+}
 
-    registerHooks(window, {
-        hooks: {
-            change(target) {
-                const task = tasks.find((item) => {
-                    const label = target.labels[0];
-                    return item.value === label.textContent;
-                });
-
-                if (task) {
-                    task.completed = target.checked;
-                    save();
-                }
-            },
-            update(data) {
-                const { value } = data;
-                save();
-            },
-            clear(value) {
-                if (value === 'all') {
-                    tasks = [];
-                    // updateUI();
-                    save();
-                }
-                if (value === 'completed') {
-                    tasks = tasks.filter((task) => !task.completed);
-                    save();
-                }
-                setTimeout(() => location.reload(), 0);
-            },
-            error(error) {
-                alert(error.message);
-            },
-        },
-    });
-
-    return {
-        el,
-        children,
+function Form() {
+    const onSubmit = (e) => {
+        alert('form submitted!');
+        e.preventDefault();
     };
+    return form(
+        { onSubmit },
+        label({ htmlFor: 'input-text' }, 'Task Description'),
+        br,
+        input({ id: 'input-text', type: 'text' }),
+        button('Add New Task')
+    );
+}
+
+function App() {
+    return createMountable(null, Header, List, Form);
 }
 
 const root = document.querySelector('#app');
 
-const [tasks] = createSignal([
-    { value: 'first', completed: false },
-    { value: 'second', completed: false },
-    { value: 'third', completed: false },
-]);
-
-console.log(tasks());
-
-mount(root, [
-    App,
-    {
-        data: tasks(),
-    },
-]);
+render(root, App);
