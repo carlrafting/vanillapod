@@ -7,6 +7,9 @@ import {
     render,
 } from 'vanillapod/dom';
 import { createSignal, createEffect } from 'vanillapod/state';
+import debug from 'vanillapod/debug';
+
+debug(true);
 
 console.time('dom');
 
