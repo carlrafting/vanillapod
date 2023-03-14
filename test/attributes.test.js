@@ -1,5 +1,5 @@
 import { test, expect, beforeEach } from 'vitest';
-import { setElementAttributes } from '../dist/vanillapod';
+import setElementAttributes from '../src/attributes';
 
 let element;
 
@@ -9,7 +9,7 @@ beforeEach(() => {
 
 test('set element data', () => {
     const data = {
-        foo: 'bar'
+        foo: 'bar',
     };
     setElementAttributes(element, { data });
     const result = element.dataset.foo;
@@ -17,10 +17,7 @@ test('set element data', () => {
 });
 
 test('set element classList with array', () => {
-    const classList = [
-        'foo',
-        'bar'
-    ];
+    const classList = ['foo', 'bar'];
     setElementAttributes(element, { classList });
     expect(element).toHaveClass(classList[0]);
     expect(element).toHaveClass(classList[1]);
@@ -29,9 +26,9 @@ test('set element classList with array', () => {
 test('set element attributes with function', () => {
     const attrs = () => ({
         data: {
-            hello: 'world'
+            hello: 'world',
         },
-        classList: ['foo', 'bar']
+        classList: ['foo', 'bar'],
     });
     setElementAttributes(element, { attrs });
     expect(element).toHaveClass(attrs().classList[0]);
@@ -41,9 +38,9 @@ test('set element attributes with function', () => {
 test('set element attributes with object', () => {
     const attrs = {
         data: {
-            hello: 'world'
+            hello: 'world',
         },
-        classList: ['foo', 'bar']
+        classList: ['foo', 'bar'],
     };
     setElementAttributes(element, { ...attrs });
     expect(element).toHaveClass(attrs.classList[0]);

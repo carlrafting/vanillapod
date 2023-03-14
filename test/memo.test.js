@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { memo } from '../src';
+import { memo } from '../src/memo';
 
 test('works as expected', () => {
     const m = memo((value) => {
