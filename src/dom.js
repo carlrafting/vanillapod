@@ -4,6 +4,8 @@ import { checkType } from './utils.js';
 
 const log = (...output) => console.log(...output);
 
+console.time('dom/internal');
+
 const eventHandlers = new Set();
 
 // function merge() {}
@@ -67,7 +69,7 @@ export function createMountable(element, ...params) {
     }
     template.content.append(element);
     // return template.content.cloneNode(true);
-    return template.content; // this makes the event handling work since we do not loose the referense to the element.
+    return template.content; // this makes the event handling work since we do not loose the reference to the element.
 }
 
 const dom = new Map();
@@ -144,7 +146,7 @@ function createDOMMethods(done = null) {
                 createMountable(el, ...params)
             );
             return memo(...params);
-            // return createElement(el, ...params);
+            // return createMountable(el, ...params);
         });
     }
     if (done && typeof done === 'function') done();
@@ -169,7 +171,7 @@ function createRoot(root = null) {
                 }
             });
         }
-        eventHandlers.clear();
+        return eventHandlers.clear();
     }
     createError('dom: Expected root to be an instance of NodePrototype');
 }
@@ -196,14 +198,17 @@ export function render(root, ...mountables) {
             }
         }
         // console.log([...mountables]);
-        if (done && typeof done === 'function') done(...results);
+        if (done && typeof done === 'function') done();
     };
-    loop((...results) => {
+    loop(function done() {
         root.append(...results);
+        results.length = 0; // clear results array since all items are mounted and we no longer have any use for it
         // console.log({ root });
         createRoot(root);
     });
     return function destroy(position = null) {
+        if (typeof position !== 'number')
+            createError('dom: exprected position to be of value Number');
         const rootChildren = root.querySelectorAll('*');
         if (position === null) {
             // console.log({ root });
@@ -254,3 +259,5 @@ export const textarea = el('textarea');
 export const button = el('button');
 export const select = el('select');
 export const option = el('option');
+
+console.timeEnd('dom/internal');
