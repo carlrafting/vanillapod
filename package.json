@@ -28,7 +28,7 @@
     "test:watch": "vitest --dom",
     "coverage": "vitest run --dom --coverage",
     "build": "rollup -c --bundleConfigAsCjs",
-    "clean": "rm -rf ./dist/**.js",
+    "clean": "del-cli ./dist/*.js",
     "preversion": "npm test",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
