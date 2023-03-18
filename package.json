@@ -56,7 +56,8 @@
     "./memo": "./src/memo.js",
     "./dom": "./src/dom.js",
     "./error": "./src/error.js",
-    "./debug": "./src/debug.js"
+    "./debug": "./src/debug.js",
+    "./utils": "./src/utils.js"
   },
   "type": "module",
   "repository": "https://github.com/carlrafting/vanillapod.git",
