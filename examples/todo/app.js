@@ -53,7 +53,7 @@ function Header() {
 
     createEffect(() => {
         const el = document.querySelector('header > span');
-        el.textContent = count();
+        el && (el.textContent = count());
     });
 
     return header(
@@ -177,7 +177,7 @@ function Form() {
 }
 
 function App() {
-    return fragment({}, Header, Form);
+    return fragment(Header, Form);
 }
 
 const root = document.querySelector('#app');
