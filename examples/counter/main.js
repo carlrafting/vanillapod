@@ -1,33 +1,44 @@
-import { makeStore } from '../../src/state';
+import { createSignal, createEffect } from '../../src/state';
+import { button, render, h2, fragment } from '../../src/dom';
+import debug from '../../src/debug';
 
-const counter = makeStore(0);
+debug(true);
 
-const h2 = document.querySelector('h2');
-const buttonIncrement = document.querySelector('#increment');
-const buttonDecrement = document.querySelector('#decrement');
-const buttonReset = document.querySelector('#reset');
+function Counter({ id = 1 } = {}) {
+    const [count, setCount] = createSignal(0);
 
-counter.subscribe(() => {
-    console.log(`Counter is now: ${counter.read()}`);
-    h2.textContent = counter.read();
-});
+    createEffect(() => {
+        const countElem = document.getElementById(`count-${id}`);
+        countElem.textContent = count();
+    });
 
-counter.subscribe(() => {
-    document.title = counter.read();
-});
-
-const reset = () => 0;
-
-function increment(state) {
-    return state + 1;
+    return fragment(
+        h2({ id: `count-${id}` }, `${count()}`),
+        button(
+            {
+                onClick() {
+                    setCount(count() + 1);
+                },
+            },
+            'Increment'
+        ),
+        button(
+            {
+                onClick() {
+                    setCount(count() - 1);
+                },
+            },
+            'Decrement'
+        ),
+        button(
+            {
+                onClick() {
+                    setCount(0);
+                },
+            },
+            'Reset'
+        )
+    );
 }
 
-function decrement(state) {
-    return state - 1;
-}
-
-buttonIncrement.onclick = () => counter.dispatch(increment);
-buttonDecrement.onclick = () => counter.dispatch(decrement);
-buttonReset.onclick = () => counter.dispatch(reset);
-
-// */
+render(document.body, Counter);
