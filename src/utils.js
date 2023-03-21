@@ -117,15 +117,9 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
     }
 }
 
-/**
- * createArray
- *
- * @param  {...any} items
- * @returns {array} array
- *
- */
-
 /* 
+
+createArray
 
 Methods:
 ================================================
@@ -158,6 +152,7 @@ export function createArray(...items) {
             return prototype.get(0);
         },
         last() {
+            console.log('createArrray', { count });
             return prototype.get(arr.length - 1);
         },
         add(item) {
@@ -175,6 +170,7 @@ export function createArray(...items) {
         clear() {
             if (arr.length > 0) {
                 arr.length = 0;
+                count = 0;
                 return true;
             }
 
@@ -186,4 +182,38 @@ export function createArray(...items) {
         },
     };
     return prototype;
+}
+
+/* 
+
+createLocalStorage
+================================================
+
+const initialTasks = [
+    { value: 'first', completed: false },
+    { value: 'second', completed: true },
+    { value: 'third', completed: false },
+];
+const db = createLocalStorage('tasks', initialTasks);
+const [tasks, setTasks] = createSignal(db.read());
+
+createEffect(() => {
+    db.write(tasks());
+});
+
+*/
+
+export function createLocalStorage(key = 'app', initialData = null) {
+    const read = () => {
+        const parsed = JSON.parse(localStorage.getItem(key));
+        if (parsed === null && initialData !== null) {
+            return initialData;
+        }
+        return parsed;
+    };
+    const write = (data) => localStorage.setItem(key, JSON.stringify(data));
+    return {
+        read,
+        write,
+    };
 }
