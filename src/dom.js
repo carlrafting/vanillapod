@@ -1,12 +1,13 @@
 import { createMemo } from './memo.js';
 import { createError } from './error.js';
-import { checkType } from './utils.js';
+import { checkType, createArray } from './utils.js';
 
 const log = (...output) => console.log(...output);
 
 console.time('dom/internal');
 
-const eventHandlers = new Set();
+const eventHandlers = [];
+const elPropsBlacklist = new Set(['innerHTML']);
 
 // function merge() {}
 
@@ -19,7 +20,6 @@ export function createMountable(element, ...params) {
         element = document.createDocumentFragment();
     }
     if (params.length > 0) {
-        let prevProps = null;
         for (const param of params) {
             if (checkType(param) === 'array') {
                 const [component, props] = param;
@@ -27,25 +27,21 @@ export function createMountable(element, ...params) {
                 element.append(component(props));
             }
             if (typeof param === 'function') {
-                element.append(param());
+                const result = param();
+                checkType(result) === 'array'
+                    ? element.append(...result)
+                    : element.append(result);
             }
             if (typeof param === 'string') {
                 const text = document.createTextNode(param);
                 element.append(text);
             }
             if (typeof param === 'object' && !(param instanceof Node)) {
-                // merge props if there are multiple props definitions
-                // does not work if the same key exists on multiple prop definitions
-                const props =
-                    prevProps !== null
-                        ? structuredClone({ ...prevProps, ...param })
-                        : { ...param };
-                if (prevProps === null) {
-                    prevProps = props;
-                }
+                const props = param;
                 const indexOfStart = 0;
                 const eventKey = 'on';
                 for (const [key, value] of Object.entries(props)) {
+                    if (elPropsBlacklist.has(key)) continue; // skip setting blacklisted props like innerHTML
                     // log({ key, value });
                     // if (key in element) {
                     element[key] = value;
@@ -55,7 +51,7 @@ export function createMountable(element, ...params) {
                         const normalizedEvent = key
                             .slice(sliceStart)
                             .toLowerCase();
-                        eventHandlers.add({
+                        eventHandlers.push({
                             element,
                             event: [normalizedEvent, value],
                         });
@@ -122,6 +118,7 @@ const elements = new Set([
     'pre',
     // 3. Inline Text Semantics
     'span',
+    'br',
     // 4. Image And Multimedia
     // 5. Embedded content
     // 6. SVG
@@ -145,8 +142,8 @@ function cleanupElements() {
         for (const el of elements) {
             elements.delete(el);
         }
-        elements.clear();
         // log('cleanupElements', elements);
+        return elements.clear();
     }
     createError(`dom: can't cleanup elements Set: ${elements.size > 0}`);
 }
@@ -154,10 +151,10 @@ function cleanupElements() {
 function createDOMMethods(done = null) {
     for (const el of elements) {
         dom.set(el, (...params) => {
-            const memo = createMemo((...params) =>
+            const memo = createMemo((el, ...params) =>
                 createMountable(el, ...params)
             );
-            // return memo(...params); // using memo  creates issues when creating multiple elements with data from an array
+            // return memo(el, ...params); // using memo  creates issues when creating multiple elements with data from an array
             return createMountable(el, ...params);
         });
     }
@@ -170,20 +167,50 @@ createDOMMethods(() => cleanupElements());
 
 // log(dom.get('div')('Hello There'));
 
+function elementIsParentNode(parentNode = null, element = null) {
+    if (!element && !parentNode) {
+        return createError(
+            'dom: elementIsParentNode requires 2 arguments, was',
+            elementIsParentNode.length
+        );
+    }
+
+    if (parentNode === element) {
+        return true;
+    }
+
+    if (parentNode === null) {
+        return false;
+    }
+    return elementIsParentNode(parentNode.parentNode, element);
+}
+
 function createRoot(root = null) {
     if (root instanceof Node) {
+        // return console.log({ eventHandlers });
         for (const { element, event } of eventHandlers) {
+            // console.log({ element, event });
+            if (!element && !event) return;
             const [name, fn] = event;
             // log(element, event);
-            root.addEventListener(name, (e) => {
-                // log({ e, target: e.target, element });
-                if (e.target === element) {
-                    // log('match!');
-                    fn(e);
+            root.addEventListener(
+                name,
+                (e) => {
+                    // log({ e, target: e.target, element });
+                    if (
+                        e.target === element ||
+                        elementIsParentNode(e.target.parentNode, element)
+                    ) {
+                        // log('match!');
+                        fn(e);
+                    }
+                },
+                {
+                    capture: true,
                 }
-            });
+            );
         }
-        return eventHandlers.clear();
+        return (eventHandlers.length = 0);
     }
     createError('dom: Expected root to be an instance of NodePrototype');
 }
@@ -238,9 +265,10 @@ export function render(root, ...mountables) {
     };
 }
 
-function el(el) {
-    return (props, ...params) => dom.get(el)(props, ...params);
-}
+const el =
+    (el) =>
+    (...params) =>
+        dom.get(el)(...params);
 
 export const div = el('div');
 export const p = el('p');
@@ -250,6 +278,7 @@ export const h3 = el('h3');
 export const h4 = el('h4');
 export const h5 = el('h5');
 export const h6 = el('h6');
+export const hr = el('hr');
 export const article = el('article');
 export const aside = el('aside');
 export const footer = el('footer');
@@ -272,6 +301,9 @@ export const button = el('button');
 export const select = el('select');
 export const option = el('option');
 export const span = el('span');
-export const br = () => document.createElement('br');
+export const br = el('br');
+
+export const fragment = (props, ...params) =>
+    createMountable(null, props, ...params);
 
 console.timeEnd('dom/internal');
