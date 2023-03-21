@@ -35,14 +35,11 @@ console.time('state');
 
 const effects = createArray([]);
 
-debug('foo');
-console.log('debug', debug());
-
 function notify(listeners, value) {
     console.time('notify');
-    if (listeners.size === 0) {
+    /* if (listeners.size === 0) {
         createError('state: No listeners registered!');
-    }
+    } */
     for (const listener of listeners) {
         // console.log('notifyListeners', listener);
         if (listener && checkType(listener) === 'function') listener(value);
@@ -85,7 +82,10 @@ export function ministore(initialValue) {
     }
 
     function dispatch(action) {
-        value = checkType(action) === 'function' ? action(value) : action;
+        const nextValue = checkType(action) === 'function' ? action() : action;
+        if (nextValue !== value) {
+            value = nextValue;
+        }
         notify(listeners, value);
     }
 
@@ -107,7 +107,7 @@ function effect(fn) {
     const run = () => {
         effects.clear();
         effects.add(fn);
-        console.log({ effects: effects.entries() });
+        // console.log({ effects: effects.entries() });
         try {
             fn();
         } catch (error) {
