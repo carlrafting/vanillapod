@@ -131,6 +131,7 @@ function Form() {
             el.value = '';
         }
     });
+
     createEffect(() => {
         if (error() !== null) {
             alert(error());
