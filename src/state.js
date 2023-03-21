@@ -92,7 +92,7 @@ export function ministore(initialValue) {
     return {
         read,
         dispatch,
-        subscribe: (fn) => effect(fn),
+        subscribe: (fn) => subscribe(listeners, fn),
     };
 }
 
