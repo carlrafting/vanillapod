@@ -6,7 +6,7 @@ import {
     button as $button,
     render,
 } from 'vanillapod/dom';
-import { createSignal, createEffect } from 'vanillapod/state';
+import { createSignal } from 'vanillapod/state';
 import debug from 'vanillapod/debug';
 
 debug(true);
@@ -44,7 +44,6 @@ const button = createMountable(
         type: 'button',
         onClick: (event) => {
             alert('CLICKED!');
-            console.log(event);
             event.preventDefault();
         },
     },
@@ -71,17 +70,24 @@ function ComponentHasProps({ text }) {
 
 function ButtonWithSignals() {
     const [text, setText] = createSignal('Update Signal');
-    // createEffect(() => alert(text()));
+    /* let currentElement = null;
+    createEffect(() => {
+        currentElement.textContent = text();
+    }); */
     return $button(
         {
-            onClick(e) {
+            onClick({ target }) {
                 setText('Hello Signals!');
-                e.target.textContent = text(); // quick & dirty solution until i figure out something better
+                target.textContent = text();
             },
         },
         text()
     );
 }
+
+// we don't want this scenarion to be possible
+// @url https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML#security_considerations
+const danger = '<img src="x" onerror=alert("DANGER!")>';
 
 /* const destroy = */ render(
     () => root,
@@ -93,14 +99,9 @@ function ButtonWithSignals() {
     button,
     div({ id: 'helper' }, 'Helper Method'),
     div({ id: 'foobar' }, '123'),
-    div(
-        { id: 'multiple-prop-defs' },
-        'Merge Multiple Property Definitions',
-        {
-            style: 'background-color:green;',
-        },
-        { style: 'padding:.5rem' }
-    ),
+    div({ id: 'multiple-prop-defs' }, 'Merge Multiple Property Definitions', {
+        style: 'background-color:green;padding:.5rem;color:#fff;',
+    }),
     MyComponent,
     [ComponentHasProps, { text: 'This component has props!' }],
     ButtonWithSignals,
@@ -109,7 +110,8 @@ function ButtonWithSignals() {
         { id: 'test-overridden' },
         'Enhanced'
     ),
-    null
+    null,
+    div({ innerHTML: danger }, 'Setting innerHTML is not permitted')
 );
 
 // destroy();
