@@ -79,6 +79,7 @@ body {
     flex-grow: 1;
     border: 1px solid #bbb;
     padding: .5rem;
+    z-index: 1;
 }
 
 #app button {
