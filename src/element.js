@@ -5,7 +5,7 @@ import setElementAttributes from './attributes.js';
 import setElementTextContent from './text.js';
 import setElementEventHandlers from './events.js';
 
-const validProps = {
+export const validProps = {
     element: null,
     el: null,
     data: {},
@@ -22,10 +22,10 @@ const validProps = {
     hooks: {},
 };
 
-function validateProps(props) {
+export function validateProps(props) {
     for (const key in props) {
         if (!Object.hasOwn(validProps, key)) {
-            createError(
+            return createError(
                 `${key} is not a valid property name. Try one of the following instead: ${Object.keys(
                     validProps
                 )}`

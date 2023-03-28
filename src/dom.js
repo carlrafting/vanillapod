@@ -1,6 +1,7 @@
 import { createMemo } from './memo.js';
 import { createError } from './error.js';
 import { checkType, createArray } from './utils.js';
+import { h, validateProps } from './element.js';
 
 const log = (...output) => console.log(...output);
 
@@ -11,73 +12,109 @@ const elPropsBlacklist = new Set(['innerHTML']);
 
 // function merge() {}
 
-export function createMountable(element, ...params) {
-    const template = document.createElement('template');
-    if (typeof element === 'string') {
-        element = document.createElement(element);
-    }
-    if (!element || element === null) {
-        element = document.createDocumentFragment();
-    }
-    if (params.length > 0) {
-        for (const param of params) {
-            if (checkType(param) === 'array') {
-                const [component, props] = param;
-                console.log({ component });
-                element.append(component(props));
-            }
-            if (typeof param === 'function') {
-                const result = param();
-                checkType(result) === 'array'
-                    ? element.append(...result)
-                    : element.append(result);
-            }
-            if (typeof param === 'string') {
-                const text = document.createTextNode(param);
-                element.append(text);
-            }
-            if (typeof param === 'object' && !(param instanceof Node)) {
-                const props = param;
-                const indexOfStart = 0;
-                const eventKey = 'on';
-                for (const [key, value] of Object.entries(props)) {
-                    if (elPropsBlacklist.has(key)) continue; // skip setting blacklisted props like innerHTML
-                    // log({ key, value });
-                    // if (key in element) {
-                    element[key] = value;
-                    // }
-                    if (key.indexOf(eventKey) === indexOfStart) {
-                        const sliceStart = eventKey.length;
-                        const normalizedEvent = key
-                            .slice(sliceStart)
-                            .toLowerCase();
-                        eventHandlers.push({
-                            element,
-                            event: [normalizedEvent, value],
-                        });
-                        // continue;
-                        /* console.log({
-                            normalizedEvent,
-                            indexOfStart,
-                            sliceStart,
-                        }); */
+export function createMountable(element = null, template = true) {
+    return function inner(...params) {
+        const templateEl = template ? document.createElement('template') : null;
+        if (!element || element === null) {
+            element = document.createDocumentFragment();
+        }
+        if (element && typeof element === 'string') {
+            element = document.createElement(element);
+        }
+        if (typeof element === 'function') {
+            element = element({}); // NOTE: perhaps we should make sure props stay reactive here?
+        }
+        if (checkType(element) === 'array') {
+            const [component, props] = element;
+            element = component(props);
+        }
+        if (checkType(element) === 'object') {
+            // NOTE: backwards compat
+            if (validateProps(element)) {
+                for (const key of Object.keys(element.props)) {
+                    if (elPropsBlacklist.has(key)) {
+                        console.log('found it!');
+                        // skip setting blacklisted props like innerHTML
+                        delete element.props[key];
                     }
                 }
+
+                const { el, children } = h(element.el || element.element, {
+                    ...element,
+                });
+                if (children) {
+                    el.append(...children);
+                }
+                element = el;
             }
-            // log('bottom', { param });
-            if (param instanceof Node) {
-                try {
-                    element.append(param);
-                } catch (err) {
-                    console.error(err);
+        }
+        if (params && params.length > 0) {
+            for (const param of params) {
+                if (typeof param === 'object' && !(param instanceof Node)) {
+                    const props = param;
+                    const indexOfStart = 0;
+                    const eventKey = 'on';
+                    for (const [key, value] of Object.entries(props)) {
+                        if (elPropsBlacklist.has(key)) {
+                            // skip setting blacklisted props like innerHTML
+                            delete props[key];
+                            continue;
+                        }
+                        element[key] = value;
+                        if (key.indexOf(eventKey) === indexOfStart) {
+                            const sliceStart = eventKey.length;
+                            const normalizedEvent = key
+                                .slice(sliceStart)
+                                .toLowerCase();
+                            eventHandlers.push({
+                                element,
+                                event: [normalizedEvent, value],
+                            });
+                        }
+                    }
+                }
+                if (typeof param === 'string') {
+                    const text = document.createTextNode(param);
+                    element.textContent = text.data;
+                }
+                if (param instanceof Node) {
+                    try {
+                        element.append(param);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+                if (typeof param === 'function') {
+                    const elementProxy = new Proxy(element, {
+                        get(target, prop) {
+                            if (!elPropsBlacklist.has(prop)) {
+                                return Reflect.get(target, prop).bind(target);
+                            }
+                        },
+                        set(target, prop, value) {
+                            if (!elPropsBlacklist.has(prop)) {
+                                return Reflect.set(target, prop, value);
+                            }
+                            createError(
+                                `createMountable: It is not allowed to set property '${prop}' with callback`
+                            );
+                        },
+                    });
+                    param(elementProxy);
                 }
             }
         }
-    }
-    template.content.append(element);
-    // return template.content.cloneNode(true);
-    return template.content; // this makes the event handling work since we do not loose the reference to the element.
+        if (template) {
+            templateEl.content.append(element);
+            // return template.content.cloneNode(true);
+            return templateEl.content; // NOTE: this makes the event handling work since we do not loose the reference to the element.
+        }
+        return element;
+    };
 }
+
+export const createTemplate = (el, ...params) =>
+    createMountable(el, true)(...params);
 
 const dom = new Map();
 
@@ -142,26 +179,68 @@ function cleanupElements() {
         for (const el of elements) {
             elements.delete(el);
         }
-        // log('cleanupElements', elements);
         return elements.clear();
     }
-    createError(`dom: can't cleanup elements Set: ${elements.size > 0}`);
+    createError(
+        `cleanupElements: can't cleanup elements Set: ${elements.size > 0}`
+    );
 }
 
 function createDOMMethods(done = null) {
     for (const el of elements) {
         dom.set(el, (...params) => {
-            const memo = createMemo((el, ...params) =>
-                createMountable(el, ...params)
-            );
+            const fn = createMountable(el, true);
+            const memo = createMemo((el, ...params) => fn(...params));
             // return memo(el, ...params); // using memo  creates issues when creating multiple elements with data from an array
-            return createMountable(el, ...params);
+            return fn(...params);
         });
     }
-    if (done && typeof done === 'function') done();
+    if (done && typeof done === 'function') {
+        done();
+    }
 }
 
 createDOMMethods(() => cleanupElements());
+
+const el =
+    (el) =>
+    (...params) =>
+        dom.get(el)(...params);
+
+export const div = el('div');
+export const p = el('p');
+export const h1 = el('h1');
+export const h2 = el('h2');
+export const h3 = el('h3');
+export const h4 = el('h4');
+export const h5 = el('h5');
+export const h6 = el('h6');
+export const hr = el('hr');
+export const article = el('article');
+export const aside = el('aside');
+export const footer = el('footer');
+export const header = el('header');
+export const main = el('main');
+export const nav = el('nav');
+export const section = el('section');
+export const ul = el('ul');
+export const ol = el('ol');
+export const li = el('li');
+export const dl = el('dl');
+export const dt = el('dt');
+export const dd = el('dd');
+export const form = el('form');
+export const fieldset = el('fieldset');
+export const label = el('label');
+export const input = el('input');
+export const textarea = el('textarea');
+export const button = el('button');
+export const select = el('select');
+export const option = el('option');
+export const span = el('span');
+export const br = el('br');
+
+export const fragment = (...params) => createMountable(null, false)(...params);
 
 // log({ dom });
 
@@ -215,14 +294,22 @@ function createRoot(root = null) {
     createError('dom: Expected root to be an instance of NodePrototype');
 }
 
-export function render(root, ...mountables) {
+export function render(mountables, root) {
     if (typeof root === 'function') {
         root = root();
     }
+    if (!root) {
+        throw new Error(
+            'render: root element could not be found in this document!'
+        );
+    }
+    if (typeof mountables === 'function') {
+        mountables = mountables();
+    }
     const results = [];
     const loop = (done = null) => {
-        for (let mountable of mountables) {
-            if (checkType(mountable) === 'function') {
+        for (const mountable of mountables) {
+            /* if (checkType(mountable) === 'function') {
                 results.push(mountable());
                 continue;
                 // results.push(component);
@@ -231,7 +318,7 @@ export function render(root, ...mountables) {
                 const [component, props] = mountable;
                 results.push(component(props));
                 continue;
-            }
+            } */
             if (mountable || mountable !== null) {
                 results.push(mountable);
             }
@@ -247,7 +334,7 @@ export function render(root, ...mountables) {
     });
     return function destroy(position = null) {
         if (typeof position !== 'number')
-            createError('dom: exprected position to be of value Number');
+            createError('destroy: expected position to be of value Number');
         const rootChildren = root.querySelectorAll('*');
         if (position === null) {
             // console.log({ root });
@@ -256,54 +343,15 @@ export function render(root, ...mountables) {
             }
             return;
         }
-        for (let index = 0; index < rootChildren.length; index++) {
-            if (index === position) {
-                const mountable = rootChildren[index];
-                mountable.remove();
+        if (rootChildren.length > 0) {
+            for (let i = 0; i < rootChildren.length; i++) {
+                if (i === position) {
+                    const mountable = rootChildren[i];
+                    mountable.remove();
+                }
             }
         }
     };
 }
-
-const el =
-    (el) =>
-    (...params) =>
-        dom.get(el)(...params);
-
-export const div = el('div');
-export const p = el('p');
-export const h1 = el('h1');
-export const h2 = el('h2');
-export const h3 = el('h3');
-export const h4 = el('h4');
-export const h5 = el('h5');
-export const h6 = el('h6');
-export const hr = el('hr');
-export const article = el('article');
-export const aside = el('aside');
-export const footer = el('footer');
-export const header = el('header');
-export const main = el('main');
-export const nav = el('nav');
-export const section = el('section');
-export const ul = el('ul');
-export const ol = el('ol');
-export const li = el('li');
-export const dl = el('dl');
-export const dt = el('dt');
-export const dd = el('dd');
-export const form = el('form');
-export const fieldset = el('fieldset');
-export const label = el('label');
-export const input = el('input');
-export const textarea = el('textarea');
-export const button = el('button');
-export const select = el('select');
-export const option = el('option');
-export const span = el('span');
-export const br = el('br');
-
-export const fragment = (props, ...params) =>
-    createMountable(null, props, ...params);
 
 console.timeEnd('dom/internal');

@@ -2,62 +2,66 @@ import debug from './debug.js';
 import { createError } from './error.js';
 import { createArray, checkType } from './utils.js';
 
-/*
-
-Usage:
-===========================================
-
-const count = store(0);
-
-count.subscribe(function logCount() {
-    console.log(count.read());
-});
-count.dispatch(count.read() + 1);
-count.dispatch(count.read() + 3);
-
-const message = store('');
-effect(function logMessage() {
-    console.log(message.read());
-});
-message.dispatch('...');
-message.dispatch('Hello World!');
-
-const [counter, setCounter] = createSignal(0);
-createEffect(() => {
-    console.log(counter())
-});
-setCounter(counter() + 3)
-setTimeout(() => setCounter(counter() * 6), 1000);
-
-*/
+/**
+ * @module state
+ */
 
 console.time('state');
 
 const effects = createArray([]);
 
-function notify(listeners, value) {
+/**
+ * @param {Set<function|array>} [listeners] set of state listeners that updates on state updates
+ * @param {*} [prevState]
+ * @param {*} [currentState]
+ */
+function notify(listeners, prevState, currentState) {
     console.time('notify');
     /* if (listeners.size === 0) {
         createError('state: No listeners registered!');
     } */
-    for (const listener of listeners) {
+    console.log({ listeners });
+    for (const subscriber of listeners) {
         // console.log('notifyListeners', listener);
-        if (listener && checkType(listener) === 'function') listener(value);
+        if (subscriber && checkType(subscriber) === 'function') {
+            if (prevState !== currentState) {
+                subscriber(prevState, currentState);
+            }
+        }
     }
     console.timeEnd('notify');
 }
 
+/**
+ *
+ * @param {Set<function>} listeners
+ * @param {function} fn
+ * @returns {function} unsubscribe function
+ */
 function subscribe(listeners, fn) {
-    console.time('subscribe');
-    listeners.add(fn);
-    console.timeEnd('subscribe');
-    return function unsubscribe() {
-        listeners.delete(fn);
-    };
+    if (checkType(listeners) === 'set') {
+        console.log('subscribing to set of listeners');
+        const unsubscribe = () => {
+            listeners.delete(fn);
+        };
+        listeners.add(fn);
+        return unsubscribe;
+    }
+    if (checkType(listeners) === 'array++') {
+        console.log('subscribing to array++ of listeners');
+        const unsubscribe = () => {
+            const index = listeners.indexOf(fn);
+            console.log({ index });
+        };
+        listeners.add(fn);
+        return unsubscribe;
+    }
 }
 
 const unsubscribes = new Set();
-
+/**
+ * @param {Set<function>} [listeners] set of state listeners that updates on state updates
+ */
 function scheduleEffect(listeners) {
     console.time('scheduleEffect');
     const effect = effects.last();
@@ -65,51 +69,115 @@ function scheduleEffect(listeners) {
     if (effect) {
         const unsubscribe = subscribe(listeners, effect);
         unsubscribes.add(unsubscribe);
-        // console.log('unsubscribeFns', { unsubscribeFns });
+        console.log('unsubscribes', { unsubscribes });
     }
     console.timeEnd('scheduleEffect');
 }
 
-// a ministore method with automatic subscription and effect scheduling
-export function ministore(initialValue) {
-    let value = initialValue;
+/**
+ * # createReactive
+ * 
+ * @description a method with automatic subscription and effect scheduling * 
+ * @exports state/store
+ * @exports state/useStore
+ * @exports state/makeStore
+ * @exports state/createStore
+ * @param {string|number|boolean|array|object} [initialValue] the initial value for the state * 
+ * @example
+ *  
+    // create reactive message state and read current state
+    const message = store('');
+    message.dispatch('...');
+    message(); // '...'
+    message.dispatch('Hello World!');
+    message(); // 'Hello World'
+
+    // create reactive count state and subscribe to state updates
+    const count = store(0);
+    count.subscribe(function logCount() {
+        console.log('Count is now: ', count.read());
+    });
+    count.dispatch(count.read() + 1); // Count is now: 1
+    count.dispatch(count.read() + 3); // Count is now: 4
+ */
+export function createReactive(initialValue) {
+    let state = initialValue;
     const listeners = new Set();
 
     function read() {
         scheduleEffect(listeners);
         // console.log('read', { fx: effects.entries(), listeners });
-        return value;
+        return state;
     }
-
+    /**
+     * dispatch
+     *
+     * @param {any|function} [action]
+     */
     function dispatch(action) {
-        const nextValue = checkType(action) === 'function' ? action() : action;
-        if (nextValue !== value) {
-            value = nextValue;
+        const prevState = state;
+        const currentState =
+            checkType(action) === 'function' ? action() : action;
+        if (prevState !== currentState) {
+            state = currentState;
         }
-        notify(listeners, value);
+        notify(listeners, prevState, currentState);
     }
 
     return {
         read,
         dispatch,
-        subscribe: (fn) => effect(fn),
+        subscribe: (fn) => subscribe(listeners, fn),
     };
 }
 
-export const store = ministore;
-export const useStore = ministore;
-export const makeStore = ministore;
-export const createStore = ministore;
+export const store = createReactive;
+export const useStore = createReactive;
+export const makeStore = createReactive;
+export const createStore = createReactive;
 
+/**
+ * # signal
+ * 
+ * @description a thin wrapper around store method with an api similar to solid.js
+ * @param {*} value 
+ * @example
+ *     
+    const [counter, setCounter] = createSignal(0);
+    setCounter(counter() + 3)
+    setTimeout(() => setCounter(counter() * 6), 1000);
+ */
+export function signal(value) {
+    const s = store(value);
+    return [s.read, s.dispatch];
+}
+
+export const createSignal = signal;
+export const useSignal = signal;
+export const makeSignal = signal;
+
+/**
+ * # effect
+ *
+ * @param {function} [fn] a callback function that runs whenever the state updates
+ * @example
+ * 
+    const [counter,setCounter] = signal(0);
+    setCounter(counter() + 3);
+    createEffect(() => {
+        console.log(counter())
+    });
+ */
 function effect(fn) {
     // console.log('createListenerEffect:', effects.entries());
     console.time('effect');
-    const run = () => {
+    const run = (prevState, currentState) => {
         effects.clear();
-        effects.add(fn);
+        // effects.add(fn);
+        subscribe(effects, fn);
         // console.log({ effects: effects.entries() });
         try {
-            fn();
+            fn(prevState, currentState);
         } catch (error) {
             console.log(error);
         } finally {
@@ -124,14 +192,6 @@ export const createEffect = effect;
 export const makeEffect = effect;
 export const useEffect = effect;
 
-// a thin wrapper around store method with an api similar to solid.js
-export function signal(value) {
-    const s = store(value);
-    return [s.read, s.dispatch];
-}
-
-export const createSignal = signal;
-export const useSignal = signal;
-export const makeSignal = signal;
+function createReactiveRoot() {}
 
 console.timeEnd('state');

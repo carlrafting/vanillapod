@@ -10,7 +10,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/user-event": "^12.8.3",
     "@vitest/coverage-c8": "^0.29.2",
-    "@vitest/ui": "^0.29.2",
     "c8": "^7.13.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.35.0",
@@ -21,7 +20,7 @@
     "happy-dom": "^8.9.0",
     "prettier": "^2.8.4",
     "rollup": "^3.18.0",
-    "vitest": "^0.29.2"
+    "vitest": "^0.29.7"
   },
   "scripts": {
     "test": "vitest run --dom",
@@ -44,7 +43,8 @@
     "sandbox/html",
     "sandbox/unmount",
     "sandbox/fibonacci",
-    "sandbox/dom"
+    "sandbox/dom",
+    "sandbox/signalsdom"
   ],
   "name": "vanillapod",
   "version": "0.11.2",

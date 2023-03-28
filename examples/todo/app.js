@@ -1,4 +1,5 @@
 import 'modern-css-reset';
+import './global.css';
 import './app.css';
 import { createSignal, createEffect } from '../../src/state';
 import debug from '../../src/debug';
@@ -15,7 +16,9 @@ import {
     header,
     span,
     fragment,
+    createTemplate,
 } from '../../src/dom';
+import { diff } from '../../sandbox/signalsdom/src/core.js';
 import { createLocalStorage, createArray } from '../../src/utils';
 
 debug(true);
@@ -49,16 +52,16 @@ function Header() {
     };
 
     const count = () =>
+        tasks() !== null &&
         `${tasks().length} ${tasks().length > 1 ? 'tasks' : 'task'}`;
-
-    createEffect(() => {
-        const el = document.querySelector('header > span');
-        el && (el.textContent = count());
-    });
 
     return header(
         h1,
-        span(count()),
+        span(count(), (el) => {
+            createEffect(() => {
+                el.textContent = count();
+            });
+        }),
         button({ onClick: clearAll }, 'Clear All Tasks'),
         button({ onClick: clearCompleted }, 'Clear Completed Tasks')
     );
@@ -69,68 +72,47 @@ function List() {
         // console.log('HELLO!');
         const label = e.target.labels[0];
         const task = tasks().find((item) => item.value == label.textContent);
-        // return console.log({ tasks: _tasks, task });
-        if (task) {
+        if (e.target.checked !== task.completed) {
             task.completed = e.target.checked;
-            setTasks(() => {
-                return [
-                    ...tasks().filter(
-                        (item) => item.value !== label.textContent
-                    ),
-                ];
-            });
+            setTasks([...tasks()]);
         }
         e.preventDefault();
     };
 
-    createEffect(() => {
-        const el = document.getElementById('tasks');
-        const items = createArray(...tasks());
-        // console.log({ last: items.last() });
-        if (el) {
-            const index = tasks().length;
-            console.log({ el }, tasks());
-            render(
-                el,
-                li(
-                    input({
-                        checked: false,
-                        id: `task-${index}`,
-                        type: 'checkbox',
-                        onChange,
-                    }),
-                    label({ htmlFor: `task-${index}` }, items.last().value)
-                )
-            );
-        }
-    });
+    return ul({ id: 'tasks' }, (el) => {
+        createEffect((prevState, currentState) => {
+            if (prevState && currentState) {
+                console.log({ prevState, currentState });
+                const results = diff(prevState, currentState);
+                console.log('diff', { results });
+                if (prevState.length === currentState.length) {
+                }
+                /* if (prevState.length < currentState.length) {
+                } */
+                return;
+            }
 
-    return ul(
-        { id: 'tasks' },
-        ...tasks().map((item, index) => {
-            return li(
-                input({
-                    checked: item.completed,
-                    id: `task-${index}`,
-                    type: 'checkbox',
-                    onChange,
-                }),
-                label({ htmlFor: `task-${index}` }, item.value)
-            );
-        })
-    );
+            tasks().map((item, index) => {
+                el.append(
+                    li(
+                        input({
+                            checked: item.completed,
+                            id: `task-${index}`,
+                            type: 'checkbox',
+                            onChange,
+                        }),
+                        label({ htmlFor: `task-${index}` }, item.value)
+                    )
+                );
+            });
+        });
+    });
 }
 
 function Form() {
     const [text, setText] = createSignal('');
     const [error, setError] = createSignal(null);
 
-    createEffect(() => {
-        const el = document.getElementById('input-text');
-        if (text() !== '') {
-            el.value = '';
-        }
-    });
     createEffect(() => {
         if (error() !== null) {
             alert(error());
@@ -160,26 +142,27 @@ function Form() {
                 console.log(event.target);
             },
         },
-        List,
+        createTemplate(List),
         label(
             {
                 htmlFor: 'input-text',
             },
             'Task Description'
         ),
-        br,
+        br(),
         input(
             { id: 'input-text', type: 'text', onChange: handleTextChange },
-            text()
+            text(),
+            (el) => {
+                createEffect(() => (el.value = text()));
+            }
         ),
         button('Add New Task')
     );
 }
 
-function App() {
-    return fragment(Header, Form);
-}
+const App = fragment(createTemplate(Header), createTemplate(Form));
 
 const root = document.querySelector('#app');
 
-render(root, App);
+render(() => [App], root);

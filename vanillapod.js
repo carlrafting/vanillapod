@@ -1,7 +1,9 @@
 export { version } from './package.json';
 
 // legacy
+export { createElement } from './src/element';
 export { default as mount } from './src/mount';
+export * from './src/hooks';
 export { default as setElementProperties } from './src/properties';
 export { default as setElementAttributes } from './src/attributes';
 export { default as setElementTextContent } from './src/text';

@@ -117,29 +117,27 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
     }
 }
 
-/* 
+/**
+ * createArray
+ * 
+ * @param  {...any} items items to spread into a new array
+ * @example
+ * 
+    // methods
+    const nums = createArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    nums.get(1), // 2
+    nums.add(11), // 11
+    nums.remove(5), // [6]
+    nums.entries(), // [1,2,3,4,5,6,7,8,9,10,11]
+    nums.clear(), // true
+    nums.entries() // []
 
-createArray
+    // iterate
+    const arr = createArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
-Methods:
-================================================
-
-const nums = createArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-nums.get(1), // 2
-nums.add(11), // 11
-nums.remove(5), // [6]
-nums.entries(), // [1,2,3,4,5,6,7,8,9,10,11]
-nums.clear(), // true
-nums.entries() // []
-
-Iterate:
-================================================
-
-const arr = createArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-for (const item of arr) {
-    console.log(item);
-}
+    for (const item of arr) {
+        console.log(item);
+    }
  */
 export function createArray(...items) {
     const arr = [...items];
@@ -179,6 +177,9 @@ export function createArray(...items) {
         *[Symbol.iterator]() {
             yield prototype.get(count);
             count++;
+        },
+        get [Symbol.toStringTag]() {
+            return 'array++';
         },
     };
     return prototype;
