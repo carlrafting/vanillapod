@@ -34,7 +34,7 @@ function notify(listeners, prevState, currentState) {
 
 /**
  *
- * @param {Set} listeners
+ * @param {Set<function>} listeners
  * @param {function} fn
  * @returns {function} unsubscribe function
  */
