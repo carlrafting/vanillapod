@@ -1,19 +1,19 @@
 import { createSignal, createEffect } from '../../src/state';
-import { button, render, h2, fragment } from '../../src/dom';
+import { button, render, h2, fragment, createTemplate } from '../../src/dom';
 import debug from '../../src/debug';
+import 'modern-css-reset';
+import './styles.css';
 
 debug(true);
 
 function Counter({ id = 1 } = {}) {
     const [count, setCount] = createSignal(0);
 
-    createEffect(() => {
-        const countElem = document.getElementById(`count-${id}`);
-        countElem.textContent = count();
-    });
-
     return fragment(
-        h2({ id: `count-${id}` }, `${count()}`),
+        h2({ id: `count-${id}` }, count().toString(), (el) => {
+            createEffect(() => (el.textContent = count()));
+        }),
+
         button(
             {
                 onClick() {
@@ -22,6 +22,7 @@ function Counter({ id = 1 } = {}) {
             },
             'Increment'
         ),
+
         button(
             {
                 onClick() {
@@ -30,6 +31,7 @@ function Counter({ id = 1 } = {}) {
             },
             'Decrement'
         ),
+
         button(
             {
                 onClick() {
@@ -41,4 +43,4 @@ function Counter({ id = 1 } = {}) {
     );
 }
 
-render(document.body, Counter);
+render(() => [createTemplate(Counter)], document.querySelector('#app'));

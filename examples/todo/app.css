@@ -1,3 +1,7 @@
+html {
+    background-color: #eee;
+}
+
 body {
     display: grid;
     place-items: center;
