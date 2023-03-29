@@ -11,7 +11,7 @@ console.time('state');
 const effects = createArray([]);
 
 /**
- * @param {Set<function|array>} [listeners] set of state listeners that updates on state updates
+ * @param {Set<function>} [listeners] set of state listeners that updates on state updates
  * @param {*} [prevState]
  * @param {*} [currentState]
  */
@@ -193,5 +193,44 @@ export const makeEffect = effect;
 export const useEffect = effect;
 
 function createReactiveRoot() {}
+
+export function onChange(prev, current, fn) {
+    const added = [];
+    const removed = [];
+    const modified = [];
+
+    const maxIterations = Math.max(prev.length, current.length);
+
+    for (let i = 0; i < maxIterations; i++) {
+        const currentItem = current[i];
+        const prevIem = prev[i];
+        if (JSON.stringify(currentItem) !== JSON.stringify(prevIem)) {
+            // add array item
+            if (current.length > prev.length) {
+                added.push(currentItem);
+            }
+            // modified array item
+            if (prev.length === current.length) {
+                modified.push(currentItem);
+            }
+            // remove array item
+            if (prev.length > current.length) {
+                removed.push(prevIem);
+            }
+        }
+    }
+
+    const results = {
+        added,
+        removed,
+        modified,
+    };
+
+    if (fn && typeof fn === 'function') {
+        return fn(results);
+    }
+
+    return results;
+}
 
 console.timeEnd('state');
