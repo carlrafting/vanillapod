@@ -1,10 +1,13 @@
 import 'modern-css-reset';
 import './global.css';
 import './app.css';
-import { createSignal, createEffect } from '../../src/state';
+import {
+    createSignal,
+    createEffect,
+    onChange as $onChange,
+} from '../../src/state';
 import debug from '../../src/debug';
 import {
-    div,
     form,
     input,
     label,
@@ -12,14 +15,14 @@ import {
     render,
     ul,
     br,
+    p,
     button,
     header,
     span,
     fragment,
     createTemplate,
 } from '../../src/dom';
-import { diff } from '../../sandbox/signalsdom/src/core.js';
-import { createLocalStorage, createArray } from '../../src/utils';
+import { createLocalStorage } from '../../src/utils';
 
 debug(true);
 
@@ -41,19 +44,18 @@ function Header() {
 
     const clearCompleted = () => {
         if (confirm('Are you sure you want to clear all completed tasks?')) {
-            setTasks(() => tasks().filter((task) => !task.completed));
+            setTasks([...tasks().filter((task) => !task.completed)]);
         }
     };
 
     const clearAll = () => {
         if (confirm('Are you sure you want to clear ALL tasks?')) {
-            setTasks(null);
+            setTasks([]);
         }
     };
 
     const count = () =>
-        tasks() !== null &&
-        `${tasks().length} ${tasks().length > 1 ? 'tasks' : 'task'}`;
+        `${tasks().length} ${tasks().length !== 1 ? 'tasks' : 'task'}`;
 
     return header(
         h1,
@@ -79,32 +81,36 @@ function List() {
         e.preventDefault();
     };
 
+    const createTask = (item, index) =>
+        li(
+            input({
+                checked: item.completed,
+                id: `task-${index}`,
+                type: 'checkbox',
+                onChange,
+            }),
+            label({ htmlFor: `task-${index}` }, item.value)
+        );
+
+    if (tasks().length === 0) {
+        createEffect(() => p('You have not created any tasks!'));
+    }
+
     return ul({ id: 'tasks' }, (el) => {
         createEffect((prevState, currentState) => {
             if (prevState && currentState) {
-                console.log({ prevState, currentState });
-                const results = diff(prevState, currentState);
-                console.log('diff', { results });
-                if (prevState.length === currentState.length) {
-                }
-                /* if (prevState.length < currentState.length) {
-                } */
-                return;
+                return $onChange(prevState, currentState, ({ added }) => {
+                    if (added.length > 0) {
+                        added.map((item) =>
+                            el.append(createTask(item, tasks().length))
+                        );
+                    }
+                });
             }
-
-            tasks().map((item, index) => {
-                el.append(
-                    li(
-                        input({
-                            checked: item.completed,
-                            id: `task-${index}`,
-                            type: 'checkbox',
-                            onChange,
-                        }),
-                        label({ htmlFor: `task-${index}` }, item.value)
-                    )
-                );
-            });
+            // create tasks list
+            return tasks().map((item, index) =>
+                el.append(createTask(item, index))
+            );
         });
     });
 }
