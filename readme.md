@@ -20,7 +20,11 @@ Vanillapods main goal is to be a learning experience and to produce something us
 
 ## Enhanche Vanilla JavaScript
 
-The purpose of vanillapod is to enhance vanilla JavaScript with a component based architecture, similair to a lot of other (bigger) libraries. Vanillapod provides several helpers to make the interaction with the DOM less cumbersome, while still maintaining access to the underlying DOM APIs.
+The purpose of vanillapod is to enhance vanilla JavaScript with a component based architecture, similair to a lot of other (bigger) libraries (like Svelte, Solid or React). Vanillapod provides several helpers to make the interaction with the DOM less cumbersome, while still maintaining access to the underlying DOM APIs.
+
+## How does vanillapod work?
+
+...
 
 ## Getting Started
 
@@ -211,18 +215,16 @@ mount(
 It's possible to mount not just elements, but any kind of node.
 
 ```js
-import { mount } from 'vanillapod';
+import { render, comment, fragment, text } from 'vanillapod';
 
 
-const comment = document.createComment('comment!');
-const fragment = document.createDocumentFragment();
-const text = document.createTextNode('text!');
-
-mount(
+render(
+    () => [
+        comment("I'm a comment"),
+        fragment(), // just an empty fragment
+        text("I'm just a simple text node"),
+    ]
     document.querySelector('#app'),
-    comment,
-    fragment,
-    text
 );
 
 ```

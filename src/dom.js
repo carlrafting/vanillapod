@@ -241,7 +241,8 @@ export const span = el('span');
 export const br = el('br');
 
 export const fragment = (...params) => createMountable(null, false)(...params);
-
+export const text = (text) => document.createTextNode(text);
+export const comment = (text) => document.createComment(text);
 // log({ dom });
 
 // log(dom.get('div')('Hello There'));

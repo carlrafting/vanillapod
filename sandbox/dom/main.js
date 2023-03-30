@@ -1,4 +1,4 @@
-import 'signalsdom/src/styles.css';
+import 'counter/styles.css';
 import {
     createTemplate,
     div,
@@ -10,6 +10,9 @@ import {
     li,
     button as $button,
     render,
+    text,
+    fragment,
+    comment,
 } from 'vanillapod/dom';
 import { createSignal, createEffect } from 'vanillapod/state';
 import debug from 'vanillapod/debug';
@@ -165,6 +168,11 @@ const danger = '<img src="x" onerror=alert("DANGER!")>';
             text: `I'm Special!`,
             children: [ul(li('1'), li('2'), li('3'))],
         }),
+        // eslint-disable-next-line quotes
+        comment("I'm a comment"),
+        // eslint-disable-next-line quotes
+        text("I'm just a simple text node"),
+        fragment(),
     ],
     root
 );
