@@ -2,7 +2,7 @@
 
 Lightweight library for building vanilla JavaScript components...
 
-__NOTE: ⚠ vanillapod is not used in production at the moment, and is missing some essential features.__
+__NOTE: ℹ️ vanillapod is somewhat feature-complete. At the moment it suits prototypes or projects of smaller sizes.__
 
 ## Install
 
@@ -18,9 +18,9 @@ $ yarn add vanillapod
 
 Vanillapods main goal is to be a learning experience and to produce something useful, if not for anyone else, at least for me. It's inspired to attempt creating a UI library, by Juha Lindstedts [RE:DOM](https://redom.js.org/) and later on Chris Ferdinandis [Reef.js](https://reefjs.com/). Hopefully it will not be too similair to those libraries (why should it exist otherwise?), but rather use those libraries to learn different approaches to solve common problems. Vanillapod is not used in production as of this time, so if you're looking for something more battle-tested, check out the libraries i mentioned above. 
 
-## Goal: Enhanche Vanilla JavaScript
+## Enhanche Vanilla JavaScript
 
-The goal of vanillapod is to enhance vanilla JavaScript with a component based architecture. Vanillapod provides several helpers to make the interaction with the DOM a bit more pleasant (hopefully).
+The purpose of vanillapod is to enhance vanilla JavaScript with a component based architecture, similair to a lot of other (bigger) libraries. Vanillapod provides several helpers to make the interaction with the DOM less cumbersome, while still maintaining access to the underlying DOM APIs.
 
 ## Getting Started
 
@@ -426,7 +426,7 @@ There are a few things that might create unexpected results...
 Since document fragments do not behave like a usual element (doesn't render any element in the DOM), events attached to it will not work. You can work around this by attaching events on another element or on the window object.
 
 ```js
-import { mount } from 'vanillapod/vanillapod';
+import { mount } from 'vanillapod';
 
 function Fragment() {
     const [el] = createDocumentFragment();
@@ -441,51 +441,21 @@ function Fragment() {
 mount(null, Fragment);
 ```
 
-### Hooks for data updates, Events for DOM changes
+### Hooks for state changes, Events for DOM changes
 
 ...
 
-## ES5 
+## Targeting Legacy Browsers (ES5) 
 
-There is a ES5 bundle available for targeting older browsers that doesn't have support for ES2015 modules. All vanillapod methods are namespaced under `vanillapod`. Here is how you use the ES5 bundle.
+If your project requires support for legacy browsers, the recommended way to support them is to use a bundler for transpiling your codebase _and_ vanillpod, or other dependencys, that are taking advantage of ES6 features like ES Modules, to something that can run in a environment that has support for ES5 features. Vite and Parcel are the two recommended bundlers, since they're the most easy-to-use and easier to configure.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vanillapod ES5</title>
-</head>
-<body>
+### Parcel
 
-<div id="root">
-    <h1>vanillapod ES5 Example</h1>
-</div>
+...
 
-<script src="./node_modules/vanillapod/dist/vanillapod.es5.min.js"></script>
-<script src="script.js"></script>
+### Vite
 
-</body>
-</html>
-```
-
-```javascript
-// script.js
-
-function myComponent() {
-    return {
-        element: 'div',
-        text: 'Hello World'
-    };
-}
-
-if (window.vanillapod) {
-    vanillapod.mount(null, myComponent);
-} else {
-    console.error('Something went wrong!');
-}
-```
+...
 
 ## Debugging
 
