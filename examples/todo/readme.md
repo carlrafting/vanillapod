@@ -1,3 +1,3 @@
-# vanillapod todo app
+# vanillapod todo example
 
 ...
