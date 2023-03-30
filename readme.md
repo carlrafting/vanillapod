@@ -478,7 +478,7 @@ debug() // returns true
 
 ## Example App
 
-You can check out an example of how to build a [ToDo app with vanillapod here](https://github.com/carlrafting/vanillapod-example).
+You can check out an example of how to build a [ToDo app with vanillapod here](./examples/todo/).
 
 ## ToDo
 
