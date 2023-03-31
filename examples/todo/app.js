@@ -26,6 +26,7 @@ import { createLocalStorage } from '../../src/utils';
 
 debug(true);
 
+const root = document.querySelector('#app');
 const initialTasks = [
     { value: 'first', completed: false },
     { value: 'second', completed: true },
@@ -40,7 +41,7 @@ createEffect(() => {
 });
 
 function Header() {
-    const h1 = document.body.querySelector('h1');
+    const h1 = root.querySelector('h1');
 
     const clearCompleted = () => {
         if (confirm('Are you sure you want to clear all completed tasks?')) {
@@ -169,6 +170,4 @@ function Form() {
 
 const App = fragment(createTemplate(Header), createTemplate(Form));
 
-const root = document.querySelector('#app');
-
-render(() => [App], root);
+render(() => App, root);

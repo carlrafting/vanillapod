@@ -6,11 +6,11 @@ import './styles.css';
 
 debug(true);
 
-function Counter({ id = 1 } = {}) {
+function Counter() {
     const [count, setCount] = createSignal(0);
 
     return fragment(
-        h2({ id: `count-${id}` }, count().toString(), (el) => {
+        h2(count(), (el) => {
             createEffect(() => (el.textContent = count()));
         }),
 
@@ -43,4 +43,4 @@ function Counter({ id = 1 } = {}) {
     );
 }
 
-render(() => [createTemplate(Counter)], document.querySelector('#app'));
+render(() => createTemplate(Counter), document.querySelector('#app'));
