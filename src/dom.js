@@ -73,7 +73,7 @@ export function createMountable(element = null, template = true) {
                         }
                     }
                 }
-                if (typeof param === 'string') {
+                if (typeof param === 'string' || typeof param === 'number') {
                     const text = document.createTextNode(param);
                     element.textContent = text.data;
                 }
@@ -306,6 +306,9 @@ export function render(mountables, root) {
     }
     if (typeof mountables === 'function') {
         mountables = mountables();
+        if (checkType(mountables) !== 'array') {
+            mountables = [mountables];
+        }
     }
     const results = [];
     const loop = (done = null) => {
