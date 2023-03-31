@@ -204,17 +204,40 @@ createEffect(() => {
 
 */
 
+async function createPersistedStorage() {
+    if (navigator.storage && navigator.storage.persisted) {
+        await navigator.storage.persisted();
+        return {
+            async grant() {
+                await navigator.storage.persist();
+            },
+        };
+    }
+}
+
 export function createLocalStorage(key = 'app', initialData = null) {
-    const read = () => {
-        const parsed = JSON.parse(localStorage.getItem(key));
-        if (parsed === null && initialData !== null) {
-            return initialData;
-        }
-        return parsed;
-    };
-    const write = (data) => localStorage.setItem(key, JSON.stringify(data));
+    createPersistedStorage()
+        .then(({ grant }) => {
+            const granted = grant();
+            console.log('Granted persisted storage?', granted ? 'yes' : 'no');
+        })
+        .catch((err) => console.log(err));
+
     return {
-        read,
-        write,
+        read() {
+            const parsed = JSON.parse(localStorage.getItem(key));
+            const dataType = checkType(parsed);
+            console.log({ dataType });
+            if (parsed === null && initialData !== null) {
+                return initialData;
+            }
+            /* if (dataType === 'array') {
+                return [];
+            } */
+            return parsed;
+        },
+        write(data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        },
     };
 }
