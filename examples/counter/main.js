@@ -8,6 +8,10 @@ debug(true);
 
 function Counter() {
     const [count, setCount] = createSignal(0);
+    const increment = () => count() + 1;
+    const double = () => count() * 2;
+    const half = () => count() / 2;
+    const decrement = () => count() - 1;
 
     return fragment(
         h2(count(), (el) => {
@@ -17,7 +21,7 @@ function Counter() {
         button(
             {
                 onClick() {
-                    setCount(count() + 1);
+                    setCount(increment);
                 },
             },
             'Increment'
@@ -26,10 +30,28 @@ function Counter() {
         button(
             {
                 onClick() {
-                    setCount(count() - 1);
+                    setCount(decrement);
                 },
             },
             'Decrement'
+        ),
+
+        button(
+            {
+                onclick() {
+                    setCount(double);
+                },
+            },
+            'Double'
+        ),
+
+        button(
+            {
+                onclick() {
+                    setCount(half);
+                },
+            },
+            'Half'
         ),
 
         button(
