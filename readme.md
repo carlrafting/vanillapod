@@ -32,7 +32,7 @@ document.body.querySelector('#app').append(el, button);
 ```
 Wouldn't it be nice if count updated automatically when we pressed the button? One solution could be to wrap the DOM updates in a function:
 
-```js
+```diff
 let count = 0;
 const el = document.createElement('h1');
 const button = document.createElement('button');
