@@ -50,7 +50,7 @@ const button = document.createElement('button');
 document.body.querySelector('#app').append(el, button);
 ```
 
-There is nothing wrong with this solution, but as the application grows there are alot of moving parts the developer has to keep track of manually. Also, why are we calling the function `effect`, what is up with that? `effect` is a naming convention borrowed from the concept of _reactive programming_. In simple terms, an `effect` is a *reaction* or *response* to a change in state. When the button is pressed we update `count`, which in this case is our *state*, and in response to that, we run the effect.
+There is nothing wrong with this solution, but as the application grows there are alot of moving parts the developer has to keep track of manually. Also, why are we calling the function `effect`, what is up with that? `effect` is a naming convention borrowed from the concept of _reactive programming_. In simple terms, an `effect` is a **reaction** or **response** to a change in **state**. When the button is pressed we update `count`, which in this case is our **state**, and in response to that, we run the `effect`.
 
 ---
 
