@@ -16,7 +16,43 @@ $ yarn add vanillapod
 
 ## Background
 
-Vanillapods main goal is to be a learning experience and to produce something useful, if not for anyone else, at least for me. It's inspired to attempt creating a UI library, by Juha Lindstedts [RE:DOM](https://redom.js.org/) and later on Chris Ferdinandis [Reef.js](https://reefjs.com/). Hopefully it will not be too similair to those libraries (why should it exist otherwise?), but rather use those libraries to learn different approaches to solve common problems. Vanillapod is not used in production as of this time, so if you're looking for something more battle-tested, check out the libraries i mentioned above. 
+vanillapod is a library which purpose is to _enhance vanilla JavaScript_. What is wrong with JavaScript, and how is vanillapod adressing that? Take the following example of code:
+
+```js
+let count = 0;
+const el = document.createElement('h1');
+const button = document.createElement('button');
+
+button.textContent = 'Count!';
+el.textContent = count;
+
+button.onclick = () => count++;
+
+document.body.querySelector('#app').append(el, button);
+```
+Wouldn't it be nice if count updated automatically when we pressed the button? One solution could be to wrap the DOM updates in a function:
+
+```js
+let count = 0;
+const el = document.createElement('h1');
+const button = document.createElement('button');
+
++ function effect() {
+    button.textContent = 'Count!';
+    el.textContent = count;
++ }
+
++ effect();
+
+- button.onclick = () => count++;
++ button.onclick = () => count++ && effect();
+
+document.body.querySelector('#app').append(el, button);
+```
+
+For the last decade or so we've seen a bunch of different approaches to making front-end development easier, for the right or wrong reasons. Front-end developers have argued back and forth, we've seen new libraries come and go.  
+
+Vanillapods main goal is to be a learning experience and to produce something useful, if not for anyone else, at least for me. It's inspired to attempt creating a UI library, by Juha Lindstedts [RE:DOM](https://redom.js.org/) and later on Chris Ferdinandis [Reef.js](https://reefjs.com/) and [Andrea Giammarchi many DOM libraries](https://github.com/WebReflection). Hopefully it will not be too similair to those libraries (why should it exist otherwise?), but rather use those libraries to learn different approaches to solve common problems. Vanillapod is not used in production as of this time, so if you're looking for something more battle-tested, check out the libraries i mentioned above. 
 
 ## Enhanche Vanilla JavaScript
 
@@ -28,9 +64,9 @@ The purpose of vanillapod is to enhance vanilla JavaScript with a component base
 
 ## Getting Started
 
-You can use vanillapod regardless of using a bundler (Webpack, parcel, rollup or vite), or using ES2015 modules in browsers that support it.
+You can use vanillapod regardless of using a bundler (Webpack, parcel, rollup or vite), or using ES2015 modules in browsers that supports it.
 
-To import vanillapod methods without a bundler, you need to point to the script file inside the `dist` directory.
+To import vanillapod methods without a bundler, you need to point to the script file located inside the `dist` directory.
 
 ```js
 // import without bundler
@@ -479,6 +515,10 @@ debug() // returns true
 ## Example App
 
 You can check out an example of how to build a [ToDo app with vanillapod here](./examples/todo/).
+
+## Aknowledgements
+
+...
 
 ## ToDo
 
