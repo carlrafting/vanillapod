@@ -4,7 +4,7 @@
 
 Lightweight library for building vanilla JavaScript components...
 
-__NOTE: ℹ️ vanillapod is somewhat feature-complete. At the moment it suits prototypes or projects of smaller sizes.__
+    __NOTE: ℹ️ vanillapod is somewhat feature-complete. At the moment it suits prototypes or projects of smaller sizes.__
 
 ## Install
 
@@ -52,17 +52,19 @@ const button = document.createElement('button');
 document.body.querySelector('#app').append(el, button);
 ```
 
-There is nothing wrong with this solution, but as the application grows there are alot of moving parts the developer has to keep track of manually. Also, why are we calling the function `effect`, what is up with that? `effect` is a naming convention borrowed from the concept of _reactive programming_. In simple terms, an `effect` is a **reaction** or **response** to a change in **state**. When the button is pressed we update `count`, which in this case is our **state**, and in response to that, we run the `effect`.
+There is nothing wrong with this solution, but as the application grows there are alot of moving parts the developer has to keep track of manually. Also, why are we calling the function `effect`, what is up with that? `effect` is a naming convention borrowed from the concept of [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). In simple terms, an `effect` is a **reaction** or **response** to a change in **state**. When the button is pressed we update `count`, which in this case is our **state**, and in response to that, we run the `effect`.
 
 ---
 
-For the last decade or so we've seen a bunch of different approaches to making front-end development easier, for the right or wrong reasons. Front-end developers have argued back and forth, we've seen new libraries come and go.  
+For the last decade or so we've seen a bunch of different approaches to making front-end development easier, for the right or wrong reasons. Front-end developers have argued back and forth, we've seen new libraries come and go. 
+
+---
 
 Vanillapods main goal is to be a learning experience and to produce something useful, if not for anyone else, at least for me. It's inspired to attempt creating a UI library, by Juha Lindstedts [RE:DOM](https://redom.js.org/) and later on Chris Ferdinandis [Reef.js](https://reefjs.com/) and [Andrea Giammarchi many DOM libraries](https://github.com/WebReflection). Hopefully it will not be too similair to those libraries (why should it exist otherwise?), but rather use those libraries to learn different approaches to solve common problems. Vanillapod is not used in production as of this time, so if you're looking for something more battle-tested, check out the libraries i mentioned above. 
 
 ## Enhanche Vanilla JavaScript
 
-The purpose of vanillapod is to enhance vanilla JavaScript with a component based architecture, similair to a lot of other (bigger) libraries (like Svelte, Solid or React). Vanillapod provides several helpers to make the interaction with the DOM less cumbersome, while still maintaining access to the underlying DOM APIs.
+The purpose of vanillapod is to enhance vanilla JavaScript with a component based architecture, similair to a lot of other (bigger) libraries (like Svelte, Solid.js or React) while keeping the philosophy in line with smaller libraries like Reef.js, RE:DOM. Vanillapod provides several helpers to make the interaction with the DOM less cumbersome, while still maintaining access to the underlying DOM APIs.
 
 ## How does vanillapod work?
 
@@ -524,7 +526,7 @@ You can check out an example of how to build a [ToDo app with vanillapod here](.
 
 ## Aknowledgements
 
-...
+Vanillapod would not be possible without many of the existing Open Source JavaScript projects.
 
 ## ToDo
 
