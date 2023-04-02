@@ -4,7 +4,7 @@
 
 Lightweight library for building vanilla JavaScript components...
 
-    __NOTE: ℹ️ vanillapod is somewhat feature-complete. At the moment it suits prototypes or projects of smaller sizes.__
+> __NOTE: ℹ️ vanillapod is somewhat feature-complete. At the moment it suits prototypes or projects of smaller sizes.__
 
 ## Install
 
