@@ -1,5 +1,7 @@
-import { test, expect } from 'vitest';
-import { createStore, signal } from '../src/state';
+// import { test, assert.equal } from 'vitest';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createStore, signal } from '../src/state.js';
 
 test('store: should handle number, boolean, string and null values', () => {
     const number = createStore(0);
@@ -17,19 +19,19 @@ test('store: should handle number, boolean, string and null values', () => {
 
     number.subscribe(() => {
         effects.number = true;
-        expect(effects.number).toBe(true);
+        assert.equal(effects.number, true);
     });
     boolean.subscribe(() => {
         effects.boolean = true;
-        expect(effects.boolean).toBe(true);
+        assert.equal(effects.boolean, true);
     });
     string.subscribe(() => {
         effects.string = true;
-        expect(effects.string).toBe(true);
+        assert.equal(effects.string, true);
     });
     nullValue.subscribe(() => {
         effects.nullValue = true;
-        expect(effects.nullValue).toBe(true);
+        assert.equal(effects.nullValue, true);
     });
 
     number.dispatch(() => number.read() + 1);
@@ -37,10 +39,10 @@ test('store: should handle number, boolean, string and null values', () => {
     string.dispatch(() => 'Hello World!');
     nullValue.dispatch(() => ({ title: 'Hello World!' }));
 
-    expect(number.read()).toBe(1);
-    expect(boolean.read()).toBe(true);
-    expect(string.read()).toBe('Hello World!');
-    expect(nullValue.read()).not.toBeNull();
+    assert.equal(number.read(), 1);
+    assert.equal(boolean.read(), true);
+    assert.equal(string.read(), 'Hello World!');
+    assert.notEqual(nullValue.read(), null);
 });
 
 test('signals: should work as expected', () => {
@@ -49,9 +51,9 @@ test('signals: should work as expected', () => {
     // countEffect(() => console.log(count()));
 
     setCount(() => count() + 1);
-    expect(count()).toBe(1);
+    assert.equal(count(), 1);
     setCount(() => count() + 2);
-    expect(count()).toBe(3);
+    assert.equal(count(), 3);
     setCount(() => count() + 11);
-    expect(count()).toBe(14);
+    assert.equal(count(), 14);
 });

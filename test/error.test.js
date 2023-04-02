@@ -1,22 +1,22 @@
-import { test, expect } from 'vitest';
-import debug from '../src/debug';
-import error from '../src/error';
+import { it } from 'node:test';
+import assert from 'node:assert';
+import debug from '../src/debug.js';
+import { createError as error } from '../src/error.js';
 
-test('error with debug enabled', () => {
+it('should throw error with debug enabled', () => {
     debug(true);
 
-    expect(() => {
-        error(new Error('This will throw an error...'));
-    }).toThrowError();
+    assert.throws(() => {
+        return error('This will throw an error...');
+    });
 });
 
-test('error with debug disabled', () => {
+it('should not throw error with debug disabled', () => {
     // this test is not working as expected...
     debug(false);
 
-    expect(() => {
-        error(new Error('This will be added to errors array...'));
-    }).toThrowError();
-
+    assert.doesNotThrow(() => {
+        return error('This will be added to errors array...');
+    });
     // console.log(errors);
 });

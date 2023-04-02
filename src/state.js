@@ -194,6 +194,14 @@ export const useEffect = effect;
 
 function createReactiveRoot() {}
 
+/**
+ * # onChange
+ *
+ * @param {prevState} [prev] previous state
+ * @param {currentState} current current state
+ * @param {function(results)} fn callback
+ * @returns {results|function(results)}
+ */
 export function onChange(prev, current, fn) {
     const added = [];
     const removed = [];
@@ -232,5 +240,34 @@ export function onChange(prev, current, fn) {
 
     return results;
 }
+
+/**
+ * # memo
+ *
+ * @param {function} fn
+ * @returns {result}
+ */
+export function memo(fn = () => {}) {
+    if (typeof fn !== 'function') {
+        createError('memo: expected function as argument');
+    }
+    const cache = new Map();
+    return (...args) => {
+        const key = JSON.stringify(...args);
+        // console.log('memo: key', key);
+        if (cache.has(key)) {
+            // console.log('memo: getting cached value');
+            return cache.get(key);
+        }
+        const result = fn(...args);
+        // console.log('memo: adding result to cache');
+        cache.set(key, result);
+        // return result;
+    };
+}
+
+export const createMemo = memo;
+export const makeMemo = memo;
+export const useMemo = memo;
 
 console.timeEnd('state');

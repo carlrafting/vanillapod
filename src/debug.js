@@ -13,7 +13,7 @@ export default function debug(value = false) {
     if (typeof value === 'boolean') VANILLAPOD_DEBUG = value;
 }
 
-function createDebug(name = '') {
+export function createDebug(name = '') {
     return (method = '') => ({
         enable() {
             VANILLAPOD_DEBUG = true;
@@ -26,16 +26,4 @@ function createDebug(name = '') {
             console.log(timestamp, name, method, ...output);
         },
     });
-}
-
-{
-    const debug = createDebug('vanillapod');
-    debug('mymethod').log('example');
-    const results = performance.measure('perf', () => {
-        const arr = [];
-        for (let i = 0; i < 1000; i += 1) {
-            arr.push(i);
-        }
-    });
-    debug('perf').log(results);
 }

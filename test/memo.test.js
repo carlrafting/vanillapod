@@ -1,14 +1,12 @@
-import { test, expect } from 'vitest';
-import { memo } from '../src/memo';
+import { it } from 'node:test';
+import assert from 'node:assert/strict';
+import { memo } from '../src/state.js';
 
-test('works as expected', () => {
-    const m = memo((value) => {
-        console.log(value);
-        return value;
-    });
+it('should work as expected with simple values', () => {
+    const m = memo((value) => value);
 
     for (const num of [1, 2, 3, 4, 5]) {
         m(num);
-        expect(m(num)).toBe(num);
+        assert.equal(m(num), num);
     }
 });

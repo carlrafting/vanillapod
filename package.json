@@ -26,7 +26,7 @@
     "test": "vitest run --dom",
     "test:watch": "vitest --dom",
     "coverage": "vitest run --dom --coverage",
-    "build": "rollup -c --bundleConfigAsCjs",
+    "build": "rollup -c",
     "clean": "del-cli ./dist/*.js",
     "preversion": "npm test",
     "version": "npm run build",
@@ -44,7 +44,8 @@
     "sandbox/unmount",
     "sandbox/fibonacci",
     "sandbox/dom",
-    "sandbox/signalsdom"
+    "sandbox/signalsdom",
+    "sandbox/standard"
   ],
   "name": "vanillapod",
   "version": "0.11.2",
@@ -53,7 +54,6 @@
   "exports": {
     ".": "./dist/vanillapod.js",
     "./state": "./src/state.js",
-    "./memo": "./src/memo.js",
     "./dom": "./src/dom.js",
     "./error": "./src/error.js",
     "./debug": "./src/debug.js",

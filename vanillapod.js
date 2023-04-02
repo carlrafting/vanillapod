@@ -13,7 +13,6 @@ export { default as createDocumentFragment } from './src/fragment';
 // new api exports
 export { default as debug } from './src/debug';
 export * from './src/dom';
-export * from './src/memo';
 export * from './src/state';
 export * from './src/error';
 export * from './src/element';
