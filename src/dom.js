@@ -1,4 +1,4 @@
-import { createMemo } from './memo.js';
+import { createMemo } from './state.js';
 import { createError } from './error.js';
 import { checkType, createArray } from './utils.js';
 import { h, validateProps } from './element.js';
@@ -186,21 +186,23 @@ function cleanupElements() {
     );
 }
 
-function createDOMMethods(done = null) {
+function createDOMMap(done = null) {
+    // const memo = createMemo((fn, ...params) => fn(...params));
     for (const el of elements) {
-        dom.set(el, (...params) => {
-            const fn = createMountable(el, true);
-            const memo = createMemo((el, ...params) => fn(...params));
-            // return memo(el, ...params); // using memo  creates issues when creating multiple elements with data from an array
-            return fn(...params);
-        });
+        const fn = (...params) => {
+            const createElement = createMountable(el, true);
+            // return memo(fn, ...params);
+            return createElement(...params);
+        };
+        dom.set(el, fn);
     }
+    console.log({ dom });
     if (done && typeof done === 'function') {
         done();
     }
 }
 
-createDOMMethods(() => cleanupElements());
+createDOMMap(() => cleanupElements());
 
 const el =
     (el) =>
