@@ -16,4 +16,3 @@ export * from './src/dom';
 export * from './src/state';
 export * from './src/error';
 export * from './src/element';
-export * from './src/hooks';
