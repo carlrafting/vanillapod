@@ -1,7 +1,7 @@
 // import test from 'ava';
 import { describe, it, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createReactive, signal, onChange } from '../src/state.js';
+import { createReactive, signal, onChange, createStore } from '../src/state.js';
 
 describe('reactivity', () => {
     it('should handle number values', () => {
@@ -68,7 +68,7 @@ describe('signals', () => {
 });
 
 describe('store', () => {
-    it('should skip', { skip: true });
+    it('should store different kinds of values', () => {});
 });
 
 describe('onChange', () => {

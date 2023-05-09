@@ -14,7 +14,7 @@ export default function debug(value = false) {
 }
 
 export function createDebug(name = '') {
-    return (method = '') => ({
+    const __proto__ = (method = '') => ({
         enable() {
             VANILLAPOD_DEBUG = true;
         },
@@ -26,4 +26,5 @@ export function createDebug(name = '') {
             console.log(timestamp, name, method, ...output);
         },
     });
+    return __proto__;
 }
