@@ -93,20 +93,32 @@ function List() {
             label({ htmlFor: `task-${index}` }, item.value)
         );
 
-    if (tasks().length === 0) {
-        createEffect(() => p('You have not created any tasks!'));
-    }
-
     return ul({ id: 'tasks' }, (el) => {
         createEffect((prevState, currentState) => {
             if (prevState && currentState) {
-                return $onChange(prevState, currentState, ({ added }) => {
-                    if (added.length > 0) {
-                        added.map((item) =>
-                            el.append(createTask(item, tasks().length))
-                        );
+                return $onChange(
+                    prevState,
+                    currentState,
+                    ({ added, removed }) => {
+                        console.log({ added, removed });
+                        if (added.length > 0) {
+                            added.map((item) =>
+                                el.append(createTask(item, tasks().length - 1))
+                            );
+                            return;
+                        }
+                        if (removed.length > 0) {
+                            for (const remove of removed) {
+                                for (const child of el.children) {
+                                    if (remove.value === child.textContent) {
+                                        child.remove();
+                                    }
+                                }
+                            }
+                            return;
+                        }
                     }
-                });
+                );
             }
             // create tasks list
             return tasks().map((item, index) =>
