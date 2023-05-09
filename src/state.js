@@ -1,17 +1,16 @@
 import debug from './debug.js';
-import { createError } from './error.js';
+import { isEqual } from './utils.js';
+import { createError, logErrors } from './error.js';
 import { createArray, checkType } from './utils.js';
-
-/**
- * @module state
- */
 
 console.time('state');
 
 const effects = createArray([]);
 
 /**
- * @param {Set<function>} [listeners] set of state listeners that updates on state updates
+ * # notify
+ *
+ * @param {Set<function>} listeners set of state listeners that updates on state updates
  * @param {*} [prevState]
  * @param {*} [currentState]
  */
@@ -33,10 +32,11 @@ function notify(listeners, prevState, currentState) {
 }
 
 /**
+ * # subscribe
  *
- * @param {Set<function>} listeners
- * @param {function} fn
- * @returns {function} unsubscribe function
+ * @param {Iterable<function>} listeners - set/array++ of listeners
+ * @param {function} fn - listener fn
+ * @returns {function} - unsubscribe function
  */
 function subscribe(listeners, fn) {
     if (checkType(listeners) === 'set') {
@@ -59,8 +59,11 @@ function subscribe(listeners, fn) {
 }
 
 const unsubscribes = new Set();
+
 /**
- * @param {Set<function>} [listeners] set of state listeners that updates on state updates
+ * # scheduleEffect
+ *
+ * @param {Set<function>} listeners set of state listeners that updates on state updates
  */
 function scheduleEffect(listeners) {
     console.time('scheduleEffect');
@@ -78,22 +81,18 @@ function scheduleEffect(listeners) {
  * # createReactive
  * 
  * @description a method with automatic subscription and effect scheduling * 
- * @exports state/store
- * @exports state/useStore
- * @exports state/makeStore
- * @exports state/createStore
- * @param {string|number|boolean|array|object} [initialValue] the initial value for the state * 
+ * @param {*} initialValue the initial value for the state * 
  * @example
  *  
     // create reactive message state and read current state
-    const message = store('');
+    const message = createReactive('');
     message.dispatch('...');
     message(); // '...'
     message.dispatch('Hello World!');
     message(); // 'Hello World'
 
     // create reactive count state and subscribe to state updates
-    const count = store(0);
+    const count = createReactive(0);
     count.subscribe(function logCount() {
         console.log('Count is now: ', count.read());
     });
@@ -109,15 +108,16 @@ export function createReactive(initialValue) {
         // console.log('read', { fx: effects.entries(), listeners });
         return state;
     }
+
     /**
      * dispatch
      *
-     * @param {any|function} [action]
+     * @param {*|function} newValue update state with `newValue`
      */
-    function dispatch(action) {
+    function dispatch(newValue) {
         const prevState = state;
         const currentState =
-            checkType(action) === 'function' ? action() : action;
+            checkType(newValue) === 'function' ? newValue() : newValue;
         if (prevState !== currentState) {
             state = currentState;
         }
@@ -131,10 +131,66 @@ export function createReactive(initialValue) {
     };
 }
 
-export const store = createReactive;
-export const useStore = createReactive;
-export const makeStore = createReactive;
-export const createStore = createReactive;
+/**
+ * # store
+ *
+ * a method for storing state defined as an object
+ *
+ * @param {object} value - the initial state represented as an object
+ * @returns
+ */
+export function store(value) {
+    let state = value;
+    let prevState = null;
+    const listeners = new Set();
+    /**
+     *
+     * @param {string} [key] - optional key defined on state object
+     * @returns
+     */
+    const getStore = (key) => {
+        if (key && Object.hasOwn(state, key)) {
+            return state[key];
+        }
+        return state;
+    };
+    /**
+     * # writeStore
+     *
+     * @param {string} key - a key on state object to change
+     * @param {object|fn} value - state changes represented either by a new object directly or as result by a function
+     * @returns
+     */
+    const setStore = (key, value) => {
+        if (key && typeof key !== 'string') {
+            createError(`Value must be of type 'String'!`, TypeError);
+        }
+        prevState = state;
+        const valueType = checkType(value);
+        if (valueType === 'function') {
+            const fn = value;
+            state[key] = fn(prevState[key]);
+            return;
+        }
+        state = {
+            ...prevState,
+            [key]:
+                valueType === 'object'
+                    ? (Object.hasOwn(prevState, key) && {
+                          ...prevState[key],
+                          ...value,
+                      }) || { [key]: { ...value } }
+                    : valueType === 'array'
+                    ? [...value]
+                    : value,
+        };
+    };
+    return [getStore, setStore];
+}
+
+export const useStore = store;
+export const makeStore = store;
+export const createStore = store;
 
 /**
  * # signal
@@ -148,7 +204,7 @@ export const createStore = createReactive;
     setTimeout(() => setCounter(counter() * 6), 1000);
  */
 export function signal(value) {
-    const s = store(value);
+    const s = createReactive(value);
     return [s.read, s.dispatch];
 }
 
@@ -159,7 +215,7 @@ export const makeSignal = signal;
 /**
  * # effect
  *
- * @param {function} [fn] a callback function that runs whenever the state updates
+ * @param {function} fn a callback function that runs whenever the state updates
  * @example
  * 
     const [counter,setCounter] = signal(0);
@@ -178,9 +234,9 @@ function effect(fn) {
         // console.log({ effects: effects.entries() });
         try {
             fn(prevState, currentState);
-        } catch (error) {
+        } /* catch (error) {
             console.log(error);
-        } finally {
+        } */ finally {
             effects.entries().pop();
         }
     };
@@ -197,9 +253,12 @@ function createReactiveRoot() {}
 /**
  * # onChange
  *
- * @param {prevState} [prev] previous state
+ * @typedef {{added: [], removed: [], modified: []}} results - foobar
+ * @typedef {*} prevState
+ * @typedef {*} currentState
+ * @param {prevState} prev previous state
  * @param {currentState} current current state
- * @param {function(results)} fn callback
+ * @param {(results)} fn callback
  * @returns {results|function(results)}
  */
 export function onChange(prev, current, fn) {
@@ -245,25 +304,32 @@ export function onChange(prev, current, fn) {
  * # memo
  *
  * @param {function} fn
- * @returns {result}
+ * @returns {*} result
  */
 export function memo(fn = () => {}) {
-    if (typeof fn !== 'function') {
-        createError('memo: expected function as argument');
+    if (!fn || fn === null || typeof fn !== 'function') {
+        return createError(
+            'memo: expected argument to be a function',
+            TypeError
+        );
     }
+    // const cache = new WeakMap();
     const cache = new Map();
-    return (...args) => {
+    const ref = (...args) => {
         const key = JSON.stringify(...args);
-        // console.log('memo: key', key);
+        // const key = [...args];
+        console.log('memo: key', key);
         if (cache.has(key)) {
-            // console.log('memo: getting cached value');
+            console.log('memo: getting cached value');
             return cache.get(key);
         }
         const result = fn(...args);
-        // console.log('memo: adding result to cache');
+        console.log('memo: adding result to cache');
         cache.set(key, result);
-        // return result;
+        return result;
     };
+    ref.cache = cache;
+    return ref;
 }
 
 export const createMemo = memo;
