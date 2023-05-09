@@ -204,6 +204,10 @@ createEffect(() => {
 
 */
 
+/**
+ * # createPersistedStorage
+ *
+ */
 async function createPersistedStorage() {
     if (navigator.storage && navigator.storage.persisted) {
         await navigator.storage.persisted();
@@ -215,6 +219,13 @@ async function createPersistedStorage() {
     }
 }
 
+/**
+ * # createLocalStorage
+ *
+ * @param {string} key
+ * @param {*} initialData
+ * @returns
+ */
 export function createLocalStorage(key = 'app', initialData = null) {
     createPersistedStorage()
         .then(({ grant }) => {
@@ -228,12 +239,12 @@ export function createLocalStorage(key = 'app', initialData = null) {
             const parsed = JSON.parse(localStorage.getItem(key));
             const dataType = checkType(parsed);
             console.log({ dataType });
-            if (parsed === null && initialData !== null) {
+            if (
+                (parsed === null && initialData !== null) ||
+                (dataType === 'array' && parsed.length === 0)
+            ) {
                 return initialData;
             }
-            /* if (dataType === 'array') {
-                return [];
-            } */
             return parsed;
         },
         write(data) {
@@ -241,3 +252,134 @@ export function createLocalStorage(key = 'app', initialData = null) {
         },
     };
 }
+
+/**
+ * # isEqual
+ *
+ * @param {(Array|Object)} first
+ * @param {Array} second
+ * @returns
+ */
+export function isEqual(first, second) {
+    if (typeof first !== 'object' || typeof second !== 'object') {
+        return false;
+    }
+
+    if (Array.isArray(first) !== Array.isArray(second)) {
+        return false;
+    }
+
+    const firstKeys = Object.keys(first);
+    const secondKeys = Object.keys(second);
+
+    if (firstKeys.length !== secondKeys.length) {
+        return false;
+    }
+
+    for (let i = 0; i < firstKeys.length; i++) {
+        const key = firstKeys[i];
+
+        if (!Object.hasOwn(second, key)) {
+            return false;
+        }
+
+        const firstValue = first[key];
+        const secondValue = second[key];
+
+        if (typeof firstValue === 'object' && typeof secondValue === 'object') {
+            if (!isEqual(firstValue, secondValue)) {
+                return false;
+            }
+        } else if (firstValue !== secondValue) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/* const tests = new Set();
+
+function test(msg, fn) {
+    tests.add({ msg, fn });
+} */
+
+/* {
+    console.log('object equality');
+    console.log('objects', isEqual({ value: 1 }, { value: 1 }));
+    console.log(
+        'deep objects',
+        isEqual(
+            { value: 1, deep: { value: 2 } },
+            { value: 1, deep: { value: 2 } }
+        ),
+        'deeper same',
+        isEqual(
+            { value: 1, deep: { value: 2, deeper: { value: 3 } } },
+            { value: 1, deep: { value: 2, deeper: { value: 3 } } }
+        ),
+        'deeper different',
+        isEqual(
+            { value: 1, deep: { value: 2, deeper: { value: 3 } } },
+            { value: 1, deep: { value: 2, deeper: { value: 4 } } }
+        ),
+        'contains arrays same',
+        isEqual({ value: [1, 2, 3, 4, 5] }, { value: [1, 2, 3, 4, 5] }),
+        'deep with arrays',
+        isEqual(
+            { value: [1, 2, 3, 4, 5], deep: { items: [1, 2, 3, 4, 5] } },
+            { value: [1, 2, 3, 4, 5], deep: { items: [1, 2, 3, 4, 5] } }
+        )
+    );
+    console.log('array equality');
+    console.log('arrays', isEqual([1, 2, 3], [1, 2, 3]));
+    console.log('nested arrays', isEqual([[1], [2], [3]], [[1], [2], [3]]));
+    console.log(
+        'arrays with objects',
+        isEqual([{ value: 1 }, { value: 2 }], [{ value: 1 }, { value: 2 }])
+    );
+    console.log('arrays with different length', isEqual([1, 2, 3], [1, 2]));
+    console.log('arrays with different values', isEqual([1, 2, 3], [1, 4, 3]));
+    console.log(
+        'same',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } }
+        )
+    );
+    console.log(
+        'different',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, c: { d: 3, e: { f: 5 } } }
+        )
+    );
+    console.log(
+        'different',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, c: { d: 3, e: { g: 4 } } }
+        )
+    );
+    console.log(
+        'different',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, c: { d: 3, f: { e: 4 } } }
+        )
+    );
+    console.log(
+        'different',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, c: { d: 3 } }
+        )
+    );
+    console.log(
+        'different',
+        isEqual(
+            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
+            { a: 1, b: 2, d: { e: 3, f: { g: 4 } } }
+        )
+    );
+} */
