@@ -86,10 +86,24 @@ export function createMountable(element = null, template = true) {
                 }
                 if (typeof param === 'function') {
                     const elementProxy = new Proxy(element, {
-                        get(target, prop) {
-                            if (!elPropsBlacklist.has(prop)) {
-                                return Reflect.get(target, prop).bind(target);
+                        get(target, prop, receiver) {
+                            /* if (!elPropsBlacklist.has(prop)) {
+                                // return element;
+                                return;
+                            } */
+                            const value = target[prop];
+                            if (typeof value === 'function') {
+                                return function (...args) {
+                                    return value.apply(
+                                        this === receiver ? target : this,
+                                        args
+                                    );
+                                };
                             }
+                            return Reflect.get(target, prop);
+                            return Reflect.get(
+                                ...arguments
+                            ) /* .bind(element) */;
                         },
                         set(target, prop, value) {
                             if (!elPropsBlacklist.has(prop)) {
