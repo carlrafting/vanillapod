@@ -6,4 +6,5 @@ sandbox/*
 !sandbox/dom
 !sandbox/standard
 !sandbox/html
+!sandbox/reactive
 dist
