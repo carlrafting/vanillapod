@@ -1,6 +1,4 @@
-// export { version } from './package.json';
-
-export const version = "0.11.2";
+export const version = '0.11.2';
 
 // legacy
 export { createElement } from './src/element.js';
