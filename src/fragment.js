@@ -1,6 +1,6 @@
-import setElementProperties from './properties';
-import setElementEventHandlers from './events';
-import setElementTextContent from './text';
+import setElementProperties from './properties.js';
+import setElementEventHandlers from './events.js';
+import setElementTextContent from './text.js';
 
 export default function createDocumentFragment(props = {}) {
     const fragment = document.createDocumentFragment();

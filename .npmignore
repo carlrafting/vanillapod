@@ -5,5 +5,4 @@ coverage
 .nyc_output
 sandbox
 scripts
-src
 *.code-workspace

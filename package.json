@@ -12,8 +12,6 @@
   "scripts": {
     "test": "node --test-reporter=spec --test",
     "test:watch": "npm t -- --watch",
-    "build": "rollup -c",
-    "clean": "del-cli ./dist/*.{js,d.ts,map}",
     "preversion": "npm test",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
@@ -36,10 +34,10 @@
   ],
   "name": "vanillapod",
   "version": "0.11.2",
-  "main": "./dist/vanillapod.js",
-  "module": "./dist/vanillapod.js",
+  "main": "./vanillapod.js",
+  "module": "./vanillapod.js",
   "exports": {
-    ".": "./dist/vanillapod.js",
+    ".": "./vanillapod.js",
     "./state": "./src/state.js",
     "./dom": "./src/dom.js",
     "./error": "./src/error.js",
