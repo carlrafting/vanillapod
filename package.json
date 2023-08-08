@@ -28,7 +28,8 @@
     "sandbox/dom",
     "sandbox/signalsdom",
     "sandbox/standard",
-    "sandbox/store"
+    "sandbox/store",
+    "sandbox/hyper"
   ],
   "name": "vanillapod",
   "version": "0.11.2",

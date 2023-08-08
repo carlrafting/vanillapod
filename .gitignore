@@ -7,4 +7,5 @@ sandbox/*
 !sandbox/standard
 !sandbox/html
 !sandbox/reactive
+!sandbox/hyper
 dist
