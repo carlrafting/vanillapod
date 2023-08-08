@@ -14,7 +14,8 @@ $template = match ($url['path']) {
     default => 'NOPE!'
 };
 
-// set default template
+// set default layout
+$template->data(['title' => 'Vanillapod Hyper Sandbox']);
 $template->layout('layout', $template->data());
 
 // render template
