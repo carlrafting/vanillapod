@@ -18,7 +18,7 @@
 
   <?= $this->section('content') ?>
 
-  <script src="./main.js" type="module"></script>
+  <script src="/node_modules/hyper/src/main.js" type="module"></script>
 
 </body>
 
