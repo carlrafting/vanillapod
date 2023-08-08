@@ -1,0 +1,17 @@
+{
+    "name": "vanillapod/hyper",
+    "autoload": {
+        "psr-4": {
+            "Vanillapod\\Hyper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Carl Räfting",
+            "email": "carl.rafting@gmail.com"
+        }
+    ],
+    "require": {
+        "league/plates": "^3.5"
+    }
+}
