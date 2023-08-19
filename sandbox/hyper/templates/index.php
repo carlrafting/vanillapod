@@ -9,3 +9,8 @@
 
 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odio similique qui optio eum tempore nam beatae voluptate
     eveniet reprehenderit dolorum amet neque, commodi explicabo aliquam recusandae? Non mollitia ut suscipit!</p>
+
+<form action="/second" method="post">
+    <input type="hidden" name="foo" value="bar">
+    <button>GO!</button>
+</form>
