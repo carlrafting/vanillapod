@@ -110,6 +110,8 @@ file located inside the `dist` directory.
 import { mount } from './node_modules/vanillapod/dist/vanillapod.js';
 ```
 
+## API
+
 ### Implicit Components
 
 The first step to get started is defining your component.
@@ -278,7 +280,7 @@ mount(
     {
         element: 'p',
         text: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus quaerat magnam ratione consequuntur, tempora ipsa sapiente reiciendis eligendi maiores cum blanditiis odit architecto dolorem exercitationem facere. Tempore pariatur magni nemo.',
-    }
+    },
 );
 ```
 
@@ -528,26 +530,3 @@ You can check out an example of how to build a
 
 Vanillapod would not be possible without many of the existing Open Source
 JavaScript projects.
-
-## ToDo
-
--   [x] lifecycle events/hooks
--   [x] complete name variable in doRegister function (function removed)
--   [ ] make it possible to unmount component
--   [ ] message/pubsub component
--   [ ] make it nicer to check value of classList from another component.
-        `stopButton().classList[1]` is not so nice...
--   [x] only output `console.log` if debug is true
--   [x] refactor createElement.js if necessary...
--   [x] write some initial tests!
--   [x] make it possible to attach multiple elements at once... ie:
-
-    ```javascript
-    mount(root, [element1, element2, element3]);
-    ```
-
--   [x] only throw errors when debug is true
--   [x] showcase how to set properties
--   [ ] make it possible to debug components visually with debug method?
--   [ ] router component would be nice!
--   [x] write documentation for implicit vs explicit approach
