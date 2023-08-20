@@ -1,7 +1,7 @@
 // import test from 'ava';
-import { describe, it, test } from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createReactive, signal, onChange, createStore } from '../src/state.js';
+import { createReactive, signal, onChange } from '../src/state.js';
 
 describe('reactivity', () => {
     it('should handle number values', () => {
@@ -115,8 +115,8 @@ describe('onChange', () => {
                 'same object',
                 onChange(
                     [{ value: 1 }, { value: 2 }, { value: 3 }],
-                    [{ value: 1 }, { value: 2 }, { value: 3 }]
-                )
+                    [{ value: 1 }, { value: 2 }, { value: 3 }],
+                ),
             );
             // array of objects with addition
             console.log(
@@ -129,8 +129,8 @@ describe('onChange', () => {
                         { value: 3 },
                         { value: 4 },
                         { value: 5 },
-                    ]
-                )
+                    ],
+                ),
             );
             // array of objects with removals
             console.log(
@@ -143,16 +143,16 @@ describe('onChange', () => {
                         { value: 4 },
                         { value: 5 },
                     ],
-                    [{ value: 1 }, { value: 2 }, { value: 3 }]
-                )
+                    [{ value: 1 }, { value: 2 }, { value: 3 }],
+                ),
             );
             // array of objects with modifications
             console.log(
                 'updated objects',
                 onChange(
                     [{ value: 1 }, { value: 2 }, { value: 3 }],
-                    [{ value: 4 }, { value: 5 }, { value: 6 }]
-                )
+                    [{ value: 4 }, { value: 5 }, { value: 6 }],
+                ),
             );
         }
     });
