@@ -1,3 +1,7 @@
+.eslintignore
+.eslintrc.json
+.vscode
+.prettierrc
 test
 examples
 *.log

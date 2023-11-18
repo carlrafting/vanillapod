@@ -17,6 +17,10 @@ $ npm install vanillapod
 $ yarn add vanillapod
 ```
 
+## API
+
+...
+
 ## Background
 
 For the last decade or so we've seen a bunch of different approaches to making
@@ -109,8 +113,6 @@ file located inside the `dist` directory.
 
 import { mount } from './node_modules/vanillapod/dist/vanillapod.js';
 ```
-
-## API
 
 ### Implicit Components
 

@@ -1,12 +1,19 @@
 {
+  "name": "vanillapod",
+  "version": "0.11.2",
+  "type": "module",
+  "repository": "https://github.com/carlrafting/vanillapod.git",
+  "author": {
+    "name": "Carl Räfting",
+    "email": "mail@carlrafting.com",
+    "url": "https://carlrafting.com"
+  },
+  "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.1",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "prettier": "^3.0.1",
-    "vite": "^4.4.9"
+    "prettier": "^3.0.1"
   },
   "scripts": {
     "test": "node --test-reporter=spec --test",
@@ -30,10 +37,10 @@
     "sandbox/signalsdom",
     "sandbox/standard",
     "sandbox/store",
-    "sandbox/hyper"
+    "sandbox/hyper",
+    "sandbox/customevents",
+    "sandbox/ssr"
   ],
-  "name": "vanillapod",
-  "version": "0.11.2",
   "main": "./vanillapod.js",
   "module": "./vanillapod.js",
   "exports": {
@@ -43,9 +50,5 @@
     "./error": "./src/error.js",
     "./debug": "./src/debug.js",
     "./utils": "./src/utils.js"
-  },
-  "type": "module",
-  "repository": "https://github.com/carlrafting/vanillapod.git",
-  "author": "Carl Räfting <carl.rafting@gmail.com>",
-  "license": "MIT"
+  }
 }

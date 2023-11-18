@@ -8,4 +8,6 @@ sandbox/*
 !sandbox/html
 !sandbox/reactive
 !sandbox/hyper
+!sandbox/customevents
+!sandbox/ssr
 dist

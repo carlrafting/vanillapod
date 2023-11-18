@@ -1,10 +1,4 @@
 {
-    "editor.formatOnSave": true,
-    "eslint.enable": true,
-    "prettier.enable": true,
-    "[markdown]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
