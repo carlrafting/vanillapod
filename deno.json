@@ -1,5 +1,12 @@
 {
   "name": "@carlrafting/vanillapod",
   "version": "0.11.2",
-  "exports": "./mod.ts"
+  "exports": "./mod.ts",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "lib": [
+      "dom"
+    ]
+  }
 }
