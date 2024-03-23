@@ -1,5 +1,5 @@
 {
-    "name": "@carlrafting/vanillapod",
-    "version": "0.11.2",
-    "exports": "./vanillapod.js"
-  }
+  "name": "@carlrafting/vanillapod",
+  "version": "0.11.2",
+  "exports": "./mod.ts"
+}
