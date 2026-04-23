@@ -33,15 +33,15 @@ following example of code:
 
 ```js
 let count = 0;
-const el = document.createElement('h1');
-const button = document.createElement('button');
+const el = document.createElement("h1");
+const button = document.createElement("button");
 
-button.textContent = 'Count!';
+button.textContent = "Count!";
 el.textContent = count;
 
 button.onclick = () => count++;
 
-document.body.querySelector('#app').append(el, button);
+document.body.querySelector("#app").append(el, button);
 ```
 
 Wouldn't it be nice if count updated automatically when we pressed the button?
@@ -111,7 +111,7 @@ file located inside the `dist` directory.
 ```js
 // import without bundler
 
-import { mount } from './node_modules/vanillapod/dist/vanillapod.js';
+import { mount } from "./node_modules/vanillapod/dist/vanillapod.js";
 ```
 
 ### Implicit Components
@@ -122,10 +122,10 @@ The first step to get started is defining your component.
 // script.js
 
 function myComponent() {
-    return {
-        element: 'h1',
-        text: 'This is my first vanillapod component!',
-    };
+  return {
+    element: "h1",
+    text: "This is my first vanillapod component!",
+  };
 }
 ```
 
@@ -140,26 +140,26 @@ inside a component.
 
 Here are the methods available for working with explicit components:
 
--   [setElementEventHandlers](./src/events.js)
--   [setElementAttributes](./src/attributes.js)
--   [setElementProperties](./src/properties.js)
--   [setElementTextContent](./src/text.js)
--   [createElement](./src/element.js#L92)
--   [createDocumentFragment](./src/fragment.js)
+- [setElementEventHandlers](./src/events.js)
+- [setElementAttributes](./src/attributes.js)
+- [setElementProperties](./src/properties.js)
+- [setElementTextContent](./src/text.js)
+- [createElement](./src/element.js#L92)
+- [createDocumentFragment](./src/fragment.js)
 
 ```javascript
 // script.js
 
-import { createElement } from 'vanillapod';
+import { createElement } from "vanillapod";
 
 function myComponent() {
-    const element = createElement('h1', {
-        text: 'This is my first vanillapod component!',
-    });
+  const element = createElement("h1", {
+    text: "This is my first vanillapod component!",
+  });
 
-    return {
-        element,
-    };
+  return {
+    element,
+  };
 }
 ```
 
@@ -177,9 +177,9 @@ the experience of using createElement as smooth as possible.
 
 These are the three different alias methods for createElement:
 
--   [`h`](./src/element.js#L126)
--   [`e`](./src/element.js#L127)
--   [`html`](./src/element.js#L128)
+- [`h`](./src/element.js#L126)
+- [`e`](./src/element.js#L127)
+- [`html`](./src/element.js#L128)
 
 ### Mounting
 
@@ -210,32 +210,32 @@ It's also possible to mount multiple components at the same time.
 ```javascript
 // script.js
 
-import { createElement, mount } from 'vanillapod';
+import { createElement, mount } from "vanillapod";
 
 function myComponent() {
-    const element = createElement('h1', {
-        text: 'This is my first vanillapod component!',
-    });
+  const element = createElement("h1", {
+    text: "This is my first vanillapod component!",
+  });
 
-    return {
-        element,
-    };
+  return {
+    element,
+  };
 }
 
 function anotherComponent() {
-    return {
-        element: 'div',
-        classList: ['another-component'],
-        text: 'this is a second component',
-    };
+  return {
+    element: "div",
+    classList: ["another-component"],
+    text: "this is a second component",
+  };
 }
 
 function thirdComponent() {
-    return {
-        element: 'div',
-        classList: ['third-component'],
-        text: 'this is a third component',
-    };
+  return {
+    element: "div",
+    classList: ["third-component"],
+    text: "this is a third component",
+  };
 }
 
 // ...
@@ -258,31 +258,32 @@ mount(null, myComponent, anotherComponent, thirdComponent);
 It's possible to pass props/data to components when mounting.
 
 ```javascript
-import { mount } from 'vanillapod';
+import { mount } from "vanillapod";
 
 function Header({ text }) {
-    return {
-        element: 'header',
-        text,
-    };
+  return {
+    element: "header",
+    text,
+  };
 }
 
-mount(document.body, [Header, { text: 'Hello World!' }]);
+mount(document.body, [Header, { text: "Hello World!" }]);
 ```
 
 It's not necessary to mount a functional component, you can mount objects
 directly instead.
 
 ```js
-import { mount } from 'vanillapod';
+import { mount } from "vanillapod";
 
 mount(
-    document.querySelector('#app'),
-    { element: 'h1', text: 'This is not a functional component!' },
-    {
-        element: 'p',
-        text: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus quaerat magnam ratione consequuntur, tempora ipsa sapiente reiciendis eligendi maiores cum blanditiis odit architecto dolorem exercitationem facere. Tempore pariatur magni nemo.',
-    },
+  document.querySelector("#app"),
+  { element: "h1", text: "This is not a functional component!" },
+  {
+    element: "p",
+    text:
+      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Natus quaerat magnam ratione consequuntur, tempora ipsa sapiente reiciendis eligendi maiores cum blanditiis odit architecto dolorem exercitationem facere. Tempore pariatur magni nemo.",
+  },
 );
 ```
 
@@ -305,11 +306,11 @@ render(
 ### Unmounting
 
 ```js
-import { mount, unmount } from 'vanillapod';
+import { mount, unmount } from "vanillapod";
 
-const component = { el: 'h1', text: 'Unmount me right now!' };
+const component = { el: "h1", text: "Unmount me right now!" };
 
-mount(document.querySelector('#app'), component);
+mount(document.querySelector("#app"), component);
 
 setTimeout(() => unmount(root, component), 5000);
 ```
@@ -324,18 +325,18 @@ in the component properties.
 ```javascript
 // script.js
 
-import { mount } from 'vanillapod';
+import { mount } from "vanillapod";
 
 const heading = () => ({
-    element: 'h1',
-    text: 'This is my first vanillapod component!',
+  element: "h1",
+  text: "This is my first vanillapod component!",
 });
 
 function myComponent() {
-    return {
-        element: 'div',
-        children: [heading],
-    };
+  return {
+    element: "div",
+    children: [heading],
+  };
 }
 
 mount(null, myComponent);
@@ -347,13 +348,13 @@ mount(null, myComponent);
 // ...
 
 function myComponent() {
-    return {
-        // ...
-        attributes: {
-            hidden: '',
-        },
-        // ...
-    };
+  return {
+    // ...
+    attributes: {
+      hidden: "",
+    },
+    // ...
+  };
 }
 ```
 
@@ -365,13 +366,13 @@ Use `setElementAttributes` for explicit components.
 // ...
 
 function myComponent() {
-    return {
-        // ...
-        properties: {
-            id: 'myComponent',
-        },
-        // ...
-    };
+  return {
+    // ...
+    properties: {
+      id: "myComponent",
+    },
+    // ...
+  };
 }
 ```
 
@@ -391,17 +392,17 @@ normally pass to
 // ...
 
 function myComponent() {
-    const onClick = (e) => {
-        console.log('Click event fired!');
-    };
+  const onClick = (e) => {
+    console.log("Click event fired!");
+  };
 
-    return {
-        // ...
-        events: {
-            click: onClick,
-        },
-        // ...
-    };
+  return {
+    // ...
+    events: {
+      click: onClick,
+    },
+    // ...
+  };
 }
 
 // ...
@@ -410,62 +411,62 @@ function myComponent() {
 ### Passing data to child components
 
 ```js
-import { createDocumentFragment, mount } from 'vanillapod/vanillapod';
+import { createDocumentFragment, mount } from "vanillapod/vanillapod";
 
 function List({ tasks }) {
-    return {
-        element: 'ul',
-        children: tasks.map((item) => () => ({
-            element: 'li',
-            text: item,
-        })),
-    };
+  return {
+    element: "ul",
+    children: tasks.map((item) => () => ({
+      element: "li",
+      text: item,
+    })),
+  };
 }
 
 function Header({ text }) {
-    return {
-        element: 'header',
-        text,
-    };
+  return {
+    element: "header",
+    text,
+  };
 }
 
 function App() {
-    const tasks = ['first', 'second', 'third'];
+  const tasks = ["first", "second", "third"];
 
-    const children = [
-        [Header, { text: 'hello world!' }],
-        [List, { tasks }],
-    ];
+  const children = [
+    [Header, { text: "hello world!" }],
+    [List, { tasks }],
+  ];
 
-    const [el] = createDocumentFragment();
+  const [el] = createDocumentFragment();
 
-    return {
-        el,
-        children,
-    };
+  return {
+    el,
+    children,
+  };
 }
 
-mount(document.querySelector('#app'), App);
+mount(document.querySelector("#app"), App);
 ```
 
 ### Lifecycle Methods (Hooks)
 
 ```js
 function myComponent() {
-    // ...
+  // ...
 
-    return {
-        // ...
-        hooks: {
-            before() {
-                console.log('myComponent before mount hook');
-            },
-            mount() {
-                console.log('myComponent on mount hook');
-            },
-        },
-        // ...
-    };
+  return {
+    // ...
+    hooks: {
+      before() {
+        console.log("myComponent before mount hook");
+      },
+      mount() {
+        console.log("myComponent on mount hook");
+      },
+    },
+    // ...
+  };
 }
 ```
 
@@ -482,20 +483,20 @@ element in the DOM), events attached to it will not work. You can work around
 this by attaching events on another element or on the window object.
 
 ```js
-import { mount } from 'vanillapod';
+import { mount } from "vanillapod";
 
 function FragmentExample() {
-    const [el] = createDocumentFragment();
+  const [el] = createDocumentFragment();
 
-    // this will not work, since a fragment is not a DOM Element
-    el.addEventListener('click', () => console.log('not clicked!'));
+  // this will not work, since a fragment is not a DOM Element
+  el.addEventListener("click", () => console.log("not clicked!"));
 
-    // this is one possible workaround
-    window.addEventListener('click', () => console.log('clicked!'));
+  // this is one possible workaround
+  window.addEventListener("click", () => console.log("clicked!"));
 
-    return {
-        el,
-    };
+  return {
+    el,
+  };
 }
 
 mount(null, Fragment);
@@ -514,7 +515,7 @@ debugging, do the following:
 ```javascript
 // yourscript.js
 
-import { debug } from 'vanillapod';
+import { debug } from "vanillapod";
 
 debug(true);
 

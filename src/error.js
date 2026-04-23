@@ -1,29 +1,29 @@
-import debug from './debug.js';
+import debug from "./debug.js";
 
 const errors = new Set();
 
-export function createError(message = '', exception = Error) {
-    if (debug()) {
-        if (message !== '') {
-            throw new exception(message);
-        }
+export function createError(message = "", exception = Error) {
+  if (debug()) {
+    if (message !== "") {
+      throw new exception(message);
     }
+  }
 
-    errors.add({ exception: message, type: exception });
+  errors.add({ exception: message, type: exception });
 }
 
 export function logErrors() {
-    for (const err of [...errors]) {
-        console.log(err);
-    }
+  for (const err of [...errors]) {
+    console.log(err);
+  }
 }
 
 function captureErrors(fn) {
-    try {
-        fn();
-    } catch (err) {
-        console.log('catch block', err);
-    }
+  try {
+    fn();
+  } catch (err) {
+    console.log("catch block", err);
+  }
 }
 
 /* captureErrors(() => {

@@ -10,10 +10,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.35.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "prettier": "^3.0.1"
   },
   "scripts": {
     "test": "node --test-reporter=spec --test",
@@ -25,20 +21,11 @@
   "workspaces": [
     "./examples/*",
     "./sandbox",
-    "sandbox/lite",
-    "sandbox/ministore",
-    "sandbox/pubsub",
     "sandbox/reactive",
-    "sandbox/signals",
     "sandbox/html",
-    "sandbox/unmount",
-    "sandbox/fibonacci",
     "sandbox/dom",
-    "sandbox/signalsdom",
     "sandbox/standard",
-    "sandbox/store",
     "sandbox/hyper",
-    "sandbox/customevents",
     "sandbox/ssr"
   ],
   "main": "./vanillapod.js",

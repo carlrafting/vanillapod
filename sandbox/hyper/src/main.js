@@ -1,7 +1,7 @@
-import { createMetaElement, ensureMetaElementExists } from './hyper.js';
+import { createMetaElement, ensureMetaElementExists } from "./hyper.js";
 
 document.head.append(createMetaElement());
 
 if (ensureMetaElementExists()) {
-    alert('hooray!');
+  alert("hooray!");
 }
