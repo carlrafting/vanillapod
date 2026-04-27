@@ -6,8 +6,9 @@
     "allowJs": true,
     "checkJs": true,
     "lib": [
-      "dom"
-    ]
+      "dom",
+      "esnext"
+    ]    
   },
   "nodeModulesDir": "auto"
 }
