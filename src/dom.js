@@ -1,19 +1,24 @@
-import { createMemo } from "./state.js";
 import { createError } from "./error.js";
-import { checkType, createArray } from "./utils.js";
+import { checkType } from "./utils.js";
 import { h, validateProps } from "./element.js";
 
 const log = (...output) => console.log(...output);
 
 console.time("dom/internal");
 
+/**
+ * @type {{ element: null; event: any[]; }[]}
+ */
 const eventHandlers = [];
 const elPropsBlacklist = new Set(["innerHTML"]);
 
-// function merge() {}
-
-export function createMountable(element = null, template = true) {
-  return function inner(...params) {
+export function createMountable(
+  /** @type {HTMLElement|null} */ element = null, 
+  /** @type {Boolean} */ template = true
+) {
+  return function inner(
+    /** @type {any[]} */ ...params
+  ) {
     const templateEl = template ? document.createElement("template") : null;
     if (!element || element === null) {
       element = document.createDocumentFragment();
@@ -101,9 +106,6 @@ export function createMountable(element = null, template = true) {
                 };
               }
               return Reflect.get(target, prop);
-              return Reflect.get(
-                ...arguments,
-              ) /* .bind(element) */;
             },
             set(target, prop, value) {
               if (!elPropsBlacklist.has(prop)) {
@@ -218,7 +220,11 @@ function createDOMMap(done = null) {
 
 createDOMMap(() => cleanupElements());
 
-const el = (el) => (...params) => dom.get(el)(...params);
+const el = (
+  /** @type {string} */ el
+) => (
+  /** @type {any} */ ...params
+) => dom.get(el)(...params);
 
 export const div = el("div");
 export const p = el("p");
@@ -253,18 +259,27 @@ export const option = el("option");
 export const span = el("span");
 export const br = el("br");
 
-export const fragment = (...params) => createMountable(null, false)(...params);
-export const text = (text) => document.createTextNode(text);
-export const comment = (text) => document.createComment(text);
-// log({ dom });
+export const fragment = (
+  /** @type {unknown[]} */ ...params
+) => createMountable(null, false)(...params);
+export const text = (
+  /** @type {string} */ text
+) => document.createTextNode(text);
+export const comment = (
+  /** @type {string} */ text
+) => document.createComment(text);
 
-// log(dom.get('div')('Hello There'));
-
-function elementIsParentNode(parentNode = null, element = null) {
+/**
+ * @param {{ parentNode: Node; } | null} parentNode
+ * @param {HTMLElement} element
+ */
+function elementIsParentNode(
+  parentNode, 
+  element,
+) {
   if (!element && !parentNode) {
     return createError(
-      "dom: elementIsParentNode requires 2 arguments, was",
-      elementIsParentNode.length,
+      `om: elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
     );
   }
 
@@ -275,10 +290,15 @@ function elementIsParentNode(parentNode = null, element = null) {
   if (parentNode === null) {
     return false;
   }
-  return elementIsParentNode(parentNode.parentNode, element);
+  return elementIsParentNode(parentNode, element);
 }
 
-function createRoot(root = null) {
+function createRoot(
+  /** @type {HTMLElement|null} */ root = null
+) {
+  if (!root) {
+    throw "root must be provided in order to render elements";
+  }
   if (root instanceof Node) {
     // return console.log({ eventHandlers });
     for (const { element, event } of eventHandlers) {
@@ -308,7 +328,14 @@ function createRoot(root = null) {
   createError("dom: Expected root to be an instance of NodePrototype");
 }
 
-export function render(mountables, root) {
+/**
+ * @param {any[] | (() => any)} mountables
+ * @param {HTMLElement | { (): any; append: (arg0: any) => void; querySelectorAll: (arg0: string) => any; } | null | undefined} root
+ */
+export function render(
+  mountables, 
+  root
+) {
   if (typeof root === "function") {
     root = root();
   }
@@ -323,24 +350,16 @@ export function render(mountables, root) {
       mountables = [mountables];
     }
   }
+  /**
+   * @type {any[]}
+   */
   const results = [];
   const loop = (done = null) => {
     for (const mountable of mountables) {
-      /* if (checkType(mountable) === 'function') {
-                results.push(mountable());
-                continue;
-                // results.push(component);
-            }
-            if (checkType(mountable) === 'array') {
-                const [component, props] = mountable;
-                results.push(component(props));
-                continue;
-            } */
       if (mountable || mountable !== null) {
         results.push(mountable);
       }
     }
-    // console.log([...mountables]);
     if (done && typeof done === "function") done();
   };
   loop(function done() {
@@ -371,5 +390,3 @@ export function render(mountables, root) {
     }
   };
 }
-
-console.timeEnd("dom/internal");

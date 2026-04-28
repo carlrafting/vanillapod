@@ -6,6 +6,9 @@ import { createError } from "./error.js";
 // element property to store hooks
 const key = "_vanillapod_hooks";
 
+/**
+ * @param {{ [x: string]: {}; }} element
+ */
 function registerHooks(element, { hooks = {} }) {
   if (!hooks) {
     return;

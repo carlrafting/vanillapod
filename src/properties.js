@@ -1,3 +1,6 @@
+/**
+ * @param {DocumentFragment} element
+ */
 export default function setElementProperties(element, { props, properties }) {
   if (props || properties) {
     if (!props) {

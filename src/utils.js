@@ -29,9 +29,12 @@ export function delay(fn, timeout, ...args) {
  * @param {boolean} asap - fn should execute asap or not
  */
 export function debounce(fn, treshold = 100, asap = false) {
+  /**
+   * @type {number | null | undefined}
+   */
   let timeout;
 
-  return function debounced(...args) {
+  return function debounced(/** @type {any[]} */ ...args) {
     const delayed = () => {
       if (!asap) {
         fn.apply(debounced, args);
@@ -55,9 +58,12 @@ export function debounce(fn, treshold = 100, asap = false) {
  * @param {function} fn - function to debounce
  */
 export function debounceRAF(fn) {
+  /**
+   * @type {number}
+   */
   let timeout;
 
-  return function debounced(...args) {
+  return function debounced(/** @type {any[]} */ ...args) {
     if (timeout) {
       globalThis.cancelAnimationFrame(timeout);
     }
@@ -106,7 +112,7 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
       if (child.nodeType === Node.ELEMENT_NODE) {
         const childHasChildNodes = child.childNodes.length > 0;
         if (childHasChildNodes) {
-          traverseChildNodes(child, (childChild) => {
+          traverseChildNodes(child, (/** @type {any} */ childChild) => {
             callback(childChild);
           });
         }
@@ -246,6 +252,9 @@ export function createLocalStorage(key = "app", initialData = null) {
       }
       return parsed;
     },
+    /**
+     * @param {any} data
+     */
     write(data) {
       localStorage.setItem(key, JSON.stringify(data));
     },
@@ -253,11 +262,8 @@ export function createLocalStorage(key = "app", initialData = null) {
 }
 
 /**
- * # isEqual
- *
- * @param {(Array|Object)} first
- * @param {Array} second
- * @returns
+ * @param {{ [x: string]: any; }} first
+ * @param {object} second
  */
 export function isEqual(first, second) {
   if (typeof first !== "object" || typeof second !== "object") {

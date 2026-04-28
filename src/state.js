@@ -1,6 +1,4 @@
-import debug from "./debug.js";
-import { isEqual } from "./utils.js";
-import { createError, logErrors } from "./error.js";
+import { createError } from "./error.js";
 import { checkType, createArray } from "./utils.js";
 
 console.time("state");
@@ -315,8 +313,10 @@ export function memo(fn = () => {}) {
   }
   // const cache = new WeakMap();
   const cache = new Map();
-  const ref = (...args) => {
-    const key = JSON.stringify(...args);
+  const ref = (
+    /** @type {any[]} */ ...args
+  ) => {
+    const key = JSON.stringify([...args]);
     // const key = [...args];
     console.log("memo: key", key);
     if (cache.has(key)) {

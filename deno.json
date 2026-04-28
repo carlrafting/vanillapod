@@ -1,14 +1,17 @@
 {
-  "name": "@carlrafting/vanillapod",
+  "name": "@vanillapod/vanillapod",
   "version": "0.11.2",
   "exports": "./mod.ts",
   "compilerOptions": {
-    "allowJs": true,
     "checkJs": true,
     "lib": [
       "dom",
       "esnext"
     ]    
   },
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "publish": {
+    "include": ["./dist"],
+    "exclude": ["./test", "./examples", "./sandbox"]
+  }
 }

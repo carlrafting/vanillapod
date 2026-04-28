@@ -2,8 +2,11 @@ import { registerHooks, triggerHook } from "./hooks.js";
 import { createError } from "./error.js";
 import { checkType } from "./utils.js";
 import { createComponentInstance, createElement } from "./element.js";
-import debug from "./debug.js";
 
+/**
+ * @param {{ insertBefore: (arg0: any, arg1: null) => void; }} root
+ * @param {any[]} args
+ */
 export default function mount(root, ...args) {
   let index = 0;
   let vanillapodComponent;
@@ -73,6 +76,11 @@ export default function mount(root, ...args) {
   }
 }
 
+/**
+ * @param {[any, any]} arg
+ * @param {{ (): any; (): { el: Node; }; }} vanillapodComponent
+ * @param {{}} props
+ */
 export function init(arg, vanillapodComponent, props) {
   // console.log({arg, vanillapodComponent, props});
   checkType(arg) === "array" && ([vanillapodComponent, props] = arg);
