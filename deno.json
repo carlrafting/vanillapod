@@ -1,6 +1,5 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts",
     "lume": {
       "description": "Run Lume command",
       "command": "deno run -P=lume lume/cli.ts"
@@ -70,5 +69,8 @@
       ]
     }
   },
-  "lock": false
+  "lock": false,
+  "links": [
+    "../assets"
+  ]
 }
