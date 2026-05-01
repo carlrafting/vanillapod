@@ -1,6 +1,6 @@
 # vanillapod
 
-![logo](logo.png)
+![logo](./assets/logo.png)
 
 Lightweight library for building vanilla JavaScript components...
 

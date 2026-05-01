@@ -7,11 +7,15 @@
     "lib": [
       "dom",
       "esnext"
-    ]    
+    ]
   },
   "nodeModulesDir": "auto",
   "publish": {
     "include": ["./dist"],
     "exclude": ["./test", "./examples", "./sandbox"]
-  }
+  },
+  "workspace": [
+    "./assets",
+    "./docs"
+  ]
 }
