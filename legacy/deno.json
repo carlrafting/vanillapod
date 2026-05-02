@@ -13,9 +13,5 @@
   "publish": {
     "include": ["./dist"],
     "exclude": ["./test", "./examples", "./sandbox"]
-  },
-  "workspace": [
-    "./assets",
-    "./docs"
-  ]
+  }
 }
