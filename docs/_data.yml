@@ -1,2 +1,2 @@
 layout: layouts/page.vto
-templateFormat: [vto, md]
+templateEngine: [vto, md]

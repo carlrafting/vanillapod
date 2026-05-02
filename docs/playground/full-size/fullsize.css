@@ -1,0 +1,10 @@
+@scope (full-size) {
+  :scope {
+    display: block;
+    box-sizing: border-box;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-block: 1lh;
+    width: max(100vw, 100dvw, 100svw, 100cqw);
+  }
+}

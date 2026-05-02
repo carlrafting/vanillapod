@@ -1,0 +1,4 @@
+{
+  "name": "www",
+  "exports": "./serve.ts"
+}

@@ -1,0 +1,51 @@
+---
+title: Theme Toggle
+description: 
+    Provides a convient way for developers to implement a control that people can use to toggle between available themes (color-scheme), that are available for a website or web app.
+tags: [theme]    
+---
+
+<theme-toggle>
+  <link rel="stylesheet" href="./theme.css" media="screen">
+  <script type="module" src="./theme.js"></script>
+  <form action="/theme/update" method="post">
+    <fieldset>
+      <legend>Theme</legend>
+      <menu id="theme-menu">
+        <li>
+          <input
+            id="theme-auto"
+            type="radio"
+            name="theme"
+            value="auto"
+            checked
+            disabled
+          > <label
+            for="theme-auto"
+          >Auto (system)</label>
+        </li>
+        <li>
+          <input
+            id="theme-light"
+            type="radio"
+            name="theme"
+            value="light"
+            disabled
+          >
+          <label for="theme-light">Light</label>
+        </li>
+        <li>
+          <input
+            id="theme-dark"
+            type="radio"
+            name="theme"
+            value="dark"
+            disabled
+          >
+          <label for="theme-dark">Dark</label>
+        </li>
+      </menu>
+      <button disabled>Save Theme</button>
+    </fieldset>
+  </form>
+</theme-toggle>

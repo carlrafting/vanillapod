@@ -1,0 +1,36 @@
+html {
+  font-family: sans-serif;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-end: 1lh;
+  width: fit-content;
+  & > img {
+    width: 4rem;
+    height: 4rem;
+  }
+  & > :where([data-name]) {
+    font-family: monospace;
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-style: italic;
+  }
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+}
+
+form menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flow > * + * {
+  margin-block-start: 1lh;
+}

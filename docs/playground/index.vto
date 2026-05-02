@@ -1,0 +1,20 @@
+---
+title: Playground
+description: This is the Playground where you can learn more about how and what components that vanillapod are made up of.
+type: playground
+---
+
+{{ for component of search.pages("type=component") }}
+  <h2>{{ component.title }}</h2>
+  {{ if component.tags && component.tags.length > 0 }}
+    <div class="tags">
+      <strong>Tags:</strong>
+      {{ for tag of component.tags }}
+        <span class="tag">{{ tag }}</span>
+      {{ /for }}
+    </div>
+  {{ /if }}
+  <p>{{ component.description }}</p>
+  <pre>{{ component.content.replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}</pre>
+  <a href="{{ component.url }}">Demo</a>
+{{ /for }}
