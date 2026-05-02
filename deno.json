@@ -52,7 +52,8 @@
     "jsxImportSource": "lume"
   },
   "unstable": [
-    "fmt-component"
+    "fmt-component",
+    "raw-imports"
   ],
   "allowScripts": {
     "deny": [
@@ -70,7 +71,9 @@
     }
   },
   "lock": false,
-  "links": [
-    "../assets"
+  "workspace": [
+    "./assets",
+    "./docs",
+    "./dom"
   ]
 }
