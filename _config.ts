@@ -1,10 +1,11 @@
 import lume from "lume/mod.ts";
 
 const site = lume({
-    src: "src",
+  src: "docs",
 });
 
-site.copy("assets/logo.png");
-site.copy([".css", ".js"]);
+site.remote("assets/global.css", "assets/global.css");
+site.remote("logo.small.avif", "assets/logo.small.avif");
+site.copy([".css", ".js", ".png", ".avif"]);
 
 export default site;
