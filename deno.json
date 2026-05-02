@@ -74,6 +74,7 @@
   "workspace": [
     "./assets",
     "./docs",
-    "./dom"
+    "./dom",
+    "./legacy"
   ]
 }
