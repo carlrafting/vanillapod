@@ -1,0 +1,40 @@
+@layer reset {
+  html, input, select, option, button {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  html {
+    min-block-size: auto;
+    min-block-size: max(100vh, 100dvh, 100svh);
+    padding: 1lh 1rem;
+  }
+  ul,
+  ol,
+  menu,
+  body,
+  fieldset,
+  legend {
+    margin: 0;
+    padding: 0;
+  }
+  fieldset,
+  img {
+    border: none;
+  }
+  picture,
+  video,
+  audio,
+  img,
+  svg {
+    inline-size: auto;
+    block-size: auto;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.25;
+    font-weight: normal;
+  }
+  a {
+    color: currentColor;
+    text-decoration: none;
+  }
+}
