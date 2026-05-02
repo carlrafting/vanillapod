@@ -14,7 +14,7 @@
     }
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
     "lume/": "https://cdn.jsdelivr.net/gh/lumeland/lume@3.2.4/"
   },
   "permissions": {
