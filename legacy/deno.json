@@ -9,7 +9,6 @@
       "esnext"
     ]
   },
-  "nodeModulesDir": "auto",
   "publish": {
     "include": ["./dist"],
     "exclude": ["./test", "./examples", "./sandbox"]

@@ -76,5 +76,6 @@
     "./docs",
     "./dom",
     "./legacy"
-  ]
+  ],
+  "nodeModulesDir": "auto"
 }
