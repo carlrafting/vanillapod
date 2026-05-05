@@ -1,6 +1,6 @@
 ---
 title: Playground
-description: This is the Playground where you can learn more about how and what components that vanillapod are made up of.
+description: This is the Playground where you can learn more about how and what components vanillapod are made up of.
 type: playground
 ---
 
@@ -15,6 +15,6 @@ type: playground
     </div>
   {{ /if }}
   <p>{{ component.description }}</p>
-  <pre>{{ component.content.replaceAll("<", "&lt;").replaceAll(">", "&gt;") }}</pre>
+  <pre><code class="language-javascript">{{ component.content |> escape }}</code></pre>
   <a href="{{ component.url }}">Demo</a>
 {{ /for }}
