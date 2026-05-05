@@ -1,3 +1,37 @@
+@layer colors {
+  :root {
+    --color-lightgrey-hex: #666;
+  }
+}
+
+@layer theme {
+  @scope ([data-theme="auto"], .theme-auto) {
+    :scope {
+      color-scheme: light dark;
+    }
+  }
+  @scope ([data-theme="light"], .theme-light) {
+    :scope {
+      color-scheme: light;
+    }
+  }
+  @scope ([data-theme="dark"]) {
+    :scope {
+      color-scheme: dark;
+    }
+  }
+}
+
+pre {
+  color: #666;
+}
+.token {
+  color: #888;
+}
+[class*="language"] {
+  background-color: black;
+}
+
 html {
   font-family: sans-serif;
 }

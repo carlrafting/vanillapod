@@ -1,7 +1,16 @@
-@scope (full-size) {
+@scope (full-size, .full-size) {
   :scope {
     display: block;
     box-sizing: border-box;
+    /*
+      @description
+
+      `margin-inline` and `padding-inline` are affected by the following dependency
+
+      @module "local:@vanillapod/assets"
+      @file "global.css"
+      @line [9]
+    */
     margin-inline: -1rem;
     padding-inline: 1rem;
     padding-block: 1lh;
