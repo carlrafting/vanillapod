@@ -1,5 +1,10 @@
 ---
 layout: ./document.vto
+nav: [
+  { href: /, text: Home },
+  { href: /docs/, text: Docs },
+  { href: /playground/, text: Playground }
+]
 ---
 
 <header>
@@ -8,8 +13,20 @@ layout: ./document.vto
     <span data-name>vanillapod</span>
   </a>
   <nav id="global-nav">
-    <a href="/">Home</a>
-    <a href="/playground/">Playground</a>
+    {{ if nav && nav.length > 0 }}
+      {{ for item of nav }}
+        <a href="{{ item.href }}">
+          {{ set text = item.text }}
+          {{ if url == item.href }}
+            <strong>{{ text }}</strong>
+          {{ else }}
+            {{ text }}
+          {{ /if }}
+        </a>
+      {{ /for }}
+    {{ else }}
+      no nav data was declared within the template hiearchy...
+    {{ /if }}
   </nav>
   <h1>{{ title }}</h1>
   <p>{{ description }}</p>
