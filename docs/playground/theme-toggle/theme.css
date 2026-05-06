@@ -1,1 +1,39 @@
+@scope (:root) {
+  :scope {
+    color: green;
+  }
+}
 
+@scope ([data-theme="auto"]) {
+  :scope {
+    color-scheme: light dark;
+    color: purple;
+  }
+}
+
+@scope ([data-theme="light"]) {
+  :scope {
+    color-scheme: light;
+    color: cyan;
+  }
+}
+
+@scope ([data-theme="dark"]) {
+  :scope {
+    color-scheme: dark;
+    color: coral;
+  }
+}
+
+@scope (theme-toggle) {
+  :scope {
+    color: red;
+
+    &:where([loaded]) button {
+      display: none;
+    }
+  }
+  menu {
+    display: flex;
+  }
+}

@@ -5,7 +5,7 @@ description:
 tags: [theme, theme-toggle]
 ---
 
-<theme-toggle>
+<theme-toggle target=":root" store="localStorage" autodetect enable>
   <link rel="stylesheet" href="./theme.css" media="screen">
   <form action="/theme/update" method="post">
     <fieldset>

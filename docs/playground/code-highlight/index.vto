@@ -1,18 +1,13 @@
 ---
 title: Code (Syntax) Hightlight
+description: Component used for code examples with syntax highlighting
 ---
 
 <code-highlight>
-  <pre>&lt;?php
-
-declare(strict_types=1);
-
-class Hello {
-    constructor(
-        public string $input
-    ) {}
-    say() {
-        return "hello, $this-&gt;input!"
-    }
-}</pre>
+  <link
+    rel="stylesheet"
+    href="./styles.css"
+    media="screen"
+  >
+  {{ include "./_example.md" |> md }}
 </code-highlight>

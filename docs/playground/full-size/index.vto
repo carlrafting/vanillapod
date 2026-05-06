@@ -5,7 +5,15 @@ description:
 tags: [layout, utility, css]
 ---
 
-<full-size style="background-color: red; color: white">
-  <link rel="stylesheet" href="./fullsize.css" media="screen">
+<full-size>
+  <style>
+    @scope (full-size) {
+      :scope {
+        color: color-contrast(red);
+        background-color: red;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="./styles.css" media="screen">
   <span>Look at me, i'm <strong>fully sized</strong>!</span>
 </full-size>
