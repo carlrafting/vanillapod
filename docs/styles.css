@@ -1,7 +1,37 @@
+@layer colors, tokens, theme, base, utils, misc;
+
+@layer base {
+  html {
+    font-family: sans-serif;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+  }
+
+  form menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
 @layer colors {
   :root {
     --color-lightgrey-hex: #666;
   }
+}
+
+@layer tokens {
+  @scope (.token) {
+    :root {
+      --token: system-ui;
+    }
+    :scope {
+      font-family: var(--token);
+    }
+  }
+  @layer tokens.extend;
 }
 
 @layer theme {
@@ -22,49 +52,34 @@
   }
 }
 
-pre {
-  color: #666;
-}
-.token {
-  color: #888;
-}
-[class*="language"] {
-  background-color: black;
-}
-
-html {
-  font-family: sans-serif;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-block-end: 1lh;
-  width: fit-content;
-  & > img {
-    width: 4rem;
-    height: 4rem;
-  }
-  & > :where([data-name]) {
-    font-family: monospace;
-    font-size: 1.25rem;
-    font-weight: 600;
-    font-style: italic;
+@layer utils {
+  @scope (.flow) {
+    :scope > * + * {
+      margin-block-start: var(--flow, 1lh);
+    }
   }
 }
 
-fieldset {
-  border: 0;
-  padding: 0;
-}
+@layer misc {
+  pre {
+    padding: 1lh 1rem;
+  }
 
-form menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.flow > * + * {
-  margin-block-start: 1lh;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-end: 1lh;
+    width: fit-content;
+    & > img {
+      width: 4rem;
+      height: 4rem;
+    }
+    & > :where([data-name]) {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-style: italic;
+    }
+  }
 }
