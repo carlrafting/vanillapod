@@ -1,0 +1,39 @@
+---
+layout: ./document.vto
+nav: [
+  { href: /, text: Home },
+  { href: /docs/, text: Docs },
+  { href: /playground/, text: Playground }
+]
+---
+
+<header>
+  <a href="/" class="logo">
+    <img src="/logo.small.avif" alt="vanillapod logo" width="64" height="64">
+    <span data-name>vanillapod</span>
+  </a>
+  <nav id="global-nav">
+    {{ if nav && nav.length > 0 }}
+      {{ for item of nav }}
+        <a href="{{ item.href }}">
+          {{ set text = item.text }}
+          {{ if url == item.href }}
+            <strong>{{ text }}</strong>
+          {{ else }}
+            {{ text }}
+          {{ /if }}
+        </a>
+      {{ /for }}
+    {{ else }}
+      no nav data was declared within the template hiearchy...
+    {{ /if }}
+  </nav>
+  <h1>{{ title }}</h1>
+  <p>{{ description }}</p>
+</header>
+
+{{ content }}
+
+<footer>
+  <p>Copyright &copy; 2026 vanillapod. All rigths reserved.</p>
+</footer>

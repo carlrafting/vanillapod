@@ -1,2 +1,4 @@
-sandbox/*
-dist
+_site
+_cache
+.env
+node_modules
