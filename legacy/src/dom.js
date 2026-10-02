@@ -2,6 +2,10 @@ import { createError } from "./error.js";
 import { checkType } from "./utils.js";
 import { h, validateProps } from "./element.js";
 
+/**
+ * @param  {...unknown} output
+ * @returns {void}
+ */
 const log = (...output) => console.log(...output);
 
 console.time("dom/internal");
@@ -13,8 +17,8 @@ const eventHandlers = [];
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 export function createMountable(
-  /** @type {HTMLElement|null} */ element = null, 
-  /** @type {Boolean} */ template = true
+  /** @type {HTMLElement|null} */ element = null,
+  /** @type {Boolean} */ template = true,
 ) {
   return function inner(
     /** @type {any[]} */ ...params
@@ -221,10 +225,9 @@ function createDOMMap(done = null) {
 createDOMMap(() => cleanupElements());
 
 const el = (
-  /** @type {string} */ el
-) => (
-  /** @type {any} */ ...params
-) => dom.get(el)(...params);
+  /** @type {string} */ el,
+) =>
+(/** @type {any} */ ...params) => dom.get(el)(...params);
 
 export const div = el("div");
 export const p = el("p");
@@ -259,14 +262,13 @@ export const option = el("option");
 export const span = el("span");
 export const br = el("br");
 
-export const fragment = (
-  /** @type {unknown[]} */ ...params
-) => createMountable(null, false)(...params);
+export const fragment = (/** @type {unknown[]} */ ...params) =>
+  createMountable(null, false)(...params);
 export const text = (
-  /** @type {string} */ text
+  /** @type {string} */ text,
 ) => document.createTextNode(text);
 export const comment = (
-  /** @type {string} */ text
+  /** @type {string} */ text,
 ) => document.createComment(text);
 
 /**
@@ -274,7 +276,7 @@ export const comment = (
  * @param {HTMLElement} element
  */
 function elementIsParentNode(
-  parentNode, 
+  parentNode,
   element,
 ) {
   if (!element && !parentNode) {
@@ -294,7 +296,7 @@ function elementIsParentNode(
 }
 
 function createRoot(
-  /** @type {HTMLElement|null} */ root = null
+  /** @type {HTMLElement|null} */ root = null,
 ) {
   if (!root) {
     throw "root must be provided in order to render elements";
@@ -333,8 +335,8 @@ function createRoot(
  * @param {HTMLElement | { (): any; append: (arg0: any) => void; querySelectorAll: (arg0: string) => any; } | null | undefined} root
  */
 export function render(
-  mountables, 
-  root
+  mountables,
+  root,
 ) {
   if (typeof root === "function") {
     root = root();

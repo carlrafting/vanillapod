@@ -10,9 +10,11 @@
     "@std/assert": "jsr:@std/assert@1"
   },
   "compilerOptions": {
+    "allowJs": true,
     "lib": [
       "dom",
-      "esnext"
-    ]    
+      "esnext",
+      "deno.ns"
+    ]
   }
 }

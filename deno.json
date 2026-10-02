@@ -76,7 +76,6 @@
   "lock": false,
   "workspace": [
     "./assets",
-    "./docs",
     "./dom",
     "./legacy"
   ],

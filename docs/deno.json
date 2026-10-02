@@ -1,7 +1,0 @@
-{
-  "name": "www",
-  "exports": "./serve.ts",
-  "imports": {
-    "@std/html": "jsr:@std/html@^1.0.6"
-  }
-}
