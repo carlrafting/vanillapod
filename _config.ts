@@ -7,6 +7,6 @@ site.ignore("./legacy");
 site.loadPages([".html.vto"]);
 site.use(prismPlugin());
 site.copy([".css", ".js", ".png", ".avif"]);
-site.filter("escape", (input) => escape(input));
+site.filter("escape", (input: string) => escape(input));
 
 export default site;
