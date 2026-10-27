@@ -82,6 +82,5 @@
     "./assets",
     "./dom",
     "./legacy"
-  ],
-  "nodeModulesDir": "auto"
+  ]
 }

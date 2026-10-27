@@ -6,6 +6,7 @@ const site = lume();
 site.ignore("./legacy");
 site.loadPages([".html.vto"]);
 site.use(prismPlugin());
+site.copy("./assets");
 site.copy([".css", ".js", ".png", ".avif"]);
 site.filter("escape", (input: string) => escape(input));
 
