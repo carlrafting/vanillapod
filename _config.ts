@@ -7,6 +7,8 @@ site.ignore("./legacy");
 site.loadPages([".html.vto"]);
 site.use(prismPlugin());
 site.copy("./assets");
+site.copy("./dom/src", "./dom/src");
+site.copy("./dom/main.js", "./dom/main.js");
 site.copy([".css", ".js", ".png", ".avif"]);
 site.filter("escape", (input: string) => escape(input));
 
