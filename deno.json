@@ -81,6 +81,7 @@
   "workspace": [
     "./assets",
     "./dom",
-    "./legacy"
+    "./legacy",
+    "./tests/browser"
   ]
 }

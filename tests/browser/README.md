@@ -1,15 +1,14 @@
 # Browser tests
 
 These tests run the DOM package in Chromium through Playwright, rather than a
-DOM emulator. They require Node.js/npm and Deno. From this directory, install
-the Node dependency and browser once, then run the suite:
+DOM emulator. They use Deno's test runner and resolve Playwright from npm.
+Install Chromium once, then run the suite from this directory:
 
 ```sh
-npm install
-npx playwright install chromium
-npm test
+deno task install-browser
+deno task test
 ```
 
-Playwright starts the Lume development server with `deno task serve` and waits
-for `http://localhost:3000`. The tests import the same `/dom/main.js` entry
-point used by browser consumers.
+The test starts the Lume development server with `deno task serve` when one
+isn't already listening at `http://localhost:3000`, then imports the same
+`/dom/main.js` entry point used by browser consumers.
