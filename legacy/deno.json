@@ -9,8 +9,5 @@
       "esnext"
     ]
   },
-  "publish": {
-    "include": ["./dist"],
-    "exclude": ["./test", "./examples", "./sandbox"]
-  }
+  "publish": false
 }

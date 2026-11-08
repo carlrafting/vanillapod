@@ -10,8 +10,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Deno
         uses: denoland/setup-deno@v2
       - name: Publish package
