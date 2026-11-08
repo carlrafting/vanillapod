@@ -1,0 +1,19 @@
+{
+  "name": "@vanillapod/dom",
+  "version": "0.0.0",
+  "exports": "./main.js",
+  "tasks": {
+    "dev": "deno test --watch"
+  },
+  "license": "MIT",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "esnext",
+      "deno.ns"
+    ]
+  }
+}

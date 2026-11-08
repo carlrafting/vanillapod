@@ -1,13 +1,4 @@
+_site
+_cache
+.env
 node_modules
-*.code-workspace
-.nyc_output
-coverage
-sandbox/*
-!sandbox/dom
-!sandbox/standard
-!sandbox/html
-!sandbox/reactive
-!sandbox/hyper
-!sandbox/customevents
-!sandbox/ssr
-dist

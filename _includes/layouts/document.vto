@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" data-theme="auto" data-page-url="{{ url }}">
+<meta charset="utf-8">
+<meta name="color-scheme" value="light">
+<title>
+{{ if title }}
+{{ title ?? null }} |
+{{ /if }}
+{{ site.name }}
+</title>
+<link rel="stylesheet" href="/assets/global.css" media="screen">
+<link rel="stylesheet" href="/styles.css" media="screen">
+<body class="flow">
+{{ content }}
