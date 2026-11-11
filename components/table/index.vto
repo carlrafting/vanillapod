@@ -1,0 +1,42 @@
+---
+title: Table
+description: Table with horizontal scroll on small viewports, zebra rows and sortable headers. Wrap the table in a focusable container so keyboard users can scroll it.
+tags: [data, accessibility, javascript]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="table-wrapper" tabindex="0" role="region" aria-label="Components">
+  <table class="table">
+    <caption>Components</caption>
+    <thead>
+      <tr>
+        <th scope="col" aria-sort="none"><button type="button">Name</button></th>
+        <th scope="col" aria-sort="none"><button type="button">Type</button></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Tabs</td><td>Navigation</td></tr>
+      <tr><td>Alert</td><td>Feedback</td></tr>
+      <tr><td>Card</td><td>Layout</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  for (const table of document.querySelectorAll(".table")) {
+    const headers = [...table.querySelectorAll("th[aria-sort]")];
+    headers.forEach((th, index) => {
+      th.querySelector("button").addEventListener("click", () => {
+        const asc = th.getAttribute("aria-sort") !== "ascending";
+        for (const h of headers) h.setAttribute("aria-sort", "none");
+        th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+        const body = table.tBodies[0];
+        const rows = [...body.rows].sort((a, b) =>
+          a.cells[index].textContent.localeCompare(b.cells[index].textContent, undefined, { numeric: true }) * (asc ? 1 : -1)
+        );
+        body.append(...rows);
+      });
+    });
+  }
+</script>

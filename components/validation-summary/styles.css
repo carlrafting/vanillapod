@@ -1,0 +1,10 @@
+@scope (.validation-summary) {
+  :scope {
+    border-inline-start: 0.25rem solid crimson;
+    background: color-mix(in srgb, crimson 10%, transparent);
+    padding: 0.75rem 1rem;
+    margin-block-end: 1rem;
+  }
+  h3 { margin-block: 0 0.5rem; }
+}
+.validated-form [aria-invalid="true"] { outline: 2px solid crimson; }

@@ -1,0 +1,7 @@
+@scope (.stack) {
+  :scope {
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-space, 1rem);
+  }
+}

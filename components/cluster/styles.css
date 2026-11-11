@@ -1,0 +1,9 @@
+@scope (.cluster) {
+  :scope {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(--cluster-justify, flex-start);
+    gap: var(--cluster-space, 1rem);
+  }
+}

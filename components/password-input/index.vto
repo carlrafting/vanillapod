@@ -1,0 +1,28 @@
+---
+title: Password Input
+description: Password field with a button that shows or hides the value. The button uses aria-pressed and a stable label so screen readers announce its state.
+tags: [forms, accessibility, javascript]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="password-input">
+  <label for="password">Password</label>
+  <div>
+    <input id="password" type="password" name="password" autocomplete="current-password">
+    <button type="button" aria-pressed="false" aria-controls="password">Show password</button>
+  </div>
+</div>
+
+<script>
+  for (const root of document.querySelectorAll(".password-input")) {
+    const input = root.querySelector("input");
+    const button = root.querySelector("button");
+    button.addEventListener("click", () => {
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      button.setAttribute("aria-pressed", show);
+      button.textContent = show ? "Hide password" : "Show password";
+    });
+  }
+</script>

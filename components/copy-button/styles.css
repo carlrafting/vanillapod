@@ -1,0 +1,4 @@
+@scope (.copy-button) {
+  :scope { cursor: pointer; }
+}
+.copy-status { margin-inline-start: 0.5rem; font-size: 0.85em; }

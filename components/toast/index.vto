@@ -1,0 +1,24 @@
+---
+title: Toast
+description: Transient notifications announced through an aria-live region. Call showToast(message) to add one, it removes itself after a timeout.
+tags: [feedback, accessibility, javascript]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<button type="button" id="toast-demo">Show toast</button>
+<div class="toasts" role="status" aria-live="polite"></div>
+
+<script>
+  function showToast(message, timeout = 4000) {
+    const region = document.querySelector(".toasts");
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    region.append(toast);
+    setTimeout(() => toast.remove(), timeout);
+  }
+  document.getElementById("toast-demo").addEventListener("click", () => {
+    showToast("Changes saved");
+  });
+</script>

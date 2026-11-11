@@ -1,0 +1,34 @@
+@scope (.switch) {
+  :scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  input {
+    appearance: none;
+    margin: 0;
+    inline-size: 2.5rem;
+    block-size: 1.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 30%, transparent);
+    position: relative;
+    cursor: inherit;
+    transition: background-color 0.15s;
+  }
+  input::before {
+    content: "";
+    position: absolute;
+    inset: 0.125rem;
+    inline-size: 1.25rem;
+    border-radius: 50%;
+    background: canvas;
+    transition: translate 0.15s;
+  }
+  input:checked { background: seagreen; }
+  input:checked::before { translate: 1rem 0; }
+  input:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    input, input::before { transition: none; }
+  }
+}

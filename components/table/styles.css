@@ -1,0 +1,11 @@
+.table-wrapper { overflow-x: auto; }
+@scope (.table) {
+  :scope { border-collapse: collapse; inline-size: 100%; }
+  caption { text-align: start; font-weight: 600; padding-block-end: 0.5rem; }
+  th, td { padding: 0.5rem 0.75rem; text-align: start; }
+  thead { border-block-end: 2px solid currentColor; }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, currentColor 6%, transparent); }
+  th button { all: unset; cursor: pointer; font-weight: 600; }
+  th[aria-sort="ascending"] button::after { content: " ▲"; }
+  th[aria-sort="descending"] button::after { content: " ▼"; }
+}
