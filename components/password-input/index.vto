@@ -1,6 +1,6 @@
 ---
 title: Password Input
-description: Password field with a button that shows or hides the value. The button uses aria-pressed and a stable label so screen readers announce its state.
+description: Password field with a button that shows or hides the value. The button keeps a fixed label and uses aria-pressed so screen readers announce its state once.
 tags: [forms, accessibility, javascript]
 ---
 
@@ -22,7 +22,6 @@ tags: [forms, accessibility, javascript]
       const show = input.type === "password";
       input.type = show ? "text" : "password";
       button.setAttribute("aria-pressed", show);
-      button.textContent = show ? "Hide password" : "Show password";
     });
   }
 </script>

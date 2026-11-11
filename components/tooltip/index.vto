@@ -12,8 +12,8 @@ tags: [overlay, accessibility, javascript]
 <script>
   for (const trigger of document.querySelectorAll("[data-tooltip]")) {
     const tip = document.getElementById(trigger.dataset.tooltip);
-    const show = () => tip.showPopover();
-    const hide = () => tip.hidePopover();
+    const show = () => !tip.matches(":popover-open") && tip.showPopover();
+    const hide = () => tip.matches(":popover-open") && tip.hidePopover();
     trigger.addEventListener("mouseenter", show);
     trigger.addEventListener("focus", show);
     trigger.addEventListener("mouseleave", hide);

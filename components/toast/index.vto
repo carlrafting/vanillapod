@@ -1,6 +1,6 @@
 ---
 title: Toast
-description: Transient notifications announced through an aria-live region. Call showToast(message) to add one, it removes itself after a timeout.
+description: Transient notifications announced through an aria-live region. Call showToast(message) to add one, it removes itself after a timeout, which pauses while hovered.
 tags: [feedback, accessibility, javascript]
 ---
 
@@ -16,7 +16,12 @@ tags: [feedback, accessibility, javascript]
     toast.className = "toast";
     toast.textContent = message;
     region.append(toast);
-    setTimeout(() => toast.remove(), timeout);
+    let timer;
+    const start = () => (timer = setTimeout(() => toast.remove(), timeout));
+    const pause = () => clearTimeout(timer);
+    toast.addEventListener("mouseenter", pause);
+    toast.addEventListener("mouseleave", start);
+    start();
   }
   document.getElementById("toast-demo").addEventListener("click", () => {
     showToast("Changes saved");

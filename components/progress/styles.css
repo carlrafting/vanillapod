@@ -1,6 +1,7 @@
 @scope (.progress) {
   :scope {
     --progress-color: royalblue;
+    appearance: none;
     display: block;
     inline-size: 100%;
     block-size: 0.75rem;
