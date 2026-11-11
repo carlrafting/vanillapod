@@ -1,23 +1,18 @@
 ---
 title: Tooltip
-description: Short hint shown on hover or keyboard focus, built on the Popover API with CSS anchor positioning where supported. Content must be supplementary, never essential.
+description: Short hint shown on hover or keyboard focus, built on the Popover API and positioned with CSS anchor positioning (anchor-name and position-anchor). Content must be supplementary, never essential.
 tags: [overlay, accessibility, javascript]
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">
 
-<button type="button" class="tooltip-trigger" aria-describedby="tip-save" data-tooltip="tip-save">Save</button>
-<div id="tip-save" class="tooltip" role="tooltip" popover="manual">Saves your changes</div>
+<button type="button" style="anchor-name: --tip-save" aria-describedby="tip-save" data-tooltip="tip-save">Save</button>
+<div id="tip-save" class="tooltip" role="tooltip" popover="manual" style="position-anchor: --tip-save">Saves your changes</div>
 
 <script>
   for (const trigger of document.querySelectorAll("[data-tooltip]")) {
     const tip = document.getElementById(trigger.dataset.tooltip);
-    const show = () => {
-      const rect = trigger.getBoundingClientRect();
-      tip.showPopover();
-      tip.style.left = `${rect.left + rect.width / 2 - tip.offsetWidth / 2}px`;
-      tip.style.top = `${rect.bottom + 6}px`;
-    };
+    const show = () => tip.showPopover();
     const hide = () => tip.hidePopover();
     trigger.addEventListener("mouseenter", show);
     trigger.addEventListener("focus", show);
@@ -26,3 +21,4 @@ tags: [overlay, accessibility, javascript]
     trigger.addEventListener("keydown", (e) => e.key === "Escape" && hide());
   }
 </script>
+
