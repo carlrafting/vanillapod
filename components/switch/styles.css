@@ -1,33 +1,43 @@
 @scope (.switch) {
   :scope {
+    --switch-gap: 0.5rem;
+    --switch-inline-size: 2.5rem;
+    --switch-block-size: 1.5rem;
+    --switch-thumb-inset: 0.125rem;
+    --switch-track: color-mix(in srgb, currentColor 30%, transparent);
+    --switch-track-checked: seagreen;
+    --switch-thumb: canvas;
+    --switch-duration: 150ms;
+    --switch-easing: ease;
+    --switch-focus-ring: 2px solid currentColor;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--switch-gap);
     cursor: pointer;
   }
   input {
     appearance: none;
     margin: 0;
-    inline-size: 2.5rem;
-    block-size: 1.5rem;
+    inline-size: var(--switch-inline-size);
+    block-size: var(--switch-block-size);
     border-radius: 999px;
-    background: color-mix(in srgb, currentColor 30%, transparent);
+    background: var(--switch-track);
     position: relative;
     cursor: inherit;
-    transition: background-color 0.15s;
+    transition: background-color var(--switch-duration) var(--switch-easing);
   }
   input::before {
     content: "";
     position: absolute;
-    inset: 0.125rem;
-    inline-size: 1.25rem;
+    inset: var(--switch-thumb-inset);
+    inline-size: calc(var(--switch-block-size) - 2 * var(--switch-thumb-inset));
     border-radius: 50%;
-    background: canvas;
-    transition: translate 0.15s;
+    background: var(--switch-thumb);
+    transition: translate var(--switch-duration) var(--switch-easing);
   }
-  input:checked { background: seagreen; }
-  input:checked::before { translate: 1rem 0; }
-  input:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  input:checked { background: var(--switch-track-checked); }
+  input:checked::before { translate: calc(var(--switch-inline-size) - var(--switch-block-size)) 0; }
+  input:focus-visible { outline: var(--switch-focus-ring); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     input, input::before { transition: none; }
   }

@@ -1,10 +1,17 @@
 @scope (.validation-summary) {
   :scope {
-    border-inline-start: 0.25rem solid crimson;
-    background: color-mix(in srgb, crimson 10%, transparent);
-    padding: 0.75rem 1rem;
-    margin-block-end: 1rem;
+    --validation-summary-color: crimson;
+    --validation-summary-border-width: 0.25rem;
+    --validation-summary-background: color-mix(in srgb, var(--validation-summary-color) 10%, transparent);
+    --validation-summary-padding: 0.75rem 1rem;
+    --validation-summary-margin-block-end: 1rem;
+    border-inline-start: var(--validation-summary-border-width) solid var(--validation-summary-color);
+    background: var(--validation-summary-background);
+    padding: var(--validation-summary-padding);
+    margin-block-end: var(--validation-summary-margin-block-end);
   }
   h3 { margin-block: 0 0.5rem; }
 }
-.validated-form [aria-invalid="true"] { outline: 2px solid crimson; }
+.validated-form [aria-invalid="true"] {
+  outline: var(--validation-invalid-outline, 2px solid crimson);
+}

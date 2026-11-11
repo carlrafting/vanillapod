@@ -1,18 +1,51 @@
 ---
 title: Tooltip
-description: Short hint shown on hover or keyboard focus, built on the Popover API and positioned with CSS anchor positioning (anchor-name and position-anchor). Content must be supplementary, never essential.
+description: Short hint shown on hover or keyboard focus, built on the Popover API and positioned with CSS anchor positioning (anchor-name and position-anchor). It sits centered above its trigger and flips below when there is no room. Set data-placement to bottom, left or right to change the side. Content must be supplementary, never essential.
 tags: [overlay, accessibility, javascript]
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">
 
-<button type="button" style="anchor-name: --tip-save" aria-describedby="tip-save" data-tooltip="tip-save">Save</button>
+<p class="tooltip-demo">
+  <button type="button" style="anchor-name: --tip-save" aria-describedby="tip-save" data-tooltip="tip-save">Save</button>
+  <button type="button" style="anchor-name: --tip-bottom" aria-describedby="tip-bottom" data-tooltip="tip-bottom">Bottom</button>
+  <button type="button" style="anchor-name: --tip-left" aria-describedby="tip-left" data-tooltip="tip-left">Left</button>
+  <button type="button" style="anchor-name: --tip-right" aria-describedby="tip-right" data-tooltip="tip-right">Right</button>
+</p>
 <div id="tip-save" class="tooltip" role="tooltip" popover="manual" style="position-anchor: --tip-save">Saves your changes</div>
+<div id="tip-bottom" class="tooltip" role="tooltip" popover="manual" data-placement="bottom" style="position-anchor: --tip-bottom">Shown below</div>
+<div id="tip-left" class="tooltip" role="tooltip" popover="manual" data-placement="left" style="position-anchor: --tip-left">Shown on the left</div>
+<div id="tip-right" class="tooltip" role="tooltip" popover="manual" data-placement="right" style="position-anchor: --tip-right">Shown on the right</div>
 
 <script>
+  const anchorSupported = CSS.supports("anchor-name: --tooltip");
+
+  // Fallback for browsers without CSS anchor positioning.
+  function place(trigger, tip) {
+    const offset = parseFloat(getComputedStyle(tip).getPropertyValue("--tooltip-offset")) *
+      parseFloat(getComputedStyle(tip).fontSize) || 6;
+    const a = trigger.getBoundingClientRect();
+    const t = tip.getBoundingClientRect();
+    const placement = tip.dataset.placement ?? "top";
+    let top = placement === "bottom" ? a.bottom + offset
+      : placement === "top" ? a.top - t.height - offset
+      : a.top + (a.height - t.height) / 2;
+    let left = placement === "left" ? a.left - t.width - offset
+      : placement === "right" ? a.right + offset
+      : a.left + (a.width - t.width) / 2;
+    if (placement === "top" && top < 0) top = a.bottom + offset;
+    left = Math.min(Math.max(left, 0), innerWidth - t.width);
+    tip.style.top = `${top}px`;
+    tip.style.left = `${left}px`;
+  }
+
   for (const trigger of document.querySelectorAll("[data-tooltip]")) {
     const tip = document.getElementById(trigger.dataset.tooltip);
-    const show = () => !tip.matches(":popover-open") && tip.showPopover();
+    const show = () => {
+      if (tip.matches(":popover-open")) return;
+      tip.showPopover();
+      if (!anchorSupported) place(trigger, tip);
+    };
     const hide = () => tip.matches(":popover-open") && tip.hidePopover();
     trigger.addEventListener("mouseenter", show);
     trigger.addEventListener("focus", show);
@@ -21,4 +54,3 @@ tags: [overlay, accessibility, javascript]
     trigger.addEventListener("keydown", (e) => e.key === "Escape" && hide());
   }
 </script>
-

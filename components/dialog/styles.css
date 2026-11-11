@@ -1,15 +1,21 @@
 @scope (.dialog) {
   :scope {
-    border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    max-inline-size: min(90vw, 32rem);
+    --dialog-border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    --dialog-radius: 0.5rem;
+    --dialog-padding: 1.5rem;
+    --dialog-max-inline-size: min(90vw, 32rem);
+    --dialog-backdrop: rgb(0 0 0 / 50%);
+    --dialog-actions-gap: 0.5rem;
+    border: var(--dialog-border);
+    border-radius: var(--dialog-radius);
+    padding: var(--dialog-padding);
+    max-inline-size: var(--dialog-max-inline-size);
   }
-  :scope::backdrop { background: rgb(0 0 0 / 50%); }
+  :scope::backdrop { background: var(--dialog-backdrop); }
   menu {
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: var(--dialog-actions-gap);
     padding: 0;
   }
 }

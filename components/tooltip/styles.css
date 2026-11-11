@@ -1,15 +1,48 @@
 @scope (.tooltip) {
   :scope {
+    --tooltip-offset: 0.375rem;
+    --tooltip-padding: 0.25rem 0.5rem;
+    --tooltip-radius: 0.25rem;
+    --tooltip-font-size: 0.85em;
+    --tooltip-max-inline-size: 20rem;
+    --tooltip-background: canvastext;
+    --tooltip-color: canvas;
     position: fixed;
-    position-area: block-end;
-    position-try-fallbacks: flip-block, flip-inline;
     inset: auto;
-    margin: 0.375rem 0 0;
+    margin: 0;
     border: 0;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.85em;
-    background: canvastext;
-    color: canvas;
+    padding: var(--tooltip-padding);
+    border-radius: var(--tooltip-radius);
+    max-inline-size: var(--tooltip-max-inline-size);
+    inline-size: max-content;
+    font-size: var(--tooltip-font-size);
+    background: var(--tooltip-background);
+    color: var(--tooltip-color);
+    overflow: visible;
+    pointer-events: none;
+
+    /* top (default): centered above the trigger, flips below when out of space */
+    position-area: block-start;
+    justify-self: anchor-center;
+    margin-block-end: var(--tooltip-offset);
+    position-try-fallbacks: flip-block;
+  }
+  :scope[data-placement="bottom"] {
+    position-area: block-end;
+    margin-block: var(--tooltip-offset) 0;
+  }
+  :scope:is([data-placement="left"], [data-placement="right"]) {
+    justify-self: normal;
+    align-self: anchor-center;
+    margin-block: 0;
+    position-try-fallbacks: flip-inline;
+  }
+  :scope[data-placement="left"] {
+    position-area: inline-start;
+    margin-inline-end: var(--tooltip-offset);
+  }
+  :scope[data-placement="right"] {
+    position-area: inline-end;
+    margin-inline-start: var(--tooltip-offset);
   }
 }

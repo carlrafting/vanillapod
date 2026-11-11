@@ -1,17 +1,66 @@
 .toasts {
+  --toasts-gap: 0.5rem;
+  --toasts-inset: 1rem;
   position: fixed;
-  inset-block-end: 1rem;
-  inset-inline-end: 1rem;
+  inset-block-end: var(--toasts-inset);
+  inset-inline-end: var(--toasts-inset);
   display: grid;
-  gap: 0.5rem;
-  z-index: 1000;
+  gap: var(--toasts-gap);
+  z-index: var(--toasts-z-index, 1000);
 }
 @scope (.toasts) {
   .toast {
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    background: canvastext;
-    color: canvas;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+    --toast-color: royalblue;
+    --toast-padding: 0.75rem 1rem;
+    --toast-radius: 0.375rem;
+    --toast-border-width: 0.25rem;
+    --toast-background: color-mix(in srgb, var(--toast-color) 15%, canvas);
+    --toast-text-color: canvastext;
+    --toast-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+    --toast-duration: 200ms;
+    --toast-easing: ease-out;
+    --toast-offset: 1rem;
+    padding: var(--toast-padding);
+    border-radius: var(--toast-radius);
+    border: 1px solid color-mix(in srgb, var(--toast-color) 40%, transparent);
+    border-inline-start: var(--toast-border-width) solid var(--toast-color);
+    background: var(--toast-background);
+    color: var(--toast-text-color);
+    box-shadow: var(--toast-shadow);
+    transition-property: opacity, translate;
+    transition-duration: var(--toast-duration);
+    transition-timing-function: var(--toast-easing);
+  }
+  .toast[data-variant="info"] { --toast-color: royalblue; }
+  .toast[data-variant="success"] { --toast-color: seagreen; }
+  .toast[data-variant="warning"] { --toast-color: darkorange; }
+  .toast:is([data-variant="danger"], [data-variant="error"]) { --toast-color: crimson; }
+
+  /* slide (default) */
+  .toast[data-leaving] {
+    opacity: 0;
+    translate: var(--toast-offset) 0;
+  }
+  @starting-style {
+    .toast {
+      opacity: 0;
+      translate: var(--toast-offset) 0;
+    }
+  }
+
+  /* fade */
+  :scope[data-animation="fade"] .toast,
+  .toast[data-animation="fade"] {
+    --toast-offset: 0px;
+  }
+
+  /* none */
+  :scope[data-animation="none"] .toast,
+  .toast[data-animation="none"] {
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toast { --toast-offset: 0px; }
   }
 }

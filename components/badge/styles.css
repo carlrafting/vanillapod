@@ -1,17 +1,25 @@
 @scope (.badge) {
   :scope {
     --badge-color: gray;
+    --badge-padding: 0.1em 0.6em;
+    --badge-radius: 999px;
+    --badge-font-size: 0.8em;
+    --badge-font-weight: 600;
+    --badge-text-color: color-mix(in srgb, var(--badge-color) 60%, canvastext);
+    --badge-background: color-mix(in srgb, var(--badge-color) 15%, transparent);
+    --badge-border: 1px solid color-mix(in srgb, var(--badge-color) 40%, transparent);
     display: inline-block;
-    padding: 0.1em 0.6em;
-    border-radius: 999px;
-    font-size: 0.8em;
-    font-weight: 600;
+    padding: var(--badge-padding);
+    border-radius: var(--badge-radius);
+    font-size: var(--badge-font-size);
+    font-weight: var(--badge-font-weight);
     line-height: 1.5;
-    color: color-mix(in srgb, var(--badge-color) 60%, canvastext);
-    background-color: color-mix(in srgb, var(--badge-color) 15%, transparent);
-    border: 1px solid color-mix(in srgb, var(--badge-color) 40%, transparent);
+    color: var(--badge-text-color);
+    background-color: var(--badge-background);
+    border: var(--badge-border);
   }
+  :scope[data-variant="info"] { --badge-color: royalblue; }
   :scope[data-variant="success"] { --badge-color: seagreen; }
   :scope[data-variant="warning"] { --badge-color: darkorange; }
-  :scope[data-variant="danger"] { --badge-color: crimson; }
+  :scope:is([data-variant="danger"], [data-variant="error"]) { --badge-color: crimson; }
 }

@@ -1,13 +1,18 @@
 @scope (.alert) {
   :scope {
     --alert-color: royalblue;
-    padding: 0.75rem 1rem;
-    border-inline-start: 0.25rem solid var(--alert-color);
-    background-color: color-mix(in srgb, var(--alert-color) 12%, transparent);
-    border-radius: 0.25rem;
-    margin-block: 1rem;
+    --alert-padding: 0.75rem 1rem;
+    --alert-border-width: 0.25rem;
+    --alert-radius: 0.25rem;
+    --alert-background: color-mix(in srgb, var(--alert-color) 12%, transparent);
+    --alert-margin-block: 1rem;
+    padding: var(--alert-padding);
+    border-inline-start: var(--alert-border-width) solid var(--alert-color);
+    background-color: var(--alert-background);
+    border-radius: var(--alert-radius);
+    margin-block: var(--alert-margin-block);
   }
   :scope[data-variant="success"] { --alert-color: seagreen; }
   :scope[data-variant="warning"] { --alert-color: darkorange; }
-  :scope[data-variant="danger"] { --alert-color: crimson; }
+  :scope:is([data-variant="danger"], [data-variant="error"]) { --alert-color: crimson; }
 }

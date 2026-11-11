@@ -1,10 +1,31 @@
 ---
 title: Table
-description: Table with horizontal scroll on small viewports, zebra rows and sortable headers. Wrap the table in a focusable container so keyboard users can scroll it.
+description: Base layout styles apply to every table element. Add the table class for borders, zebra rows and sortable headers, and wrap the table in a focusable container so keyboard users can scroll it horizontally on small viewports.
 tags: [data, accessibility, javascript]
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">
+
+<h2>Standard table</h2>
+
+<table>
+  <caption>Browser support</caption>
+  <thead>
+    <tr>
+      <th scope="col">Feature</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Safari</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">Popover</th><td>114</td><td>125</td><td>17</td></tr>
+    <tr><th scope="row">@scope</th><td>118</td><td>146</td><td>17.4</td></tr>
+    <tr><th scope="row">dialog</th><td>37</td><td>98</td><td>15.4</td></tr>
+  </tbody>
+</table>
+
+<h2>Sortable table</h2>
 
 <div class="table-wrapper" tabindex="0" role="region" aria-label="Components">
   <table class="table">

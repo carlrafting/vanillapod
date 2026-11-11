@@ -1,6 +1,6 @@
 ---
 title: Tabs
-description: Accessible tabs with roving tabindex and arrow-key navigation. Mark up tablist, tab and tabpanel roles and the script wires up the behavior.
+description: Accessible tabs with arrow-key, Home and End navigation. Every tab is also in the tab order, so Tab and Shift+Tab move between tabs. Mark up tablist, tab and tabpanel roles and the script wires up the behavior.
 tags: [navigation, accessibility, javascript]
 ---
 
@@ -8,9 +8,9 @@ tags: [navigation, accessibility, javascript]
 
 <div class="tabs">
   <div role="tablist" aria-label="Example tabs">
-    <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true">One</button>
-    <button role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1">Two</button>
-    <button role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1">Three</button>
+    <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true">One</button>
+    <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false">Two</button>
+    <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false">Three</button>
   </div>
   <div role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0">First panel</div>
   <div role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>Second panel</div>
@@ -24,7 +24,6 @@ tags: [navigation, accessibility, javascript]
       for (const t of tabs) {
         const selected = t === tab;
         t.setAttribute("aria-selected", selected);
-        t.tabIndex = selected ? 0 : -1;
         document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
       }
       tab.focus();
