@@ -1,0 +1,17 @@
+@scope (.tabs) {
+  [role="tablist"] {
+    display: flex;
+    gap: 0.25rem;
+    border-block-end: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  }
+  [role="tab"] {
+    background: none;
+    border: 0;
+    border-block-end: 2px solid transparent;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    color: inherit;
+  }
+  [role="tab"][aria-selected="true"] { border-block-end-color: currentColor; font-weight: 600; }
+  [role="tabpanel"] { padding: 1rem 0; }
+}

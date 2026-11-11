@@ -1,0 +1,49 @@
+---
+title: Tabs
+description: Accessible tabs with roving tabindex and arrow-key navigation. Mark up tablist, tab and tabpanel roles and the script wires up the behavior.
+tags: [navigation, accessibility, javascript]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="tabs">
+  <div role="tablist" aria-label="Example tabs">
+    <button role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true">One</button>
+    <button role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1">Two</button>
+    <button role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1">Three</button>
+  </div>
+  <div role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0">First panel</div>
+  <div role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>Second panel</div>
+  <div role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden>Third panel</div>
+</div>
+
+<script>
+  for (const root of document.querySelectorAll(".tabs")) {
+    const tabs = [...root.querySelectorAll('[role="tab"]')];
+    const select = (tab) => {
+      for (const t of tabs) {
+        const selected = t === tab;
+        t.setAttribute("aria-selected", selected);
+        t.tabIndex = selected ? 0 : -1;
+        document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
+      }
+      tab.focus();
+    };
+    for (const tab of tabs) {
+      tab.addEventListener("click", () => select(tab));
+      tab.addEventListener("keydown", (event) => {
+        const i = tabs.indexOf(tab);
+        const next = {
+          ArrowRight: tabs[(i + 1) % tabs.length],
+          ArrowLeft: tabs[(i - 1 + tabs.length) % tabs.length],
+          Home: tabs[0],
+          End: tabs[tabs.length - 1],
+        }[event.key];
+        if (next) {
+          event.preventDefault();
+          select(next);
+        }
+      });
+    }
+  }
+</script>

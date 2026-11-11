@@ -1,0 +1,12 @@
+---
+title: Visually Hidden
+description: Hides content visually while keeping it available to screen readers. Useful for icon-only buttons and extra context for links.
+tags: [accessibility, utility, css]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<button type="button">
+  <span aria-hidden="true">&times;</span>
+  <span class="visually-hidden">Close dialog</span>
+</button>

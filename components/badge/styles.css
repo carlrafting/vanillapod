@@ -1,0 +1,17 @@
+@scope (.badge) {
+  :scope {
+    --badge-color: gray;
+    display: inline-block;
+    padding: 0.1em 0.6em;
+    border-radius: 999px;
+    font-size: 0.8em;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--badge-color);
+    background-color: color-mix(in srgb, var(--badge-color) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--badge-color) 40%, transparent);
+  }
+  :scope[data-variant="success"] { --badge-color: seagreen; }
+  :scope[data-variant="warning"] { --badge-color: darkorange; }
+  :scope[data-variant="danger"] { --badge-color: crimson; }
+}
