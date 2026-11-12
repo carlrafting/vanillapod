@@ -6,14 +6,14 @@ type: playground
 
 <aside>
   <ul>
-{{ for component of search.pages("type=component") }}
+{{ for component of search.pages("type=component", "title=asc") }}
 <li><a href="{{ component.url }}"> {{ component.title }}</a></li>
 {{ /for }}
   </ul>
 </aside>
 
 <main>
-{{ for component of search.pages("type=component") }}
+{{ for component of search.pages("type=component", "title=asc") }}
   <h2>{{ component.title }}</h2>
   {{ if component.tags && component.tags.length > 0 }}
     <div class="tags">
