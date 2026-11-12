@@ -1,0 +1,19 @@
+@scope (.card) {
+  :scope {
+    --card-border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    --card-radius: 0.5rem;
+    --card-padding: 1rem;
+    --card-gap: 0.5rem;
+    --card-header-font-weight: 600;
+    --card-footer-font-size: 0.9em;
+    --card-footer-opacity: 80%;
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    display: grid;
+    gap: var(--card-gap);
+  }
+  :scope > * { margin: 0; }
+  header { font-weight: var(--card-header-font-weight); }
+  footer { font-size: var(--card-footer-font-size); opacity: var(--card-footer-opacity); }
+}

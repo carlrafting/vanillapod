@@ -1,0 +1,11 @@
+@scope (.password-input) {
+  :scope {
+    --password-input-gap: 0.5rem;
+    --password-input-label-gap: 0.25rem;
+    display: grid;
+    gap: var(--password-input-label-gap);
+  }
+  div { display: flex; gap: var(--password-input-gap); }
+  input { flex: 1; }
+  button { min-inline-size: var(--password-input-button-min-size, 9em); }
+}

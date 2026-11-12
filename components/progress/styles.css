@@ -1,0 +1,28 @@
+@scope (.progress) {
+  :scope {
+    --progress-color: royalblue;
+    --progress-track: color-mix(in srgb, currentColor 15%, transparent);
+    --progress-size: 0.75rem;
+    --progress-radius: 999px;
+    appearance: none;
+    display: block;
+    inline-size: 100%;
+    block-size: var(--progress-size);
+    border: 0;
+    border-radius: var(--progress-radius);
+    background: var(--progress-track);
+    accent-color: var(--progress-color);
+  }
+  :scope::-webkit-progress-bar {
+    background: var(--progress-track);
+    border-radius: var(--progress-radius);
+  }
+  :scope::-webkit-progress-value {
+    background: var(--progress-color);
+    border-radius: var(--progress-radius);
+  }
+  :scope::-moz-progress-bar {
+    background: var(--progress-color);
+    border-radius: var(--progress-radius);
+  }
+}

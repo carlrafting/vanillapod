@@ -1,0 +1,27 @@
+---
+title: Copy Button
+description: Copies the text of a target element to the clipboard using the Clipboard API and announces the result. Point data-copy-target at an element id.
+tags: [utility, accessibility, javascript]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<pre><code id="copy-source">deno task serve</code></pre>
+<button type="button" class="copy-button" data-copy-target="copy-source">Copy</button>
+<span class="copy-status" role="status" aria-live="polite"></span>
+
+<script>
+  for (const button of document.querySelectorAll("[data-copy-target]")) {
+    button.addEventListener("click", async () => {
+      const text = document.getElementById(button.dataset.copyTarget).textContent;
+      const status = button.nextElementSibling;
+      try {
+        await navigator.clipboard.writeText(text);
+        status.textContent = "Copied!";
+      } catch {
+        status.textContent = "Copy failed";
+      }
+      setTimeout(() => (status.textContent = ""), 2000);
+    });
+  }
+</script>
