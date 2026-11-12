@@ -31,6 +31,10 @@
     transition-duration: var(--toast-duration);
     transition-timing-function: var(--toast-easing);
   }
+  .toast:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
   .toast[data-variant="info"] { --toast-color: royalblue; }
   .toast[data-variant="success"] { --toast-color: seagreen; }
   .toast[data-variant="warning"] { --toast-color: darkorange; }
