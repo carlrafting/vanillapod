@@ -18,8 +18,16 @@
     background-color: var(--badge-background);
     border: var(--badge-border);
   }
-  :scope[data-variant="info"] { --badge-color: royalblue; }
-  :scope[data-variant="success"] { --badge-color: seagreen; }
-  :scope[data-variant="warning"] { --badge-color: darkorange; }
-  :scope:is([data-variant="danger"], [data-variant="error"]) { --badge-color: crimson; }
+  :scope[data-variant="info"] {
+    --badge-color: royalblue;
+  }
+  :scope[data-variant="success"] {
+    --badge-color: seagreen;
+  }
+  :scope[data-variant="warning"] {
+    --badge-color: darkorange;
+  }
+  :scope:is([data-variant="danger"], [data-variant="error"]) {
+    --badge-color: crimson;
+  }
 }
