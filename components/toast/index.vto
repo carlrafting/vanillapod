@@ -1,6 +1,6 @@
 ---
 title: Toast
-description: Transient notifications announced through an aria-live region. Call showToast(message, { variant, timeout }) to add one, it removes itself after a timeout, which pauses while hovered. Variants are info, success, warning and danger (or error). Configure animation with data-animation="slide|fade|none" on the region or a single toast, and tune it with --toast-duration, --toast-easing and --toast-offset.
+description: Transient notifications announced through an aria-live region. Call showToast(message, { variant, timeout }) to add one, it removes itself after a timeout, which pauses while hovered, or when clicked. Variants are info, success, warning and danger (or error). Configure animation with data-animation="slide|fade|none" on the region or a single toast, and tune it with --toast-duration, --toast-easing and --toast-offset.
 tags: [feedback, accessibility, javascript]
 ---
 
@@ -49,6 +49,7 @@ tags: [feedback, accessibility, javascript]
     const pause = () => clearTimeout(timer);
     toast.addEventListener("mouseenter", pause);
     toast.addEventListener("mouseleave", start);
+    toast.addEventListener("click", remove);
     start();
   }
 
