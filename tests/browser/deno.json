@@ -1,9 +1,9 @@
 {
   "imports": {
-    "playwright": "npm:playwright@1.56.1"
+    "playwright": "npm:playwright@^1.65.0"
   },
   "tasks": {
-    "install-browser": "deno run -A npm:playwright@1.56.1 install chromium",
+    "install-browser": "deno run -A npm:playwright@^1.65.0 install chromium",
     "test": "deno test --allow-env --allow-net --allow-read --allow-run --allow-write --allow-sys"
   }
 }

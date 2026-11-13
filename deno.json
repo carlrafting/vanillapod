@@ -79,7 +79,6 @@
   },
   "lock": false,
   "workspace": [
-    "./assets",
     "./dom",
     "./legacy",
     "./tests/browser"

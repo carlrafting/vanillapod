@@ -69,8 +69,12 @@ export function createMountable(
               delete props[key];
               continue;
             }
-            element[key] = value;
-            if (key.indexOf(eventKey) === indexOfStart) {
+            const isEvent = key.indexOf(eventKey) === indexOfStart &&
+              typeof value === "function";
+            // event handlers are delegated from the root; assigning them
+            // directly as well would fire them twice
+            if (!isEvent) element[key] = value;
+            if (isEvent) {
               const sliceStart = eventKey.length;
               const normalizedEvent = key
                 .slice(sliceStart)
