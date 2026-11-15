@@ -1,5 +1,8 @@
 import {
+  bind,
+  bindList,
   button,
+  createStore,
   div,
   form,
   h1,
@@ -17,8 +20,7 @@ import {
 
 const storageKey = "vanillapod-example-tasks";
 const filters = ["all", "active", "completed"];
-let selectedFilter = "all";
-let tasks = loadTasks();
+const store = createStore({ tasks: loadTasks(), filter: "all" });
 
 const app = document.querySelector("#app");
 const taskInput = input({
@@ -32,7 +34,10 @@ const taskInput = input({
 taskInput.setAttribute("required", "");
 taskInput.setAttribute("aria-describedby", "task-hint");
 
-const taskList = div({ className: "task-list-region" }).firstElementChild;
+const list = ul({ className: "task-list" }).firstElementChild;
+const emptyState = p({ className: "empty-state" }).firstElementChild;
+const taskList = div({ className: "task-list-region" }, list, emptyState)
+  .firstElementChild;
 const taskCount =
   span({ className: "task-count" }, "0 tasks").firstElementChild;
 const feedback = p({ className: "feedback", role: "status" }).firstElementChild;
@@ -43,22 +48,26 @@ filterNav.setAttribute("role", "group");
 filterNav.setAttribute("aria-label", "Filter tasks");
 
 for (const filter of filters) {
-  const filterFragment = button(
+  const filterButton = button(
     { className: "filter-button", type: "button" },
     filter[0].toUpperCase() + filter.slice(1),
-  );
-  const filterButton = filterFragment.firstElementChild;
+  ).firstElementChild;
   filterButton.dataset.filter = filter;
-  filterButton.setAttribute("aria-pressed", String(filter === selectedFilter));
+  filterButton.addEventListener("click", () => {
+    store.filter = filter;
+  });
   filterButtons.set(filter, filterButton);
   filterNav.append(filterButton);
 }
 
-const clearCompletedFragment = button(
+const clearCompletedButton = button(
   { className: "clear-button", type: "button" },
   "Clear completed",
-);
-const clearCompletedButton = clearCompletedFragment.firstElementChild;
+).firstElementChild;
+clearCompletedButton.addEventListener("click", () => {
+  store.tasks = store.tasks.filter(({ completed }) => !completed);
+  persist();
+});
 
 const taskForm = form(
   { className: "task-form" },
@@ -73,6 +82,25 @@ const taskForm = form(
     "Keep it small. You can always add another.",
   ),
 ).firstElementChild;
+
+taskForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const title = taskInput.value.trim();
+  if (!title) {
+    taskInput.focus();
+    return;
+  }
+
+  store.tasks.unshift({
+    id: crypto.randomUUID(),
+    title,
+    completed: false,
+  });
+  taskInput.value = "";
+  feedback.textContent = "";
+  persist();
+  taskInput.focus();
+});
 
 const taskCard = section({ className: "task-card" }).firstElementChild;
 taskCard.setAttribute("aria-label", "Your tasks");
@@ -113,59 +141,19 @@ const appContent = main(
 
 render([appContent], app);
 
-taskForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const title = taskInput.value.trim();
-  if (!title) {
-    taskInput.focus();
-    return;
+bind(store, "filter", (current) => {
+  for (const [filter, filterButton] of filterButtons) {
+    filterButton.setAttribute("aria-pressed", String(filter === current));
   }
-
-  tasks.unshift({
-    id: crypto.randomUUID(),
-    title,
-    completed: false,
-  });
-  taskInput.value = "";
-  feedback.textContent = "";
-  persistAndRender();
-  taskInput.focus();
+  refreshSummary();
 });
 
-app.addEventListener("change", (event) => {
-  if (!event.target.matches(".task-toggle")) return;
-  const taskItem = event.target.closest("[data-task-id]");
-  const task = tasks.find(({ id }) => id === taskItem.dataset.taskId);
-  if (!task) return;
-
-  task.completed = event.target.checked;
-  persistAndRender();
+bindList(store, "tasks", {
+  parent: list,
+  key: (task) => task.id,
+  render: createTaskItem,
+  onUpdate: refreshSummary,
 });
-
-app.addEventListener("click", (event) => {
-  const actionButton = event.target.closest("button");
-  if (!actionButton) return;
-
-  if (actionButton.matches(".filter-button")) {
-    selectedFilter = actionButton.dataset.filter;
-    renderTasks();
-    return;
-  }
-
-  if (actionButton.matches(".delete-button")) {
-    const taskItem = actionButton.closest("[data-task-id]");
-    tasks = tasks.filter(({ id }) => id !== taskItem.dataset.taskId);
-    persistAndRender();
-    return;
-  }
-
-  if (actionButton.matches(".clear-button")) {
-    tasks = tasks.filter(({ completed }) => !completed);
-    persistAndRender();
-  }
-});
-
-renderTasks();
 
 function loadTasks() {
   try {
@@ -193,63 +181,50 @@ function loadTasks() {
   }
 }
 
-function persistAndRender() {
+function persist() {
   try {
-    localStorage.setItem(storageKey, JSON.stringify(tasks));
+    localStorage.setItem(storageKey, JSON.stringify(store.tasks));
     feedback.textContent = "";
   } catch (error) {
     console.error("Could not save tasks on this device.", error);
     feedback.textContent = "Your changes could not be saved on this device.";
   }
-  renderTasks();
 }
 
-function renderTasks() {
-  const visibleTasks = tasks.filter((task) => {
-    if (selectedFilter === "active") return !task.completed;
-    if (selectedFilter === "completed") return task.completed;
-    return true;
-  });
+function matchesFilter(task, filter) {
+  if (filter === "active") return !task.completed;
+  if (filter === "completed") return task.completed;
+  return true;
+}
 
-  for (const [filter, filterButton] of filterButtons) {
-    filterButton.setAttribute(
-      "aria-pressed",
-      String(filter === selectedFilter),
-    );
-  }
+function refreshSummary() {
+  const { tasks, filter } = store;
+  const visible = tasks.filter((task) => matchesFilter(task, filter)).length;
+  const remaining = tasks.filter(({ completed }) => !completed).length;
 
-  if (visibleTasks.length === 0) {
-    const message = selectedFilter === "completed"
+  list.hidden = visible === 0;
+  emptyState.hidden = visible !== 0;
+  if (visible === 0) {
+    emptyState.textContent = filter === "completed"
       ? "Completed tasks will show up here."
-      : selectedFilter === "active"
+      : filter === "active"
       ? "You’re all caught up."
       : "Nothing on your list yet. Add one small thing to begin.";
-    taskList.replaceChildren(p({ className: "empty-state" }, message));
-  } else {
-    const list = ul({ className: "task-list" }).firstElementChild;
-    for (const task of visibleTasks) {
-      list.append(createTaskItem(task));
-    }
-    taskList.replaceChildren(list);
   }
 
-  const remaining = tasks.filter(({ completed }) => !completed).length;
   taskCount.textContent = `${remaining} ${
     remaining === 1 ? "task" : "tasks"
   } left`;
   clearCompletedButton.disabled = !tasks.some(({ completed }) => completed);
 }
 
-function createTaskItem(task) {
-  const item = li({
-    className: task.completed ? "task-item is-complete" : "task-item",
-  }).firstElementChild;
+function createTaskItem(task, { onCleanup }) {
+  const item = li({ className: "task-item" }).firstElementChild;
   item.dataset.taskId = task.id;
 
   const toggle = input({
     className: "task-toggle",
     type: "checkbox",
-    checked: task.completed,
   }).firstElementChild;
   toggle.setAttribute("aria-label", `Toggle completion for "${task.title}"`);
 
@@ -261,5 +236,30 @@ function createTaskItem(task) {
   remove.setAttribute("aria-label", `Delete "${task.title}"`);
 
   item.append(toggle, title, remove);
+
+  const stopCompleted = bind(task, "completed", (completed) => {
+    item.classList.toggle("is-complete", completed);
+    toggle.checked = completed;
+    item.hidden = !matchesFilter(task, store.filter);
+    refreshSummary();
+  });
+  const stopFilter = bind(store, "filter", () => {
+    item.hidden = !matchesFilter(task, store.filter);
+  });
+  onCleanup(() => {
+    stopCompleted();
+    stopFilter();
+  });
+
+  toggle.addEventListener("change", () => {
+    task.completed = toggle.checked;
+    persist();
+  });
+  remove.addEventListener("click", () => {
+    const index = store.tasks.indexOf(task);
+    if (index !== -1) store.tasks.splice(index, 1);
+    persist();
+  });
+
   return item;
 }
