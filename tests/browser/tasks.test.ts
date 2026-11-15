@@ -26,7 +26,8 @@ Deno.test("Tasks example app in Chromium", async (t) => {
     await page.click(".add-button");
   }
 
-  const titles = (page: any) => page.locator(".task-title").allTextContents();
+  const titles = (page: any) =>
+    page.locator(".task-item:visible .task-title").allTextContents();
   const countText = (page: any) => page.locator(".task-count").textContent();
   const stored = (page: any) =>
     page.evaluate(
