@@ -1,5 +1,12 @@
 import { assert, assertEquals, assertFalse } from "@std/assert";
-import { checkType, createArray, debounce, delay, isEqual } from "./utils.js";
+import {
+  checkType,
+  createArray,
+  createLocalStorage,
+  debounce,
+  delay,
+  isEqual,
+} from "./utils.js";
 
 Deno.test("checkType returns lowercase type names", () => {
   assertEquals(checkType([]), "array");
@@ -52,4 +59,49 @@ Deno.test("debounce collapses rapid calls into one", async () => {
   await new Promise((r) => setTimeout(r, 60));
   assertEquals(count, 1);
   assertEquals(last, 3);
+});
+
+function withFakeLocalStorage(run: (store: Map<string, string>) => void) {
+  const store = new Map<string, string>();
+  const fake = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, String(value)),
+  };
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  Object.defineProperty(globalThis, "localStorage", {
+    value: fake,
+    configurable: true,
+  });
+  try {
+    run(store);
+  } finally {
+    if (original) Object.defineProperty(globalThis, "localStorage", original);
+    else delete (globalThis as { localStorage?: unknown }).localStorage;
+  }
+}
+
+Deno.test("createLocalStorage round-trips JSON data under its key", () => {
+  withFakeLocalStorage((store) => {
+    const storage = createLocalStorage("tasks");
+    storage.write([{ id: "a", done: false }]);
+    assertEquals(store.get("tasks"), '[{"id":"a","done":false}]');
+    assertEquals(storage.read(), [{ id: "a", done: false }]);
+  });
+});
+
+Deno.test("createLocalStorage read returns initialData when nothing is saved", () => {
+  withFakeLocalStorage(() => {
+    assertEquals(createLocalStorage("missing", { count: 0 }).read(), {
+      count: 0,
+    });
+    assertEquals(createLocalStorage("missing").read(), null);
+  });
+});
+
+Deno.test("createLocalStorage read falls back to initialData for an empty array", () => {
+  withFakeLocalStorage(() => {
+    const storage = createLocalStorage("list", ["seed"]);
+    storage.write([]);
+    assertEquals(storage.read(), ["seed"]);
+  });
 });
