@@ -69,6 +69,23 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { before: 2, after: 1, remaining: "two" });
     });
 
+    await t.step("destroy without a position clears all children in debug mode", async () => {
+      const result = await page.evaluate(async () => {
+        const { p, render } = await import("/dom/main.js");
+        const debugModule = await import("/dom/src/debug.js");
+        debugModule.default(true);
+        try {
+          const root = document.createElement("main");
+          const destroy = render([p("one"), p("two")], root);
+          destroy();
+          return root.children.length;
+        } finally {
+          debugModule.default(false);
+        }
+      });
+      assertEquals(result, 0);
+    });
+
     await t.step("render throws without a root", async () => {
       const message = await page.evaluate(async () => {
         const { p, render } = await import("/dom/main.js");

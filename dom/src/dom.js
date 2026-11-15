@@ -375,7 +375,7 @@ export function render(
     createRoot(root);
   });
   return function destroy(position = null) {
-    if (typeof position !== "number") {
+    if (position !== null && typeof position !== "number") {
       createError("destroy: expected position to be of value Number");
     }
     const rootChildren = root.querySelectorAll("*");

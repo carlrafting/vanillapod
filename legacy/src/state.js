@@ -176,7 +176,7 @@ export function store(value) {
         ? (Object.hasOwn(prevState, key) && {
           ...prevState[key],
           ...value,
-        }) || { [key]: { ...value } }
+        }) || { ...value }
         : valueType === "array"
         ? [...value]
         : value,
