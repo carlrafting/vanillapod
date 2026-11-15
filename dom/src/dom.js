@@ -1,80 +1,6 @@
 import { checkType } from "./utils.js";
 import setElementEventHandlers from "./events.js";
 
-export const validProps = {
-  element: null,
-  el: null,
-  data: {},
-  classList: [],
-  classNames: [],
-  attributes: {},
-  attrs: {},
-  properties: {},
-  props: {},
-  children: [],
-  text: null,
-  events: {},
-  on: {},
-  hooks: {},
-};
-
-export function validateProps(props) {
-  for (const key in props) {
-    if (!Object.hasOwn(validProps, key)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function setElementProperties(element, { props, properties }) {
-  const values = props || properties;
-  if (values) {
-    for (const key of Object.keys(values)) {
-      element[key] = values[key];
-    }
-  }
-}
-
-function setElementAttributes(
-  element,
-  { attributes, attrs, classList, classNames, data },
-) {
-  const classes = classList || classNames;
-  if (classes) {
-    for (const className of classes) {
-      element.classList.add(className);
-    }
-  }
-
-  if (data) {
-    for (const key in data) {
-      if (Object.hasOwn(data, key)) {
-        element.dataset[key] = data[key];
-      }
-    }
-  }
-
-  const attributeMap = attrs || attributes;
-  if (attributeMap) {
-    const values = typeof attributeMap === "function"
-      ? attributeMap()
-      : attributeMap;
-    for (const key in values) {
-      if (Object.hasOwn(values, key)) {
-        element.setAttribute(key, values[key]);
-      }
-    }
-  }
-}
-
-function setElementTextContent(element, { text }) {
-  if (text && text !== "") {
-    element.textContent = text;
-  }
-}
-
 /**
  * @param {unknown[]} args
  */
@@ -102,9 +28,42 @@ export function createElement(element, ...args) {
     element = document.createElement(element);
   }
 
-  setElementProperties(element, props);
-  setElementAttributes(element, props);
-  setElementTextContent(element, props);
+  const values = props.props || props.properties;
+  if (values) {
+    for (const key of Object.keys(values)) {
+      element[key] = values[key];
+    }
+  }
+
+  const { classList, classNames, data, attributes, attrs, text } = props;
+  const classes = classList || classNames;
+  if (classes) {
+    for (const className of classes) {
+      element.classList.add(className);
+    }
+  }
+  if (data) {
+    for (const key in data) {
+      if (Object.hasOwn(data, key)) {
+        element.dataset[key] = data[key];
+      }
+    }
+  }
+  const attributeMap = attrs || attributes;
+  if (attributeMap) {
+    const attributeValues = typeof attributeMap === "function"
+      ? attributeMap()
+      : attributeMap;
+    for (const key in attributeValues) {
+      if (Object.hasOwn(attributeValues, key)) {
+        element.setAttribute(key, attributeValues[key]);
+      }
+    }
+  }
+  if (text && text !== "") {
+    element.textContent = text;
+  }
+
   setElementEventHandlers(element, props);
 
   return {
@@ -150,7 +109,7 @@ export function createMountable(
     }
     if (checkType(element) === "object") {
       // NOTE: backwards compat
-      if (validateProps(element)) {
+      if (element.el || element.element) {
         for (const key of Object.keys(element.props)) {
           if (elPropsBlacklist.has(key)) {
             console.log("found it!");

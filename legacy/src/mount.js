@@ -1,6 +1,6 @@
 import { registerHooks, triggerHook } from "./hooks.js";
 import { checkType } from "./utils.js";
-import { createElement, validateProps } from "./dom.js";
+import { createElement } from "./dom.js";
 
 /**
  * @param {any} vanillapodComponent
@@ -19,12 +19,10 @@ export function createComponentInstance(
       return;
     }
 
-    if (validateProps(props)) {
-      return {
-        vanillapodComponent,
-        ...props,
-      };
-    }
+    return {
+      vanillapodComponent,
+      ...props,
+    };
   }
 }
 
