@@ -1,4 +1,4 @@
-import { assertEquals, assertStrictEquals } from "@std/assert";
+import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
 import { bind, bindList, createStore, flush } from "./state.js";
 
 // Minimal stand-in for the DOM operations bindList relies on.
@@ -124,6 +124,27 @@ Deno.test("bindList disposes item bindings when items are removed", () => {
   assertEquals(parent.children.length, 1);
 });
 
+Deno.test("bindList rejects duplicate keys without rendering or touching the DOM", () => {
+  const store = createStore({ items: [{ id: 1 }, { id: 1 }, { id: 2 }] });
+  const parent = new FakeParent();
+  let created = 0;
+  assertThrows(
+    () =>
+      bindList(store, "items", {
+        parent: parent as unknown as Element,
+        key: (item: { id: number }) => item.id,
+        render: (item: { id: number }) => {
+          created++;
+          return new FakeNode(String(item.id)) as unknown as Node;
+        },
+      }),
+    Error,
+    "duplicate key 1",
+  );
+  assertEquals(created, 0);
+  assertEquals(parent.children.length, 0);
+});
+
 Deno.test("item edits do not re-run list reconciliation", () => {
   const store = createStore({ items: [{ id: 1, done: false }] });
   const parent = new FakeParent();
@@ -138,4 +159,54 @@ Deno.test("item edits do not re-run list reconciliation", () => {
   store.items[0].done = true;
   flush();
   assertEquals(reconciles, 1);
+});
+
+Deno.test("bindList follows sort and replacement of a nested array", () => {
+  const store = createStore({ user: { items: [{ id: 1 }, { id: 2 }] } });
+  const parent = new FakeParent();
+  bindList(store.user, "items", {
+    parent: parent as unknown as Element,
+    key: (item: { id: number }) => item.id,
+    render: (item: { id: number }) =>
+      new FakeNode(String(item.id)) as unknown as Node,
+  });
+
+  store.user.items.sort((a: { id: number }, b: { id: number }) => b.id - a.id);
+  flush();
+  assertEquals(parent.children.map((n) => n.label), ["2", "1"]);
+
+  store.user.items = [{ id: 3 }];
+  flush();
+  assertEquals(parent.children.map((n) => n.label), ["3"]);
+});
+
+Deno.test("disposing a list from another binding does not throw on flush", () => {
+  const store = createStore({ items: [{ id: 1 }], open: true });
+  const parent = new FakeParent();
+  const dispose = bindList(store, "items", {
+    parent: parent as unknown as Element,
+    key: (item: { id: number }) => item.id,
+    render: () => new FakeNode("x") as unknown as Node,
+  });
+  bind(store, "open", (open: boolean) => {
+    if (!open) dispose();
+  });
+
+  store.open = false;
+  store.items.push({ id: 2 });
+  flush();
+  assertEquals(parent.children.length, 0);
+});
+
+Deno.test("writes made while flushing are applied in the same flush", () => {
+  const store = createStore({ a: 0, b: 0 });
+  const seen: number[] = [];
+  bind(store, "a", (value: number) => {
+    store.b = value * 10;
+  });
+  bind(store, "b", (value: number) => seen.push(value));
+
+  store.a = 2;
+  flush();
+  assertEquals(seen, [0, 20]);
 });

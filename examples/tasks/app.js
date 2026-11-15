@@ -165,12 +165,16 @@ function loadTasks() {
       throw new TypeError("Saved task data must be an array.");
     }
 
-    const validTasks = parsed.filter((task) =>
-      task &&
-      typeof task.id === "string" &&
-      typeof task.title === "string" &&
-      typeof task.completed === "boolean"
-    );
+    const seenIds = new Set();
+    const validTasks = parsed.filter((task) => {
+      const valid = task &&
+        typeof task.id === "string" &&
+        typeof task.title === "string" &&
+        typeof task.completed === "boolean" &&
+        !seenIds.has(task.id);
+      if (valid) seenIds.add(task.id);
+      return valid;
+    });
     if (validTasks.length !== parsed.length) {
       console.warn("Some saved tasks were invalid and have been skipped.");
     }

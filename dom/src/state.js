@@ -11,8 +11,7 @@ const ANY = Symbol("any");
 const proxies = new WeakMap();
 const raws = new WeakMap();
 const channels = new WeakMap();
-const pending = new Set();
-let scheduled = false;
+const scheduler = { pending: new Set(), scheduled: false };
 
 function isPlain(value) {
   if (value === null || typeof value !== "object") return false;
@@ -36,13 +35,15 @@ function wrap(raw) {
 }
 
 function schedule(sub) {
-  pending.add(sub);
-  if (!scheduled) {
-    scheduled = true;
+  scheduler.pending.add(sub);
+  if (!scheduler.scheduled) {
+    scheduler.scheduled = true;
     queueMicrotask(flush);
   }
 }
 
+// Subscribers on ANY (e.g. bindList watching an array's contents) run on every
+// write to the object, not only writes to a specific key.
 function notify(raw, key) {
   const map = channels.get(raw);
   if (!map) return;
@@ -62,7 +63,6 @@ function subscribe(raw, key, run) {
   return () => {
     sub.active = false;
     subs.delete(sub);
-    pending.delete(sub);
   };
 }
 
@@ -90,9 +90,9 @@ const handler = {
  * writes; call it directly to apply updates synchronously.
  */
 export function flush() {
-  while (pending.size) {
-    const batch = [...pending];
-    pending.clear();
+  while (scheduler.pending.size) {
+    const batch = [...scheduler.pending];
+    scheduler.pending.clear();
     for (const sub of batch) {
       if (!sub.active) continue;
       try {
@@ -102,7 +102,7 @@ export function flush() {
       }
     }
   }
-  scheduled = false;
+  scheduler.scheduled = false;
 }
 
 /**
@@ -134,7 +134,9 @@ export function bind(source, key, updater) {
  * when the array changes, and only removed or moved when needed. Each item's
  * own bindings are untouched by list changes.
  *
- * The `parent` element is owned by the list: its children are managed here.
+ * The `parent` element is owned by the list: all of its children are managed
+ * here, and items are kept in array order at the end of `parent`. Do not place
+ * other children in `parent`, or they may be moved past.
  *
  * @param {object} source - store or nested store object holding the array
  * @param {PropertyKey} key - property holding the array
@@ -169,15 +171,24 @@ export function bindList(source, key, {
   };
 
   const reconcile = (list) => {
+    const items = list ?? [];
+    const keys = items.map((item, index) => keyOf(item, index));
+    const seen = new Set();
+    for (const itemKey of keys) {
+      if (seen.has(itemKey)) {
+        throw new Error(`bindList: duplicate key ${String(itemKey)}`);
+      }
+      seen.add(itemKey);
+    }
+
     const next = new Map();
     const ordered = [];
-    let index = 0;
-    for (const item of list ?? []) {
-      const itemKey = keyOf(item, index++);
+    items.forEach((item, index) => {
+      const itemKey = keys[index];
       const entry = entries.get(itemKey) ?? createEntry(item);
       next.set(itemKey, entry);
       ordered.push(entry);
-    }
+    });
 
     for (const [itemKey, entry] of entries) {
       if (!next.has(itemKey)) {
