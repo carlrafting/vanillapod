@@ -1,4 +1,3 @@
-import { createError } from "./error.js";
 import { checkType, createArray } from "./utils.js";
 
 console.time("state");
@@ -14,9 +13,6 @@ const effects = createArray([]);
  */
 function notify(listeners, prevState, currentState) {
   console.time("notify");
-  /* if (listeners.size === 0) {
-        createError('state: No listeners registered!');
-    } */
   console.log({ listeners });
   for (const subscriber of listeners) {
     // console.log('notifyListeners', listener);
@@ -160,9 +156,6 @@ export function store(value) {
    * @returns
    */
   const setStore = (key, value) => {
-    if (key && typeof key !== "string") {
-      createError(`Value must be of type 'String'!`, TypeError);
-    }
     prevState = state;
     const valueType = checkType(value);
     if (valueType === "function") {
@@ -306,16 +299,11 @@ export function onChange(prev, current, fn) {
  */
 export function memo(fn = () => {}) {
   if (!fn || fn === null || typeof fn !== "function") {
-    return createError(
-      "memo: expected argument to be a function",
-      TypeError,
-    );
+    return;
   }
   // const cache = new WeakMap();
   const cache = new Map();
-  const ref = (
-    /** @type {any[]} */ ...args
-  ) => {
+  const ref = (/** @type {any[]} */ ...args) => {
     const key = JSON.stringify([...args]);
     // const key = [...args];
     console.log("memo: key", key);

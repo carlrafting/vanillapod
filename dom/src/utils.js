@@ -1,5 +1,3 @@
-import { createError } from "./error.js";
-
 /**
  * delay
  *
@@ -99,9 +97,7 @@ export function checkType(value = null) {
  */
 export function traverseChildNodes(parent = null, callback = () => {}) {
   if (!parent) {
-    return createError(
-      `Expected parent parameter to be set, was ${parent}`,
-    );
+    return;
   }
 
   const childCount = parent.childNodes.length;

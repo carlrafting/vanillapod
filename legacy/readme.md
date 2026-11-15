@@ -141,10 +141,7 @@ inside a component.
 Here are the methods available for working with explicit components:
 
 - [setElementEventHandlers](./src/events.js)
-- [setElementAttributes](./src/attributes.js)
-- [setElementProperties](./src/properties.js)
-- [setElementTextContent](./src/text.js)
-- [createElement](./src/element.js#L92)
+- [createElement](./src/dom.js)
 - [createDocumentFragment](./src/fragment.js)
 
 ```javascript
@@ -177,9 +174,9 @@ the experience of using createElement as smooth as possible.
 
 These are the three different alias methods for createElement:
 
-- [`h`](./src/element.js#L126)
-- [`e`](./src/element.js#L127)
-- [`html`](./src/element.js#L128)
+- [`h`](./src/dom.js)
+- [`e`](./src/dom.js)
+- [`html`](./src/dom.js)
 
 ### Mounting
 
@@ -358,7 +355,7 @@ function myComponent() {
 }
 ```
 
-Use `setElementAttributes` for explicit components.
+Pass `attributes` or `attrs` for explicit components.
 
 ### Properties
 
@@ -376,7 +373,7 @@ function myComponent() {
 }
 ```
 
-Use `setElementProperties` for explicit components.
+Pass `properties` or `props` for explicit components.
 
 ### Events
 
@@ -507,22 +504,6 @@ mount(null, Fragment);
 ...
 
 ## Debugging
-
-If anything is not going as expected, you can always turn on debugging.
-vanillapod.js will then output what it's doing along the way. To turn on
-debugging, do the following:
-
-```javascript
-// yourscript.js
-
-import { debug } from "vanillapod";
-
-debug(true);
-
-// to read debug value, call debug().
-
-debug(); // returns true
-```
 
 ## Example App
 

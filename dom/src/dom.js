@@ -1,12 +1,123 @@
-import { createError } from "./error.js";
 import { checkType } from "./utils.js";
-import { h, validateProps } from "./element.js";
+import setElementEventHandlers from "./events.js";
+
+export const validProps = {
+  element: null,
+  el: null,
+  data: {},
+  classList: [],
+  classNames: [],
+  attributes: {},
+  attrs: {},
+  properties: {},
+  props: {},
+  children: [],
+  text: null,
+  events: {},
+  on: {},
+  hooks: {},
+};
+
+export function validateProps(props) {
+  for (const key in props) {
+    if (!Object.hasOwn(validProps, key)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function setElementProperties(element, { props, properties }) {
+  const values = props || properties;
+  if (values) {
+    for (const key of Object.keys(values)) {
+      element[key] = values[key];
+    }
+  }
+}
+
+function setElementAttributes(
+  element,
+  { attributes, attrs, classList, classNames, data },
+) {
+  const classes = classList || classNames;
+  if (classes) {
+    for (const className of classes) {
+      element.classList.add(className);
+    }
+  }
+
+  if (data) {
+    for (const key in data) {
+      if (Object.hasOwn(data, key)) {
+        element.dataset[key] = data[key];
+      }
+    }
+  }
+
+  const attributeMap = attrs || attributes;
+  if (attributeMap) {
+    const values = typeof attributeMap === "function"
+      ? attributeMap()
+      : attributeMap;
+    for (const key in values) {
+      if (Object.hasOwn(values, key)) {
+        element.setAttribute(key, values[key]);
+      }
+    }
+  }
+}
+
+function setElementTextContent(element, { text }) {
+  if (text && text !== "") {
+    element.textContent = text;
+  }
+}
 
 /**
- * @param  {...unknown} output
- * @returns {void}
+ * @param {unknown[]} args
  */
-const log = (...output) => console.log(...output);
+export function createElement(element, ...args) {
+  let props = {};
+
+  for (const arg of args) {
+    if (Array.isArray(arg)) {
+      props.children = arg;
+      break;
+    }
+    if (typeof arg === "function") {
+      const result = arg();
+      props = result && typeof result === "object" ? result : {};
+      break;
+    }
+    props = arg;
+  }
+
+  if (!element) {
+    return;
+  }
+
+  if (typeof element === "string") {
+    element = document.createElement(element);
+  }
+
+  setElementProperties(element, props);
+  setElementAttributes(element, props);
+  setElementTextContent(element, props);
+  setElementEventHandlers(element, props);
+
+  return {
+    ...props,
+    element,
+    el: element,
+  };
+}
+
+// aliases for createElement
+export const h = createElement;
+export const e = createElement;
+export const html = createElement;
 
 console.time("dom/internal");
 
@@ -119,9 +230,7 @@ export function createMountable(
               if (!elPropsBlacklist.has(prop)) {
                 return Reflect.set(target, prop, value);
               }
-              createError(
-                `createMountable: It is not allowed to set property '${prop}' with callback`,
-              );
+              return false;
             },
           });
           param(elementProxy);
@@ -205,9 +314,6 @@ function cleanupElements() {
     }
     return elements.clear();
   }
-  createError(
-    `cleanupElements: can't cleanup elements Set: ${elements.size > 0}`,
-  );
 }
 
 function createDOMMap(done = null) {
@@ -284,9 +390,7 @@ function elementIsParentNode(
   element,
 ) {
   if (!element && !parentNode) {
-    return createError(
-      `om: elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
-    );
+    return;
   }
 
   if (parentNode === element) {
@@ -331,7 +435,6 @@ function createRoot(
     }
     return (eventHandlers.length = 0);
   }
-  createError("dom: Expected root to be an instance of NodePrototype");
 }
 
 /**
@@ -375,9 +478,6 @@ export function render(
     createRoot(root);
   });
   return function destroy(position = null) {
-    if (position !== null && typeof position !== "number") {
-      createError("destroy: expected position to be of value Number");
-    }
     const rootChildren = root.querySelectorAll("*");
     if (position === null) {
       // console.log({ root });
