@@ -1,7 +1,7 @@
 // import test from 'ava';
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { createReactive, onChange, signal } from "../src/state.js";
+import { createReactive, onChange, signal, store } from "../src/state.js";
 
 describe("reactivity", () => {
   it("should handle number values", () => {
@@ -68,7 +68,41 @@ describe("signals", () => {
 });
 
 describe("store", () => {
-  it("should store different kinds of values", () => {});
+  it("returns the whole state, or a single key when it exists", () => {
+    const [getStore] = store({ count: 1, user: { name: "a" } });
+    assert.deepEqual(getStore(), { count: 1, user: { name: "a" } });
+    assert.equal(getStore("count"), 1);
+    assert.deepEqual(getStore("missing"), getStore());
+  });
+
+  it("sets primitive and array values", () => {
+    const [getStore, setStore] = store({ n: 0, tags: [] });
+    setStore("n", 5);
+    assert.equal(getStore("n"), 5);
+
+    const list = [1, 2];
+    setStore("tags", list);
+    assert.deepEqual(getStore("tags"), [1, 2]);
+    assert.notEqual(getStore("tags"), list);
+  });
+
+  it("applies a function updater to the previous value", () => {
+    const [getStore, setStore] = store({ n: 1 });
+    setStore("n", (prev) => prev + 1);
+    assert.equal(getStore("n"), 2);
+  });
+
+  it("merges object values into an existing key", () => {
+    const [getStore, setStore] = store({ user: { name: "a", age: 1 } });
+    setStore("user", { age: 2 });
+    assert.deepEqual(getStore("user"), { name: "a", age: 2 });
+  });
+
+  it("stores an object for a new key without wrapping it", () => {
+    const [getStore, setStore] = store({});
+    setStore("user", { name: "x" });
+    assert.deepEqual(getStore("user"), { name: "x" });
+  });
 });
 
 describe("onChange", () => {
