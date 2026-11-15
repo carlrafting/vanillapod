@@ -1,6 +1,6 @@
 import { registerHooks, triggerHook } from "./hooks.js";
 import { checkType } from "./utils.js";
-import { createElement } from "./dom.js";
+import { buildElement } from "./dom.js";
 
 /**
  * @param {any} vanillapodComponent
@@ -61,7 +61,7 @@ export default function mount(root, ...args) {
 
     // if el is a string, use implicit render approach
     if (checkType(el) === "string") {
-      const props = createElement(el, instance);
+      const props = buildElement(el, instance);
       el = props.el || props.element;
     }
 

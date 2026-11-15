@@ -2,24 +2,10 @@ import { checkType } from "./utils.js";
 import setElementEventHandlers from "./events.js";
 
 /**
- * @param {unknown[]} args
+ * @param {string | HTMLElement} element
+ * @param {Record<string, any>} props
  */
-export function createElement(element, ...args) {
-  let props = {};
-
-  for (const arg of args) {
-    if (Array.isArray(arg)) {
-      props.children = arg;
-      break;
-    }
-    if (typeof arg === "function") {
-      const result = arg();
-      props = result && typeof result === "object" ? result : {};
-      break;
-    }
-    props = arg;
-  }
-
+export function buildElement(element, props = {}) {
   if (!element) {
     return;
   }
@@ -73,11 +59,6 @@ export function createElement(element, ...args) {
   };
 }
 
-// aliases for createElement
-export const h = createElement;
-export const e = createElement;
-export const html = createElement;
-
 console.time("dom/internal");
 
 /**
@@ -118,9 +99,10 @@ export function createMountable(
           }
         }
 
-        const { el, children } = h(element.el || element.element, {
-          ...element,
-        });
+        const { el, children } = buildElement(
+          element.el || element.element,
+          { ...element },
+        );
         if (children) {
           el.append(...children);
         }
@@ -279,9 +261,9 @@ function createDOMMap(done = null) {
   // const memo = createMemo((fn, ...params) => fn(...params));
   for (const el of elements) {
     const fn = (...params) => {
-      const createElement = createMountable(el, true);
+      const mountable = createMountable(el, true);
       // return memo(fn, ...params);
-      return createElement(...params);
+      return mountable(...params);
     };
     dom.set(el, fn);
   }
