@@ -1,17 +1,49 @@
 name: Publish
 
-# Publish only from a version tag such as dom-v0.1.0, never on a plain push.
+# Publish when the version in dom/deno.json changes on dev. No tags needed.
+# If the version did not change, nothing runs past the first job.
 on:
   push:
-    tags:
-      - "dom-v*"
+    branches:
+      - dev
+    paths:
+      - "dom/deno.json"
 
 permissions:
   contents: read
 
 jobs:
+  check-version:
+    name: Check for a version change
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compare version with the previous commit
+        id: check
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          new=$(jq -r .version dom/deno.json)
+          old=""
+          if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            old=$(git show "$BEFORE":dom/deno.json 2>/dev/null | jq -r .version 2>/dev/null || true)
+          fi
+          echo "Previous version: ${old:-none}, current version: $new"
+          if [ "$old" != "$new" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   test:
     name: Check before publishing
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,14 +51,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
-
-      - name: Check tag matches package version
-        run: |
-          version=$(deno eval 'console.log(JSON.parse(Deno.readTextFileSync("dom/deno.json")).version)')
-          if [ "dom-v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match dom/deno.json version $version"
-            exit 1
-          fi
 
       - name: Check formatting
         run: deno fmt --check dom
