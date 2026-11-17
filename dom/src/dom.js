@@ -340,7 +340,7 @@ export const comment = (
 ) => document.createComment(text);
 
 /**
- * @param {{ parentNode: Node; } | null} parentNode
+ * @param {Node | null} parentNode
  * @param {HTMLElement} element
  */
 function elementIsParentNode(
@@ -360,7 +360,8 @@ function elementIsParentNode(
   if (parentNode === null) {
     return false;
   }
-  return elementIsParentNode(parentNode, element);
+  // walk up one level; recursing with the same parentNode never terminates
+  return elementIsParentNode(parentNode.parentNode, element);
 }
 
 function createRoot(
