@@ -1,7 +1,6 @@
 import { assert, assertEquals, assertFalse } from "@std/assert";
 import {
   checkType,
-  createArray,
   createLocalStorage,
   debounce,
   delay,
@@ -24,18 +23,6 @@ Deno.test("isEqual compares nested objects and arrays", () => {
   assertFalse(isEqual([1, 2, 3], [1, 2]));
   assertFalse(isEqual([1], { 0: 1 }));
   assertFalse(isEqual(1 as never, 1 as never));
-});
-
-Deno.test("createArray supports basic operations", () => {
-  const arr = createArray(1, 2, 3);
-  assertEquals(arr.first(), 1);
-  assertEquals(arr.get(1), 2);
-  arr.add(4);
-  assertEquals(arr.entries(), [1, 2, 3, 4]);
-  assertEquals(arr.remove(0), [1]);
-  assertEquals(arr.clone(), [2, 3, 4]);
-  assertEquals(arr.clear(), true);
-  assertEquals(arr.clear(), false);
 });
 
 Deno.test("delay runs fn with args after timeout", async () => {

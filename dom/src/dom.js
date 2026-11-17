@@ -1,5 +1,5 @@
 import { checkType } from "./utils.js";
-import setElementEventHandlers from "./events.js";
+import { normalizeEvent } from "./events.js";
 
 /**
  * @param {string | HTMLElement} element
@@ -51,7 +51,13 @@ export function buildElement(element, props = {}) {
     element.textContent = text;
   }
 
-  setElementEventHandlers(element, props);
+  // `on` takes precedence over `events` when both are given.
+  const handlers = props.on || props.events;
+  if (handlers) {
+    for (const event of Object.keys(handlers)) {
+      element.addEventListener(normalizeEvent(event), handlers[event], false);
+    }
+  }
 
   return {
     ...props,
@@ -59,8 +65,6 @@ export function buildElement(element, props = {}) {
     el: element,
   };
 }
-
-console.time("dom/internal");
 
 /**
  * @type {{ element: null; event: any[]; }[]}
@@ -173,7 +177,11 @@ export function createMountable(
               if (!elPropsBlacklist.has(prop)) {
                 return Reflect.set(target, prop, value);
               }
-              return false;
+              throw new Error(
+                `createMountable: It is not allowed to set property '${
+                  String(prop)
+                }' with callback`,
+              );
             },
           });
           param(elementProxy);
@@ -251,6 +259,11 @@ const elements = new Set([
 ]);
 
 function cleanupElements() {
+  if (dom.size === 0) {
+    throw new Error(
+      `cleanupElements: can't cleanup elements Set: ${elements.size}`,
+    );
+  }
   if (dom.size > 0) {
     for (const el of elements) {
       elements.delete(el);
@@ -333,7 +346,9 @@ function elementIsParentNode(
   element,
 ) {
   if (!element && !parentNode) {
-    return;
+    throw new Error(
+      `elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
+    );
   }
 
   if (parentNode === element) {
@@ -378,6 +393,7 @@ function createRoot(
     }
     return (eventHandlers.length = 0);
   }
+  throw new Error("dom: Expected root to be an instance of Node");
 }
 
 /**
@@ -421,6 +437,9 @@ export function render(
     createRoot(root);
   });
   return function destroy(position = null) {
+    if (position !== null && typeof position !== "number") {
+      throw new Error("destroy: expected position to be of value Number");
+    }
     const rootChildren = root.querySelectorAll("*");
     if (position === null) {
       // console.log({ root });

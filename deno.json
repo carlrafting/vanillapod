@@ -80,7 +80,9 @@
   "lock": false,
   "workspace": [
     "./dom",
-    "./legacy",
     "./tests/browser"
+  ],
+  "exclude": [
+    "./legacy"
   ]
 }
