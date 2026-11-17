@@ -1,10 +1,70 @@
 import { checkType } from "./utils.js";
+import { normalizeEvent } from "./events.js";
 
 /**
- * @param  {...unknown} output
- * @returns {void}
+ * @param {string | HTMLElement} element
+ * @param {Record<string, any>} props
+ * @returns {any} the props merged with `element` and `el`, or undefined when no element is given
  */
-const log = (...output) => console.log(...output);
+export function buildElement(element, props = {}) {
+  if (!element) {
+    return;
+  }
+
+  if (typeof element === "string") {
+    element = document.createElement(element);
+  }
+
+  const values = props.props || props.properties;
+  if (values) {
+    for (const key of Object.keys(values)) {
+      /** @type {any} */ (element)[key] = values[key];
+    }
+  }
+
+  const { classList, classNames, data, attributes, attrs, text } = props;
+  const classes = classList || classNames;
+  if (classes) {
+    for (const className of classes) {
+      element.classList.add(className);
+    }
+  }
+  if (data) {
+    for (const key in data) {
+      if (Object.hasOwn(data, key)) {
+        element.dataset[key] = data[key];
+      }
+    }
+  }
+  const attributeMap = attrs || attributes;
+  if (attributeMap) {
+    const attributeValues = typeof attributeMap === "function"
+      ? attributeMap()
+      : attributeMap;
+    for (const key in attributeValues) {
+      if (Object.hasOwn(attributeValues, key)) {
+        element.setAttribute(key, attributeValues[key]);
+      }
+    }
+  }
+  if (text && text !== "") {
+    element.textContent = text;
+  }
+
+  // `on` takes precedence over `events` when both are given.
+  const handlers = props.on || props.events;
+  if (handlers) {
+    for (const event of Object.keys(handlers)) {
+      element.addEventListener(normalizeEvent(event), handlers[event], false);
+    }
+  }
+
+  return {
+    ...props,
+    element,
+    el: element,
+  };
+}
 
 /**
  * @type {{ element: null; event: any[]; }[]}
@@ -35,18 +95,22 @@ export function createMountable(
     }
     if (checkType(element) === "object") {
       // NOTE: backwards compat
-      if (validateProps(element)) {
-        for (const key of Object.keys(element.props)) {
-          if (elPropsBlacklist.has(key)) {
-            console.log("found it!");
-            // skip setting blacklisted props like innerHTML
-            delete element.props[key];
+      const config = /** @type {any} */ (element);
+      if (config.el || config.element) {
+        // skip setting blacklisted props like innerHTML, whichever alias is used
+        for (const values of [config.props, config.properties]) {
+          if (!values) continue;
+          for (const key of Object.keys(values)) {
+            if (elPropsBlacklist.has(key)) {
+              delete values[key];
+            }
           }
         }
 
-        const { el, children } = h(element.el || element.element, {
-          ...element,
-        });
+        const { el, children } = buildElement(
+          config.el || config.element,
+          { ...config },
+        );
         if (children) {
           el.append(...children);
         }
@@ -115,8 +179,10 @@ export function createMountable(
               if (!elPropsBlacklist.has(prop)) {
                 return Reflect.set(target, prop, value);
               }
-              createError(
-                `createMountable: It is not allowed to set property '${prop}' with callback`,
+              throw new Error(
+                `createMountable: It is not allowed to set property '${
+                  String(prop)
+                }' with callback`,
               );
             },
           });
@@ -212,9 +278,9 @@ function createDOMMap(done = null) {
   // const memo = createMemo((fn, ...params) => fn(...params));
   for (const el of elements) {
     const fn = (...params) => {
-      const createElement = createMountable(el, true);
+      const mountable = createMountable(el, true);
       // return memo(fn, ...params);
-      return createElement(...params);
+      return mountable(...params);
     };
     dom.set(el, fn);
   }
@@ -283,7 +349,7 @@ function elementIsParentNode(
 ) {
   if (!element && !parentNode) {
     throw new Error(
-      `om: elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
+      `elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
     );
   }
 
@@ -329,7 +395,7 @@ function createRoot(
     }
     return (eventHandlers.length = 0);
   }
-  createError("dom: Expected root to be an instance of NodePrototype");
+  throw new Error("dom: Expected root to be an instance of Node");
 }
 
 /**
@@ -374,7 +440,7 @@ export function render(
   });
   return function destroy(position = null) {
     if (position !== null && typeof position !== "number") {
-      createError("destroy: expected position to be of value Number");
+      throw new Error("destroy: expected position to be of value Number");
     }
     const rootChildren = root.querySelectorAll("*");
     if (position === null) {

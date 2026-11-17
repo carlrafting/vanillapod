@@ -1,7 +1,30 @@
 import { registerHooks, triggerHook } from "./hooks.js";
-import { createError } from "./error.js";
 import { checkType } from "./utils.js";
-import { createComponentInstance, createElement } from "./element.js";
+import { buildElement } from "./dom.js";
+
+/**
+ * @param {any} vanillapodComponent
+ * @param {any} vanillapodComponentProps
+ */
+export function createComponentInstance(
+  vanillapodComponent,
+  vanillapodComponentProps,
+) {
+  if (typeof vanillapodComponent === "function") {
+    const props = vanillapodComponentProps
+      ? vanillapodComponent(vanillapodComponentProps)
+      : vanillapodComponent();
+
+    if (typeof props !== "object" || props === undefined) {
+      return;
+    }
+
+    return {
+      vanillapodComponent,
+      ...props,
+    };
+  }
+}
 
 /**
  * @param {{ insertBefore: (arg0: any, arg1: null) => void; }} root
@@ -19,17 +42,13 @@ export default function mount(root, ...args) {
     [vanillapodComponent, props] = init(arg, vanillapodComponent, props);
 
     if (!vanillapodComponent) {
-      return createError("Could not determine component format");
+      return;
     }
 
     const instance = createComponentInstance(vanillapodComponent, props);
 
-    // console.log({ instance });
-
     if (!instance) {
-      return createError(
-        `Could not create instance for ${vanillapodComponent}`,
-      );
+      return;
     }
 
     let { el, element } = instance;
@@ -42,8 +61,8 @@ export default function mount(root, ...args) {
 
     // if el is a string, use implicit render approach
     if (checkType(el) === "string") {
-      const props = createElement(el, instance);
-      el = props.el || props.element;
+      const props = buildElement(el, instance);
+      el = props?.el || props?.element;
     }
 
     registerHooks(el, instance);
