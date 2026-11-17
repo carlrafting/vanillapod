@@ -28,7 +28,7 @@ export function delay(fn, timeout, ...args) {
  */
 export function debounce(fn, treshold = 100, asap = false) {
   /**
-   * @type {number | null | undefined}
+   * @type {ReturnType<typeof setTimeout> | null | undefined}
    */
   let timeout;
 
@@ -92,8 +92,8 @@ export function checkType(value = null) {
 /**
  * traverseChildNodes
  *
- * @param {HTMLElement} parent
- * @param {function} callback
+ * @param {HTMLElement | null} [parent]
+ * @param {(node: any) => void} [callback]
  */
 export function traverseChildNodes(parent = null, callback = () => {}) {
   if (!parent) {
@@ -110,9 +110,12 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
       if (child.nodeType === Node.ELEMENT_NODE) {
         const childHasChildNodes = child.childNodes.length > 0;
         if (childHasChildNodes) {
-          traverseChildNodes(child, (/** @type {any} */ childChild) => {
-            callback(childChild);
-          });
+          traverseChildNodes(
+            /** @type {HTMLElement} */ (child),
+            (/** @type {any} */ childChild) => {
+              callback(childChild);
+            },
+          );
         }
 
         callback(child);
@@ -148,15 +151,15 @@ async function createPersistedStorage() {
  */
 export function createLocalStorage(key = "app", initialData = null) {
   createPersistedStorage()
-    .then(({ grant }) => {
-      const granted = grant();
+    .then((storage) => {
+      const granted = storage?.grant();
       console.log("Granted persisted storage?", granted ? "yes" : "no");
     })
     .catch((err) => console.log(err));
 
   return {
     read() {
-      const parsed = JSON.parse(localStorage.getItem(key));
+      const parsed = JSON.parse(localStorage.getItem(key) ?? "null");
       const dataType = checkType(parsed);
       console.log({ dataType });
       if (
@@ -178,7 +181,7 @@ export function createLocalStorage(key = "app", initialData = null) {
 
 /**
  * @param {{ [x: string]: any; }} first
- * @param {object} second
+ * @param {{ [x: string]: any; }} second
  */
 export function isEqual(first, second) {
   if (typeof first !== "object" || typeof second !== "object") {

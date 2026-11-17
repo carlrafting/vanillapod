@@ -13,16 +13,19 @@ const raws = new WeakMap();
 const channels = new WeakMap();
 const scheduler = { pending: new Set(), scheduled: false };
 
+/** @param {any} value */
 function isPlain(value) {
   if (value === null || typeof value !== "object") return false;
   return Array.isArray(value) ||
     Object.getPrototypeOf(value) === Object.prototype;
 }
 
+/** @param {any} value */
 function toRaw(value) {
   return raws.get(value) ?? value;
 }
 
+/** @param {any} raw */
 function wrap(raw) {
   if (!isPlain(raw) || raws.has(raw)) return raw;
   let proxy = proxies.get(raw);
@@ -34,6 +37,7 @@ function wrap(raw) {
   return proxy;
 }
 
+/** @param {{ run: () => void; active: boolean }} sub */
 function schedule(sub) {
   scheduler.pending.add(sub);
   if (!scheduler.scheduled) {
@@ -44,6 +48,10 @@ function schedule(sub) {
 
 // Subscribers on ANY (e.g. bindList watching an array's contents) run on every
 // write to the object, not only writes to a specific key.
+/**
+ * @param {object} raw
+ * @param {PropertyKey} key
+ */
 function notify(raw, key) {
   const map = channels.get(raw);
   if (!map) return;
@@ -52,6 +60,11 @@ function notify(raw, key) {
   }
 }
 
+/**
+ * @param {object} raw
+ * @param {PropertyKey} key
+ * @param {() => void} run
+ */
 function subscribe(raw, key, run) {
   let map = channels.get(raw);
   if (!map) channels.set(raw, map = new Map());
@@ -66,6 +79,7 @@ function subscribe(raw, key, run) {
   };
 }
 
+/** @type {ProxyHandler<any>} */
 const handler = {
   get(target, key, receiver) {
     return wrap(Reflect.get(target, key, receiver));
@@ -112,14 +126,14 @@ export function flush() {
  * @param {T} initial
  * @returns {T}
  */
-export function createStore(initial = {}) {
-  return wrap(initial);
+export function createStore(initial = /** @type {T} */ ({})) {
+  return /** @type {T} */ (wrap(initial));
 }
 
 /**
  * Runs `updater` now and again only when `source[key]` is written.
  *
- * @param {object} source - a store or nested store object
+ * @param {any} source - a store or nested store object
  * @param {PropertyKey} key
  * @param {(value: any) => void} updater
  * @returns {() => void} dispose function
@@ -138,11 +152,11 @@ export function bind(source, key, updater) {
  * here, and items are kept in array order at the end of `parent`. Do not place
  * other children in `parent`, or they may be moved past.
  *
- * @param {object} source - store or nested store object holding the array
+ * @param {any} source - store or nested store object holding the array
  * @param {PropertyKey} key - property holding the array
  * @param {object} options
  * @param {Element} options.parent - element that contains the rendered items
- * @param {(item: any) => PropertyKey} [options.key] - unique key per item
+ * @param {(item: any, index: number) => PropertyKey} [options.key] - unique key per item
  * @param {(item: any, context: { onCleanup: (fn: () => void) => void }) => Node} options.render
  * @param {(list: any) => void} [options.onUpdate] - called after each reconcile
  * @returns {() => void} dispose function
@@ -153,11 +167,16 @@ export function bindList(source, key, {
   render,
   onUpdate,
 }) {
+  /** @type {Map<PropertyKey, { node: any; dispose(): void }>} */
   const entries = new Map();
+  /** @type {any} */
   let arrayRaw;
+  /** @type {(() => void) | null} */
   let unsubscribeArray = null;
 
+  /** @param {any} item */
   const createEntry = (item) => {
+    /** @type {(() => void)[]} */
     const cleanups = [];
     const node = render(item, {
       onCleanup: (fn) => cleanups.push(fn),
@@ -170,9 +189,14 @@ export function bindList(source, key, {
     };
   };
 
+  /** @param {any} list */
   const reconcile = (list) => {
+    /** @type {any[]} */
     const items = list ?? [];
-    const keys = items.map((item, index) => keyOf(item, index));
+    const keys = items.map((
+      /** @type {any} */ item,
+      /** @type {number} */ index,
+    ) => keyOf(item, index));
     const seen = new Set();
     for (const itemKey of keys) {
       if (seen.has(itemKey)) {
@@ -182,8 +206,9 @@ export function bindList(source, key, {
     }
 
     const next = new Map();
+    /** @type {{ node: any; dispose(): void }[]} */
     const ordered = [];
-    items.forEach((item, index) => {
+    items.forEach((/** @type {any} */ item, /** @type {number} */ index) => {
       const itemKey = keys[index];
       const entry = entries.get(itemKey) ?? createEntry(item);
       next.set(itemKey, entry);
@@ -200,6 +225,7 @@ export function bindList(source, key, {
     entries.clear();
     for (const [itemKey, entry] of next) entries.set(itemKey, entry);
 
+    /** @type {any} */
     let ref = null;
     for (let i = ordered.length - 1; i >= 0; i--) {
       const { node } = ordered[i];
