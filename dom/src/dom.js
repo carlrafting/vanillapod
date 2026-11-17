@@ -77,6 +77,11 @@ const elPropsBlacklist = new Set(["innerHTML"]);
  * @param {any} [element] - tag name, node, component, or props object; null creates a fragment
  * @param {boolean} [template]
  */
+/**
+ * @param {any} [element] - tag name, node, component, or props object; null creates a fragment
+ * @param {boolean} [template]
+ * @returns {(...params: any[]) => any}
+ */
 export function createMountable(
   element = null,
   template = true,
@@ -208,6 +213,11 @@ export function createMountable(
   };
 }
 
+/**
+ * @param {any} el
+ * @param {...any} params
+ * @returns {any}
+ */
 export const createTemplate = (
   /** @type {any} */ el,
   /** @type {any[]} */ ...params
@@ -306,10 +316,11 @@ function createDOMMap(done = null) {
 
 createDOMMap(() => cleanupElements());
 
-const el = (
-  /** @type {string} */ el,
-) =>
-(/** @type {any} */ ...params) => dom.get(el)(...params);
+/**
+ * @param {string} el
+ * @returns {(...params: any[]) => any}
+ */
+const el = (el) => (/** @type {any} */ ...params) => dom.get(el)(...params);
 
 export const div = el("div");
 export const p = el("p");
@@ -344,14 +355,21 @@ export const option = el("option");
 export const span = el("span");
 export const br = el("br");
 
-export const fragment = (/** @type {unknown[]} */ ...params) =>
-  createMountable(null, false)(...params);
-export const text = (
-  /** @type {string} */ text,
-) => document.createTextNode(text);
-export const comment = (
-  /** @type {string} */ text,
-) => document.createComment(text);
+/**
+ * @param {...unknown} params
+ * @returns {any}
+ */
+export const fragment = (...params) => createMountable(null, false)(...params);
+/**
+ * @param {string} text
+ * @returns {Text}
+ */
+export const text = (text) => document.createTextNode(text);
+/**
+ * @param {string} text
+ * @returns {Comment}
+ */
+export const comment = (text) => document.createComment(text);
 
 /**
  * @param {{ parentNode: Node; } | null} parentNode
@@ -415,6 +433,7 @@ function createRoot(
 /**
  * @param {any[] | (() => any)} mountables
  * @param {HTMLElement | (() => HTMLElement | null | undefined) | null | undefined} root
+ * @returns {() => void} destroy function
  */
 export function render(
   mountables,

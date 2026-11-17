@@ -102,6 +102,8 @@ const handler = {
 /**
  * Runs all pending binding updates. Called automatically in a microtask after
  * writes; call it directly to apply updates synchronously.
+ *
+ * @returns {void}
  */
 export function flush() {
   while (scheduler.pending.size) {
