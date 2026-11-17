@@ -30,17 +30,14 @@ function applyProps(element, props) {
 
 /**
  * Builds an element from a tag name. Strings and numbers become text, Nodes
- * are appended, and a props object sets properties. A null tag name builds a
- * DocumentFragment.
+ * are appended, and a props object sets properties.
  *
- * @param {string | null} tagName
+ * @param {string} tagName
  * @param {any[]} params - an optional props object, then children
- * @returns {Node}
+ * @returns {HTMLElement}
  */
 function build(tagName, params) {
-  const element = tagName
-    ? document.createElement(tagName)
-    : document.createDocumentFragment();
+  const element = document.createElement(tagName);
   for (const param of params) {
     if (typeof param === "string" || typeof param === "number") {
       element.append(document.createTextNode(String(param)));
@@ -52,29 +49,6 @@ function build(tagName, params) {
   }
   return element;
 }
-
-/**
- * Wraps a node in a template and returns its content, so `render` can
- * mount it. Event handlers keep working because the element stays referenced.
- *
- * @param {Node} node
- * @returns {DocumentFragment}
- */
-function toFragment(node) {
-  const template = /** @type {HTMLTemplateElement} */ (
-    document.createElement("template")
-  );
-  template.content.append(node);
-  return template.content;
-}
-
-/**
- * @param {string | null} [el] - tag name; null creates a fragment
- * @param {...any} params - an optional props object, then children
- * @returns {DocumentFragment}
- */
-export const createTemplate = (el = null, ...params) =>
-  toFragment(build(el, params));
 
 const dom = new Map();
 
@@ -203,11 +177,6 @@ export const span = el("span");
 export const br = el("br");
 
 /**
- * @param {...unknown} params
- * @returns {any}
- */
-export const fragment = (/** @type {any[]} */ ...params) => build(null, params);
-/**
  * @param {string} text
  * @returns {Text}
  */
@@ -281,7 +250,6 @@ function createRoot(
 /**
  * @param {any[] | (() => any)} mountables
  * @param {HTMLElement | (() => HTMLElement | null | undefined) | null | undefined} root
- * @returns {() => void} destroy function
  */
 export function render(
   mountables,
@@ -322,25 +290,4 @@ export function render(
     // console.log({ root });
     createRoot(target);
   });
-  return function destroy(position = null) {
-    if (position !== null && typeof position !== "number") {
-      throw new Error("destroy: expected position to be of value Number");
-    }
-    const rootChildren = root.querySelectorAll("*");
-    if (position === null) {
-      // console.log({ root });
-      for (const child of rootChildren) {
-        child.remove();
-      }
-      return;
-    }
-    if (rootChildren.length > 0) {
-      for (let i = 0; i < rootChildren.length; i++) {
-        if (i === position) {
-          const mountable = rootChildren[i];
-          mountable.remove();
-        }
-      }
-    }
-  };
 }
