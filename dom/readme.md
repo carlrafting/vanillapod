@@ -80,9 +80,10 @@ render(
 handlers at the root. It returns a `destroy(position?)` function that removes
 the children, or only the child at `position`.
 
-`buildElement(tagName, props)` creates a single element from a props object
-(`classList`, `attributes`, `props`, `data`, `text`, `on`) and returns
-`{ element, el, ...props }`.
+A props object sets DOM properties on the element, such as `className`, `id`,
+`value` or `type`. Keys starting with `on` that hold a function are delegated
+from the root. For attributes or `data-*` values, set them in your own code with
+`setAttribute` or `dataset`. `innerHTML` is not allowed through props.
 
 ### State
 

@@ -2,226 +2,79 @@ import { checkType } from "./utils.js";
 import { normalizeEvent } from "./events.js";
 
 /**
- * @param {string | HTMLElement} element
- * @param {Record<string, any>} props
- * @returns {any} the props merged with `element` and `el`, or undefined when no element is given
- */
-export function buildElement(element, props = {}) {
-  if (!element) {
-    return;
-  }
-
-  if (typeof element === "string") {
-    element = document.createElement(element);
-  }
-
-  const values = props.props || props.properties;
-  if (values) {
-    for (const key of Object.keys(values)) {
-      /** @type {any} */ (element)[key] = values[key];
-    }
-  }
-
-  const { classList, classNames, data, attributes, attrs, text } = props;
-  const classes = classList || classNames;
-  if (classes) {
-    for (const className of classes) {
-      element.classList.add(className);
-    }
-  }
-  if (data) {
-    for (const key in data) {
-      if (Object.hasOwn(data, key)) {
-        element.dataset[key] = data[key];
-      }
-    }
-  }
-  const attributeMap = attrs || attributes;
-  if (attributeMap) {
-    const attributeValues = typeof attributeMap === "function"
-      ? attributeMap()
-      : attributeMap;
-    for (const key in attributeValues) {
-      if (Object.hasOwn(attributeValues, key)) {
-        element.setAttribute(key, attributeValues[key]);
-      }
-    }
-  }
-  if (text && text !== "") {
-    element.textContent = text;
-  }
-
-  // `on` takes precedence over `events` when both are given.
-  const handlers = props.on || props.events;
-  if (handlers) {
-    for (const event of Object.keys(handlers)) {
-      element.addEventListener(normalizeEvent(event), handlers[event], false);
-    }
-  }
-
-  return {
-    ...props,
-    element,
-    el: element,
-  };
-}
-
-/**
  * @type {{ element: any; event: any[]; }[]}
  */
 const eventHandlers = [];
+
 /** @type {Set<PropertyKey>} */
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 /**
- * @param {any} [element] - tag name, node, component, or props object; null creates a fragment
- * @param {boolean} [template]
+ * Sets properties from a props object. Keys starting with `on` that hold a
+ * function are registered for delegation from the root in `render`, not set on
+ * the element directly, so the handler does not fire twice.
+ *
+ * @param {any} element
+ * @param {Record<string, any>} props
  */
-/**
- * @param {any} [element] - tag name, node, component, or props object; null creates a fragment
- * @param {boolean} [template]
- * @returns {(...params: any[]) => any}
- */
-export function createMountable(
-  element = null,
-  template = true,
-) {
-  return function inner(
-    /** @type {any[]} */ ...params
-  ) {
-    const templateEl = template
-      ? /** @type {HTMLTemplateElement} */ (document.createElement("template"))
-      : null;
-    if (!element || element === null) {
-      element = document.createDocumentFragment();
+function applyProps(element, props) {
+  for (const [key, value] of Object.entries(props)) {
+    if (elPropsBlacklist.has(key)) continue;
+    if (key.startsWith("on") && typeof value === "function") {
+      eventHandlers.push({ element, event: [normalizeEvent(key), value] });
+    } else {
+      element[key] = value;
     }
-    if (element && typeof element === "string") {
-      element = document.createElement(element);
-    }
-    if (typeof element === "function") {
-      element = element({}); // NOTE: perhaps we should make sure props stay reactive here?
-    }
-    if (checkType(element) === "array") {
-      const [component, props] = element;
-      element = component(props);
-    }
-    if (checkType(element) === "object") {
-      // NOTE: backwards compat
-      const config = /** @type {any} */ (element);
-      if (config.el || config.element) {
-        // skip setting blacklisted props like innerHTML, whichever alias is used
-        for (const values of [config.props, config.properties]) {
-          if (!values) continue;
-          for (const key of Object.keys(values)) {
-            if (elPropsBlacklist.has(key)) {
-              delete values[key];
-            }
-          }
-        }
-
-        const { el, children } = buildElement(
-          config.el || config.element,
-          { ...config },
-        );
-        if (children) {
-          el.append(...children);
-        }
-        element = el;
-      }
-    }
-    if (params && params.length > 0) {
-      for (const param of params) {
-        if (typeof param === "object" && !(param instanceof Node)) {
-          const props = param;
-          const indexOfStart = 0;
-          const eventKey = "on";
-          for (const [key, value] of Object.entries(props)) {
-            if (elPropsBlacklist.has(key)) {
-              // skip setting blacklisted props like innerHTML
-              delete props[key];
-              continue;
-            }
-            const isEvent = key.indexOf(eventKey) === indexOfStart &&
-              typeof value === "function";
-            // event handlers are delegated from the root; assigning them
-            // directly as well would fire them twice
-            if (!isEvent) element[key] = value;
-            if (isEvent) {
-              const sliceStart = eventKey.length;
-              const normalizedEvent = key
-                .slice(sliceStart)
-                .toLowerCase();
-              eventHandlers.push({
-                element,
-                event: [normalizedEvent, value],
-              });
-            }
-          }
-        }
-        if (typeof param === "string" || typeof param === "number") {
-          const text = document.createTextNode(String(param));
-          element.textContent = text.data;
-        }
-        if (param instanceof Node) {
-          try {
-            element.append(param);
-          } catch (err) {
-            console.error(err);
-          }
-        }
-        if (typeof param === "function") {
-          const elementProxy = new Proxy(element, {
-            get(target, prop, receiver) {
-              /* if (!elPropsBlacklist.has(prop)) {
-                                // return element;
-                                return;
-                            } */
-              const value = target[prop];
-              if (typeof value === "function") {
-                return /** @this {any} */ function (
-                  /** @type {any[]} */ ...args
-                ) {
-                  return value.apply(
-                    this === receiver ? target : this,
-                    args,
-                  );
-                };
-              }
-              return Reflect.get(target, prop);
-            },
-            set(target, prop, value) {
-              if (!elPropsBlacklist.has(prop)) {
-                return Reflect.set(target, prop, value);
-              }
-              throw new Error(
-                `createMountable: It is not allowed to set property '${
-                  String(prop)
-                }' with callback`,
-              );
-            },
-          });
-          param(elementProxy);
-        }
-      }
-    }
-    if (template) {
-      /** @type {HTMLTemplateElement} */ (templateEl).content.append(element);
-      // return template.content.cloneNode(true);
-      return /** @type {HTMLTemplateElement} */ (templateEl).content; // NOTE: this makes the event handling work since we do not loose the reference to the element.
-    }
-    return element;
-  };
+  }
 }
 
 /**
- * @param {any} el
- * @param {...any} params
- * @returns {any}
+ * Builds an element from a tag name. Strings and numbers become text, Nodes
+ * are appended, and a props object sets properties. A null tag name builds a
+ * DocumentFragment.
+ *
+ * @param {string | null} tagName
+ * @param {any[]} params - an optional props object, then children
+ * @returns {Node}
  */
-export const createTemplate = (
-  /** @type {any} */ el,
-  /** @type {any[]} */ ...params
-) => createMountable(el, true)(...params);
+function build(tagName, params) {
+  const element = tagName
+    ? document.createElement(tagName)
+    : document.createDocumentFragment();
+  for (const param of params) {
+    if (typeof param === "string" || typeof param === "number") {
+      element.append(document.createTextNode(String(param)));
+    } else if (param instanceof Node) {
+      element.append(param);
+    } else if (param && typeof param === "object") {
+      applyProps(element, param);
+    }
+  }
+  return element;
+}
+
+/**
+ * Wraps a node in a template and returns its content, so `render` can
+ * mount it. Event handlers keep working because the element stays referenced.
+ *
+ * @param {Node} node
+ * @returns {DocumentFragment}
+ */
+function toFragment(node) {
+  const template = /** @type {HTMLTemplateElement} */ (
+    document.createElement("template")
+  );
+  template.content.append(node);
+  return template.content;
+}
+
+/**
+ * @param {string | null} [el] - tag name; null creates a fragment
+ * @param {...any} params - an optional props object, then children
+ * @returns {DocumentFragment}
+ */
+export const createTemplate = (el = null, ...params) =>
+  toFragment(build(el, params));
 
 const dom = new Map();
 
@@ -299,16 +152,11 @@ function cleanupElements() {
  * @param {(() => void) | null} [done]
  */
 function createDOMMap(done = null) {
-  // const memo = createMemo((fn, ...params) => fn(...params));
   for (const el of elements) {
-    const fn = (/** @type {any[]} */ ...params) => {
-      const mountable = createMountable(el, true);
-      // return memo(fn, ...params);
-      return mountable(...params);
-    };
+    const fn = (/** @type {any[]} */ ...params) =>
+      toFragment(build(el, params));
     dom.set(el, fn);
   }
-  console.log({ dom });
   if (done && typeof done === "function") {
     done();
   }
@@ -359,7 +207,7 @@ export const br = el("br");
  * @param {...unknown} params
  * @returns {any}
  */
-export const fragment = (...params) => createMountable(null, false)(...params);
+export const fragment = (/** @type {any[]} */ ...params) => build(null, params);
 /**
  * @param {string} text
  * @returns {Text}
