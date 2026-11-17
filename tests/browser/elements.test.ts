@@ -105,6 +105,47 @@ Deno.test("DOM elements in Chromium", async (t) => {
       });
       assertEquals(clicks, 1);
     });
+
+    await t.step(
+      "fires handlers for clicks deeply nested in the element",
+      async () => {
+        const clicks = await page.evaluate(async () => {
+          const { button, span, div, render } = await import("/dom/main.js");
+          const root = document.createElement("main");
+          document.body.append(root);
+          let count = 0;
+          render(
+            [button({ onclick: () => count++ }, div(span("deep")))],
+            root,
+          );
+          root.querySelector("span")?.click();
+          return count;
+        });
+        assertEquals(clicks, 1);
+      },
+    );
+
+    await t.step(
+      "clicks outside the element do not throw or fire it",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { button, render } = await import("/dom/main.js");
+          const root = document.createElement("main");
+          document.body.append(root);
+          let count = 0;
+          render([button({ onclick: () => count++ }, "go")], root);
+          const outside = document.createElement("div");
+          root.append(outside);
+          const errors: string[] = [];
+          const onError = (e: ErrorEvent) => errors.push(e.message);
+          window.addEventListener("error", onError);
+          outside.click();
+          window.removeEventListener("error", onError);
+          return { count, errors };
+        });
+        assertEquals(result, { count: 0, errors: [] });
+      },
+    );
   } finally {
     await browser.close();
     await server?.kill();
