@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dom:
+    name: DOM package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # TODO: widen to the whole repo once tests/browser and the site files are formatted.
+      - name: Check formatting
+        run: deno fmt --check dom
+
+      # TODO: drop --no-check once dom/ type-checks cleanly (checkJs is on).
+      - name: Run unit tests
+        working-directory: dom
+        run: deno test -A --no-check
+
+      # TODO: drop --no-check and --allow-slow-types once dom/ type-checks cleanly.
+      - name: Verify JSR package
+        run: deno publish --dry-run --no-check --allow-slow-types
+
+  legacy:
+    name: Legacy package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Check formatting
+        run: deno fmt --check legacy
+
+      # legacy/ is excluded from the root workspace, so run its tests from its own directory.
+      # TODO: drop --no-check once legacy/ type-checks cleanly (checkJs is on).
+      - name: Run unit tests
+        working-directory: legacy
+        run: deno test -A --no-check
+
+  browser:
+    name: Browser tests and site build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Build site
+        run: deno task build
+
+      - name: Install Chromium
+        working-directory: tests/browser
+        run: deno run -A npm:playwright@^1.65.0 install --with-deps chromium
+
+      # The tests start the Lume dev server themselves (see tests/browser/helpers.ts).
+      - name: Run browser tests
+        working-directory: tests/browser
+        run: deno task test
