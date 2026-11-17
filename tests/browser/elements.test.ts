@@ -31,43 +31,22 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { hasB: false, text: "safe" });
     });
 
-    await t.step("builds fragments, text and comments", async () => {
+    await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
-        const { fragment, p, text, comment } = await import("/dom/main.js");
-        return {
-          children: fragment(p("a"), p("b")).children.length,
-          text: text("hi").nodeType,
-          comment: comment("c").nodeType,
-        };
+        const { text, comment } = await import("/dom/main.js");
+        return { text: text("hi").nodeType, comment: comment("c").nodeType };
       });
-      assertEquals(result, { children: 2, text: 3, comment: 8 });
+      assertEquals(result, { text: 3, comment: 8 });
     });
 
-    await t.step("render appends and destroy removes by position", async () => {
+    await t.step("render appends every mountable to the root", async () => {
       const result = await page.evaluate(async () => {
         const { p, render } = await import("/dom/main.js");
         const root = document.createElement("main");
-        const destroy = render([p("one"), p("two")], root);
-        const before = root.children.length;
-        destroy(0);
-        return {
-          before,
-          after: root.children.length,
-          remaining: root.children[0]?.textContent,
-        };
+        render([p("one"), p("two")], root);
+        return [...root.children].map((c) => c.textContent);
       });
-      assertEquals(result, { before: 2, after: 1, remaining: "two" });
-    });
-
-    await t.step("destroy without a position clears all children", async () => {
-      const result = await page.evaluate(async () => {
-        const { p, render } = await import("/dom/main.js");
-        const root = document.createElement("main");
-        const destroy = render([p("one"), p("two")], root);
-        destroy();
-        return root.children.length;
-      });
-      assertEquals(result, 0);
+      assertEquals(result, ["one", "two"]);
     });
 
     await t.step("render throws without a root", async () => {

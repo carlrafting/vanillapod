@@ -77,8 +77,7 @@ render(
 ```
 
 `render(mountables, root)` appends the elements to `root` and attaches event
-handlers at the root. It returns a `destroy(position?)` function that removes
-the children, or only the child at `position`.
+handlers at the root.
 
 A props object sets DOM properties on the element, such as `className`, `id`,
 `value` or `type`. Keys starting with `on` that hold a function are delegated
@@ -117,8 +116,8 @@ synchronously.
 
 ## Errors
 
-Invalid input throws an `Error`, for example `render` without a root,
-`traverseChildNodes` without a parent, or `destroy` with a non-number position.
+Invalid input throws an `Error`, for example `render` without a root, or
+`traverseChildNodes` without a parent.
 
 ## Types
 
