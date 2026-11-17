@@ -97,11 +97,13 @@ export function createMountable(
       // NOTE: backwards compat
       const config = /** @type {any} */ (element);
       if (config.el || config.element) {
-        for (const key of Object.keys(config.props)) {
-          if (elPropsBlacklist.has(key)) {
-            console.log("found it!");
-            // skip setting blacklisted props like innerHTML
-            delete config.props[key];
+        // skip setting blacklisted props like innerHTML, whichever alias is used
+        for (const values of [config.props, config.properties]) {
+          if (!values) continue;
+          for (const key of Object.keys(values)) {
+            if (elPropsBlacklist.has(key)) {
+              delete values[key];
+            }
           }
         }
 

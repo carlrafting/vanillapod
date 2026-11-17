@@ -130,6 +130,39 @@ Deno.test("buildElement props in Chromium", async (t) => {
         });
       },
     );
+
+    await t.step(
+      "createMountable accepts an object without props",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { createMountable } = await import("/dom/src/dom.js");
+          const fragment = createMountable({ el: "p", text: "hi" })();
+          return fragment.firstElementChild?.outerHTML;
+        });
+        assertEquals(result, "<p>hi</p>");
+      },
+    );
+
+    await t.step(
+      "createMountable drops innerHTML from props and properties",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { createMountable } = await import("/dom/src/dom.js");
+          const fromProps = createMountable({
+            el: "div",
+            props: { innerHTML: "<b>x</b>", id: "a" },
+          })();
+          const fromProperties = createMountable({
+            el: "div",
+            properties: { innerHTML: "<b>x</b>", id: "b" },
+          })();
+          return [fromProps, fromProperties].map((f) =>
+            f.firstElementChild?.outerHTML
+          );
+        });
+        assertEquals(result, ['<div id="a"></div>', '<div id="b"></div>']);
+      },
+    );
   } finally {
     await browser.close();
     server?.kill();
