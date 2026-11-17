@@ -1,5 +1,3 @@
-import { createError } from "./error.js";
-
 /**
  * delay
  *
@@ -99,7 +97,7 @@ export function checkType(value = null) {
  */
 export function traverseChildNodes(parent = null, callback = () => {}) {
   if (!parent) {
-    return createError(
+    throw new Error(
       `Expected parent parameter to be set, was ${parent}`,
     );
   }
@@ -124,94 +122,11 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
 }
 
 /**
- * createArray
+ * createPersistedStorage
  *
- * @param  {...any} items items to spread into a new array
- * @example
- *
-    // methods
-    const nums = createArray(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    nums.get(1), // 2
-    nums.add(11), // 11
-    nums.remove(5), // [6]
-    nums.entries(), // [1,2,3,4,5,6,7,8,9,10,11]
-    nums.clear(), // true
-    nums.entries() // []
-
-    // iterate
-    const arr = createArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-    for (const item of arr) {
-        console.log(item);
-    }
- */
-export function createArray(...items) {
-  const arr = [...items];
-  let count = 0;
-  const prototype = {
-    get(index) {
-      return arr[index];
-    },
-    first() {
-      return prototype.get(0);
-    },
-    last() {
-      console.log("createArrray", { count });
-      return prototype.get(arr.length - 1);
-    },
-    add(item) {
-      return arr.push(item);
-    },
-    remove(index) {
-      return arr.splice(index, 1);
-    },
-    clone() {
-      return [...arr];
-    },
-    entries() {
-      return arr;
-    },
-    clear() {
-      if (arr.length > 0) {
-        arr.length = 0;
-        count = 0;
-        return true;
-      }
-
-      return false;
-    },
-    *[Symbol.iterator]() {
-      yield prototype.get(count);
-      count++;
-    },
-    get [Symbol.toStringTag]() {
-      return "array++";
-    },
-  };
-  return prototype;
-}
-
-/*
-
-createLocalStorage
-================================================
-
-const initialTasks = [
-    { value: 'first', completed: false },
-    { value: 'second', completed: true },
-    { value: 'third', completed: false },
-];
-const db = createLocalStorage('tasks', initialTasks);
-const [tasks, setTasks] = createSignal(db.read());
-
-createEffect(() => {
-    db.write(tasks());
-});
-
-*/
-
-/**
- * # createPersistedStorage
+ * @returns {Promise<{
+ *  grant(): Promise<void>;
+ * } | undefined>}
  */
 async function createPersistedStorage() {
   if (navigator.storage && navigator.storage.persisted) {
@@ -225,7 +140,7 @@ async function createPersistedStorage() {
 }
 
 /**
- * # createLocalStorage
+ * createLocalStorage
  *
  * @param {string} key
  * @param {*} initialData
@@ -302,89 +217,3 @@ export function isEqual(first, second) {
 
   return true;
 }
-
-/* const tests = new Set();
-
-function test(msg, fn) {
-    tests.add({ msg, fn });
-} */
-
-/* {
-    console.log('object equality');
-    console.log('objects', isEqual({ value: 1 }, { value: 1 }));
-    console.log(
-        'deep objects',
-        isEqual(
-            { value: 1, deep: { value: 2 } },
-            { value: 1, deep: { value: 2 } }
-        ),
-        'deeper same',
-        isEqual(
-            { value: 1, deep: { value: 2, deeper: { value: 3 } } },
-            { value: 1, deep: { value: 2, deeper: { value: 3 } } }
-        ),
-        'deeper different',
-        isEqual(
-            { value: 1, deep: { value: 2, deeper: { value: 3 } } },
-            { value: 1, deep: { value: 2, deeper: { value: 4 } } }
-        ),
-        'contains arrays same',
-        isEqual({ value: [1, 2, 3, 4, 5] }, { value: [1, 2, 3, 4, 5] }),
-        'deep with arrays',
-        isEqual(
-            { value: [1, 2, 3, 4, 5], deep: { items: [1, 2, 3, 4, 5] } },
-            { value: [1, 2, 3, 4, 5], deep: { items: [1, 2, 3, 4, 5] } }
-        )
-    );
-    console.log('array equality');
-    console.log('arrays', isEqual([1, 2, 3], [1, 2, 3]));
-    console.log('nested arrays', isEqual([[1], [2], [3]], [[1], [2], [3]]));
-    console.log(
-        'arrays with objects',
-        isEqual([{ value: 1 }, { value: 2 }], [{ value: 1 }, { value: 2 }])
-    );
-    console.log('arrays with different length', isEqual([1, 2, 3], [1, 2]));
-    console.log('arrays with different values', isEqual([1, 2, 3], [1, 4, 3]));
-    console.log(
-        'same',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } }
-        )
-    );
-    console.log(
-        'different',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, c: { d: 3, e: { f: 5 } } }
-        )
-    );
-    console.log(
-        'different',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, c: { d: 3, e: { g: 4 } } }
-        )
-    );
-    console.log(
-        'different',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, c: { d: 3, f: { e: 4 } } }
-        )
-    );
-    console.log(
-        'different',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, c: { d: 3 } }
-        )
-    );
-    console.log(
-        'different',
-        isEqual(
-            { a: 1, b: 2, c: { d: 3, e: { f: 4 } } },
-            { a: 1, b: 2, d: { e: 3, f: { g: 4 } } }
-        )
-    );
-} */

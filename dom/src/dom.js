@@ -1,14 +1,10 @@
-import { createError } from "./error.js";
 import { checkType } from "./utils.js";
-import { h, validateProps } from "./element.js";
 
 /**
  * @param  {...unknown} output
  * @returns {void}
  */
 const log = (...output) => console.log(...output);
-
-console.time("dom/internal");
 
 /**
  * @type {{ element: null; event: any[]; }[]}
@@ -199,15 +195,17 @@ const elements = new Set([
 ]);
 
 function cleanupElements() {
+  if (dom.size === 0) {
+    throw new Error(
+      `cleanupElements: can't cleanup elements Set: ${elements.size}`,
+    );
+  }
   if (dom.size > 0) {
     for (const el of elements) {
       elements.delete(el);
     }
     return elements.clear();
   }
-  createError(
-    `cleanupElements: can't cleanup elements Set: ${elements.size > 0}`,
-  );
 }
 
 function createDOMMap(done = null) {
@@ -284,7 +282,7 @@ function elementIsParentNode(
   element,
 ) {
   if (!element && !parentNode) {
-    return createError(
+    throw new Error(
       `om: elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
     );
   }
