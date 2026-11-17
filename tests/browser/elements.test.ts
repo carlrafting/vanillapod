@@ -13,7 +13,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
     await t.step("nests children inside tag helpers", async () => {
       const result = await page.evaluate(async () => {
         const { ul, li } = await import("/dom/main.js");
-        const list = ul(li("one"), li("two")).firstElementChild;
+        const list = ul(li("one"), li("two"));
         return {
           count: list.children.length,
           last: list.children[1].textContent,
@@ -25,7 +25,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
     await t.step("does not allow innerHTML through props", async () => {
       const result = await page.evaluate(async () => {
         const { div } = await import("/dom/main.js");
-        const el = div({ innerHTML: "<b>bad</b>" }, "safe").firstElementChild;
+        const el = div({ innerHTML: "<b>bad</b>" }, "safe");
         return { hasB: el.querySelector("b") !== null, text: el.textContent };
       });
       assertEquals(result, { hasB: false, text: "safe" });

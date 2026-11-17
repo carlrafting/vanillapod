@@ -153,8 +153,7 @@ function cleanupElements() {
  */
 function createDOMMap(done = null) {
   for (const el of elements) {
-    const fn = (/** @type {any[]} */ ...params) =>
-      toFragment(build(el, params));
+    const fn = (/** @type {any[]} */ ...params) => build(el, params);
     dom.set(el, fn);
   }
   if (done && typeof done === "function") {
