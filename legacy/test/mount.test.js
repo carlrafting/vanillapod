@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from "node:test";
+import { afterEach, beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import mount, { init } from "../src/mount.js";
 
@@ -73,6 +73,19 @@ describe("mount", () => {
       ["before", 0],
       ["mount", 1],
     ]);
+  });
+
+  it("mounts components with unknown keys and ignores those keys", () => {
+    const root = new FakeNode("root");
+    const el = new FakeNode("p");
+    mount(root, () => ({ el, txt: "typo" }));
+    assert.deepEqual(root.children, [el]);
+  });
+
+  it("inserts nothing when a component does not return an object", () => {
+    const root = new FakeNode("root");
+    mount(root, () => "not an object");
+    assert.equal(root.children.length, 0);
   });
 
   it("inserts nothing for values it cannot interpret", () => {

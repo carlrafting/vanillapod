@@ -141,21 +141,18 @@ inside a component.
 Here are the methods available for working with explicit components:
 
 - [setElementEventHandlers](./src/events.js)
-- [setElementAttributes](./src/attributes.js)
-- [setElementProperties](./src/properties.js)
-- [setElementTextContent](./src/text.js)
-- [createElement](./src/element.js#L92)
+- [buildElement](./src/dom.js)
 - [createDocumentFragment](./src/fragment.js)
 
 ```javascript
 // script.js
 
-import { createElement } from "vanillapod";
+import { buildElement } from "vanillapod";
 
 function myComponent() {
-  const element = createElement("h1", {
+  const element = buildElement("h1", {
     text: "This is my first vanillapod component!",
-  });
+  }).element;
 
   return {
     element,
@@ -166,20 +163,14 @@ function myComponent() {
 The explicit approach gives you more flexibility of what a component can do. The
 only requirement of a component using the explicit approach is that is should
 return an object with a `element` property. You can create elements using the
-`createElement` method.
+`buildElement` method.
 
-### createElement
+### buildElement
 
-createElement is the method for creating all of the different DOM elements. It
-expects a `element` string value and returns all the props that vanillpod
-expects from components. There are several aliases for createElement, to make
-the experience of using createElement as smooth as possible.
-
-These are the three different alias methods for createElement:
-
-- [`h`](./src/element.js#L126)
-- [`e`](./src/element.js#L127)
-- [`html`](./src/element.js#L128)
+`buildElement(tagName, props)` creates a DOM element from a tag name and a props
+object (`text`, `classList`, `attributes`, `props`, `data`, and events). It
+returns an object with `element` and `el` set to the new element, plus the props
+that vanillapod expects from components.
 
 ### Mounting
 
@@ -190,17 +181,17 @@ and pass it to `mount` as the first argument.
 ```javascript
 // script.js
 
-import { createElement, mount } from 'vanillapod';
+import { buildElement, mount } from "vanillapod";
 
 function myComponent() {
-    return {
-        element: createElement('h1', {
-            text: 'This is my first vanillapod component!'
-        });
-    };
+  return {
+    element: buildElement("h1", {
+      text: "This is my first vanillapod component!",
+    }).element,
+  };
 }
 
-const root = document.getElementById('root');
+const root = document.getElementById("root");
 
 mount(root, myComponent);
 ```
@@ -210,12 +201,12 @@ It's also possible to mount multiple components at the same time.
 ```javascript
 // script.js
 
-import { createElement, mount } from "vanillapod";
+import { buildElement, mount } from "vanillapod";
 
 function myComponent() {
-  const element = createElement("h1", {
+  const element = buildElement("h1", {
     text: "This is my first vanillapod component!",
-  });
+  }).element;
 
   return {
     element,
@@ -358,7 +349,7 @@ function myComponent() {
 }
 ```
 
-Use `setElementAttributes` for explicit components.
+Pass `attributes` or `attrs` for explicit components.
 
 ### Properties
 
@@ -376,13 +367,13 @@ function myComponent() {
 }
 ```
 
-Use `setElementProperties` for explicit components.
+Pass `properties` or `props` for explicit components.
 
 ### Events
 
 It's possible to attach event handlers to your component, by defining event
 handler functions in a `events` key on the `props` object that gets passed to
-`createElement` in your component. The event name is the same as what you'd
+`buildElement` in your component. The event name is the same as what you'd
 normally pass to
 [`element.addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
 
@@ -505,24 +496,6 @@ mount(null, Fragment);
 ### Hooks for state changes, Events for DOM changes
 
 ...
-
-## Debugging
-
-If anything is not going as expected, you can always turn on debugging.
-vanillapod.js will then output what it's doing along the way. To turn on
-debugging, do the following:
-
-```javascript
-// yourscript.js
-
-import { debug } from "vanillapod";
-
-debug(true);
-
-// to read debug value, call debug().
-
-debug(); // returns true
-```
 
 ## Example App
 
