@@ -12,7 +12,6 @@ it("should throw error with debug enabled", () => {
 });
 
 it("should not throw error with debug disabled", () => {
-  // this test is not working as expected...
   debug(false);
 
   assert.doesNotThrow(() => {

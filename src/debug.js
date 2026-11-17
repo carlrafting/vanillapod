@@ -3,10 +3,10 @@ let VANILLAPOD_DEBUG = false;
 /**
  * debug
  *
- * @param {boolean} value - enable or disable debug output
+ * @param {boolean} [value] - enable or disable debug output; omit to read the current state
  */
-export default function debug(value = false) {
-  if (!value) {
+export default function debug(value) {
+  if (value === undefined) {
     return VANILLAPOD_DEBUG;
   }
 

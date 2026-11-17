@@ -20,7 +20,6 @@
   },
   "workspaces": [
     "./examples/*",
-    "./sandbox",
     "sandbox/reactive",
     "sandbox/html",
     "sandbox/dom",
