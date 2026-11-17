@@ -5,7 +5,7 @@ import {
   debounce,
   delay,
   isEqual,
-} from "./utils.js";
+} from "../src/utils.js";
 
 Deno.test("checkType returns lowercase type names", () => {
   assertEquals(checkType([]), "array");

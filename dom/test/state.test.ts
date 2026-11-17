@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
-import { bind, bindList, createStore, flush } from "./state.js";
+import { bind, bindList, createStore, flush } from "../src/state.js";
 
 // Minimal stand-in for the DOM operations bindList relies on.
 class FakeParent {
