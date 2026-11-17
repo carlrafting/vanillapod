@@ -75,6 +75,19 @@ describe("mount", () => {
     ]);
   });
 
+  it("mounts components with unknown keys and ignores those keys", () => {
+    const root = new FakeNode("root");
+    const el = new FakeNode("p");
+    mount(root, () => ({ el, txt: "typo" }));
+    assert.deepEqual(root.children, [el]);
+  });
+
+  it("inserts nothing when a component does not return an object", () => {
+    const root = new FakeNode("root");
+    mount(root, () => "not an object");
+    assert.equal(root.children.length, 0);
+  });
+
   it("inserts nothing for values it cannot interpret", () => {
     const root = new FakeNode("root");
     mount(root, 42);

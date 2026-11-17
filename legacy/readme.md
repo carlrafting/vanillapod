@@ -497,8 +497,6 @@ mount(null, Fragment);
 
 ...
 
-## Debugging
-
 ## Example App
 
 You can check out an example of how to build a
