@@ -4,6 +4,7 @@ import setElementEventHandlers from "./events.js";
 /**
  * @param {string | HTMLElement} element
  * @param {Record<string, any>} props
+ * @returns {any} the props merged with `element` and `el`, or undefined when no element is given
  */
 export function buildElement(element, props = {}) {
   if (!element) {
@@ -17,7 +18,7 @@ export function buildElement(element, props = {}) {
   const values = props.props || props.properties;
   if (values) {
     for (const key of Object.keys(values)) {
-      element[key] = values[key];
+      /** @type {any} */ (element)[key] = values[key];
     }
   }
 
@@ -90,18 +91,19 @@ export function createMountable(
     }
     if (checkType(element) === "object") {
       // NOTE: backwards compat
-      if (element.el || element.element) {
-        for (const key of Object.keys(element.props)) {
+      const config = /** @type {any} */ (element);
+      if (config.el || config.element) {
+        for (const key of Object.keys(config.props)) {
           if (elPropsBlacklist.has(key)) {
             console.log("found it!");
             // skip setting blacklisted props like innerHTML
-            delete element.props[key];
+            delete config.props[key];
           }
         }
 
         const { el, children } = buildElement(
-          element.el || element.element,
-          { ...element },
+          config.el || config.element,
+          { ...config },
         );
         if (children) {
           el.append(...children);

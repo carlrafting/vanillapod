@@ -181,17 +181,17 @@ and pass it to `mount` as the first argument.
 ```javascript
 // script.js
 
-import { buildElement, mount } from 'vanillapod';
+import { buildElement, mount } from "vanillapod";
 
 function myComponent() {
-    return {
-        element: buildElement('h1', {
-            text: 'This is my first vanillapod component!'
-        }).element,
-    };
+  return {
+    element: buildElement("h1", {
+      text: "This is my first vanillapod component!",
+    }).element,
+  };
 }
 
-const root = document.getElementById('root');
+const root = document.getElementById("root");
 
 mount(root, myComponent);
 ```

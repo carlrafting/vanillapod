@@ -62,7 +62,7 @@ export default function mount(root, ...args) {
     // if el is a string, use implicit render approach
     if (checkType(el) === "string") {
       const props = buildElement(el, instance);
-      el = props.el || props.element;
+      el = props?.el || props?.element;
     }
 
     registerHooks(el, instance);
