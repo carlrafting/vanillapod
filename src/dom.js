@@ -1,18 +1,56 @@
-import { createMemo } from "./state.js";
+// @ts-self-types="./dom.d.ts"
 import { createError } from "./error.js";
-import { checkType, createArray } from "./utils.js";
+import { checkType } from "./utils.js";
 import { h, validateProps } from "./element.js";
 
-const log = (...output) => console.log(...output);
+/** @import { Component, CreatedElement, ElementProps } from "./element.js" */
+
+/**
+ * What a mountable is created from: a tag name, a node, a component,
+ * a `[component, props]` tuple, element props, or `null` for a fragment.
+ *
+ * @typedef {string | Node | Component | [Component, unknown] | ElementProps | null} MountableElement
+ */
+
+/**
+ * A parameter passed to a mountable: props to set on the element, text content,
+ * a child node to append, or a callback receiving the element.
+ *
+ * @typedef {Record<string, unknown> | string | number | Node | ((element: any) => void)} MountableParam
+ */
+
+/**
+ * A function creating a node from mountable params, e.g. `div("Hello")`.
+ *
+ * @typedef {(...params: MountableParam[]) => Node} Mountable
+ */
 
 console.time("dom/internal");
 
+/** @type {{ element: any, event: [string, (e: Event) => void] }[]} */
 const eventHandlers = [];
+/** @type {Set<string | symbol>} */
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 // function merge() {}
 
+/**
+ * createMountable
+ *
+ * Create a function that builds `element` and applies the params passed to it.
+ *
+ * @overload
+ * @param {MountableElement} [element] - what to create the mountable from
+ * @param {boolean} [template] - wrap the result in a template's content fragment
+ * @returns {Mountable}
+ */
+/**
+ * @param {any} [element]
+ * @param {boolean} [template]
+ * @returns {Mountable}
+ */
 export function createMountable(element = null, template = true) {
+  /** @param {...any} params */
   return function inner(...params) {
     const templateEl = template ? document.createElement("template") : null;
     if (!element || element === null) {
@@ -39,9 +77,11 @@ export function createMountable(element = null, template = true) {
           }
         }
 
-        const { el, children } = h(element.el || element.element, {
-          ...element,
-        });
+        const { el, children } = /** @type {CreatedElement} */ (
+          h(element.el || element.element, {
+            ...element,
+          })
+        );
         if (children) {
           el.append(...children);
         }
@@ -74,7 +114,7 @@ export function createMountable(element = null, template = true) {
           }
         }
         if (typeof param === "string" || typeof param === "number") {
-          const text = document.createTextNode(param);
+          const text = document.createTextNode(String(param));
           element.textContent = text.data;
         }
         if (param instanceof Node) {
@@ -93,6 +133,10 @@ export function createMountable(element = null, template = true) {
                             } */
               const value = target[prop];
               if (typeof value === "function") {
+                /**
+                 * @this {any}
+                 * @param {...any} args
+                 */
                 return function (...args) {
                   return value.apply(
                     this === receiver ? target : this,
@@ -101,24 +145,24 @@ export function createMountable(element = null, template = true) {
                 };
               }
               return Reflect.get(target, prop);
-              return Reflect.get(
-                ...arguments,
-              ) /* .bind(element) */;
             },
             set(target, prop, value) {
               if (!elPropsBlacklist.has(prop)) {
                 return Reflect.set(target, prop, value);
               }
               createError(
-                `createMountable: It is not allowed to set property '${prop}' with callback`,
+                `createMountable: It is not allowed to set property '${
+                  String(prop)
+                }' with callback`,
               );
+              return false;
             },
           });
           param(elementProxy);
         }
       }
     }
-    if (template) {
+    if (template && templateEl) {
       templateEl.content.append(element);
       // return template.content.cloneNode(true);
       return templateEl.content; // NOTE: this makes the event handling work since we do not loose the reference to the element.
@@ -127,9 +171,17 @@ export function createMountable(element = null, template = true) {
   };
 }
 
+/**
+ * createTemplate
+ *
+ * @param {MountableElement} el - what to create the mountable from
+ * @param {...MountableParam} params - mountable params
+ * @returns {Node}
+ */
 export const createTemplate = (el, ...params) =>
   createMountable(el, true)(...params);
 
+/** @type {Map<string, Mountable>} */
 const dom = new Map();
 
 /**
@@ -200,9 +252,11 @@ function cleanupElements() {
   );
 }
 
+/** @param {(() => void) | null} [done] */
 function createDOMMap(done = null) {
   // const memo = createMemo((fn, ...params) => fn(...params));
   for (const el of elements) {
+    /** @type {Mountable} */
     const fn = (...params) => {
       const createElement = createMountable(el, true);
       // return memo(fn, ...params);
@@ -218,7 +272,12 @@ function createDOMMap(done = null) {
 
 createDOMMap(() => cleanupElements());
 
-const el = (el) => (...params) => dom.get(el)(...params);
+/**
+ * @param {string} el - tag name
+ * @returns {Mountable}
+ */
+const el = (el) => (...params) =>
+  /** @type {Mountable} */ (dom.get(el))(...params);
 
 export const div = el("div");
 export const p = el("p");
@@ -253,18 +312,31 @@ export const option = el("option");
 export const span = el("span");
 export const br = el("br");
 
+/** @type {Mountable} */
 export const fragment = (...params) => createMountable(null, false)(...params);
+/**
+ * @param {string} text
+ * @returns {Text}
+ */
 export const text = (text) => document.createTextNode(text);
+/**
+ * @param {string} text
+ * @returns {Comment}
+ */
 export const comment = (text) => document.createComment(text);
 // log({ dom });
 
 // log(dom.get('div')('Hello There'));
 
+/**
+ * @param {Node | null} [parentNode]
+ * @param {Node | null} [element]
+ * @returns {boolean | undefined}
+ */
 function elementIsParentNode(parentNode = null, element = null) {
   if (!element && !parentNode) {
     return createError(
-      "dom: elementIsParentNode requires 2 arguments, was",
-      elementIsParentNode.length,
+      "dom: elementIsParentNode requires 2 arguments",
     );
   }
 
@@ -278,6 +350,10 @@ function elementIsParentNode(parentNode = null, element = null) {
   return elementIsParentNode(parentNode.parentNode, element);
 }
 
+/**
+ * @param {Node | null} [root]
+ * @returns {number | undefined}
+ */
 function createRoot(root = null) {
   if (root instanceof Node) {
     // return console.log({ eventHandlers });
@@ -292,7 +368,10 @@ function createRoot(root = null) {
           // log({ e, target: e.target, element });
           if (
             e.target === element ||
-            elementIsParentNode(e.target.parentNode, element)
+            elementIsParentNode(
+              /** @type {Node} */ (e.target).parentNode,
+              element,
+            )
           ) {
             // log('match!');
             fn(e);
@@ -308,6 +387,21 @@ function createRoot(root = null) {
   createError("dom: Expected root to be an instance of NodePrototype");
 }
 
+/**
+ * render
+ *
+ * Append mountables to `root` and attach their event handlers.
+ *
+ * @overload
+ * @param {Node[] | (() => Node | Node[])} mountables - nodes to render, or a function returning them
+ * @param {(ParentNode & Node) | (() => (ParentNode & Node) | null) | null} root - node to render into, or a function returning it
+ * @returns {(position?: number | null) => void} destroy function removing rendered elements
+ */
+/**
+ * @param {any} mountables
+ * @param {any} root
+ * @returns {(position?: number | null) => void}
+ */
 export function render(mountables, root) {
   if (typeof root === "function") {
     root = root();
@@ -323,7 +417,9 @@ export function render(mountables, root) {
       mountables = [mountables];
     }
   }
+  /** @type {Node[]} */
   const results = [];
+  /** @param {(() => void) | null} [done] */
   const loop = (done = null) => {
     for (const mountable of mountables) {
       /* if (checkType(mountable) === 'function') {

@@ -1,16 +1,34 @@
-import debug from "./debug.js";
-import { isEqual } from "./utils.js";
-import { createError, logErrors } from "./error.js";
+// @ts-self-types="./state.d.ts"
+import { createError } from "./error.js";
 import { checkType, createArray } from "./utils.js";
+
+/** @import { ArrayPlus } from "./utils.js" */
+
+/**
+ * A state listener, called with the previous and current state.
+ *
+ * @typedef {(prevState?: any, currentState?: any) => void} Listener
+ */
+
+/**
+ * The value returned by `createReactive`.
+ *
+ * @template T
+ * @typedef {object} Reactive
+ * @property {() => T} read - read the current state (and subscribe the running effect)
+ * @property {(newValue: T | (() => T)) => void} dispatch - update the state
+ * @property {(fn: Listener) => (() => void) | undefined} subscribe - subscribe to state updates, returns an unsubscribe function
+ */
 
 console.time("state");
 
+/** @type {ArrayPlus<any>} */
 const effects = createArray([]);
 
 /**
  * # notify
  *
- * @param {Set<function>} listeners set of state listeners that updates on state updates
+ * @param {Set<Listener>} listeners set of state listeners that updates on state updates
  * @param {*} [prevState]
  * @param {*} [currentState]
  */
@@ -34,12 +52,12 @@ function notify(listeners, prevState, currentState) {
 /**
  * # subscribe
  *
- * @param {Iterable<function>} listeners - set/array++ of listeners
- * @param {function} fn - listener fn
- * @returns {function} - unsubscribe function
+ * @param {Set<Listener> | ArrayPlus<Listener>} listeners - set/array++ of listeners
+ * @param {Listener} fn - listener fn
+ * @returns {(() => void) | undefined} - unsubscribe function
  */
 function subscribe(listeners, fn) {
-  if (checkType(listeners) === "set") {
+  if (listeners instanceof Set) {
     console.log("subscribing to set of listeners");
     const unsubscribe = () => {
       listeners.delete(fn);
@@ -50,7 +68,7 @@ function subscribe(listeners, fn) {
   if (checkType(listeners) === "array++") {
     console.log("subscribing to array++ of listeners");
     const unsubscribe = () => {
-      const index = listeners.indexOf(fn);
+      const index = /** @type {any} */ (listeners).indexOf(fn);
       console.log({ index });
     };
     listeners.add(fn);
@@ -63,7 +81,7 @@ const unsubscribes = new Set();
 /**
  * # scheduleEffect
  *
- * @param {Set<function>} listeners set of state listeners that updates on state updates
+ * @param {Set<Listener>} listeners set of state listeners that updates on state updates
  */
 function scheduleEffect(listeners) {
   console.time("scheduleEffect");
@@ -81,7 +99,9 @@ function scheduleEffect(listeners) {
  * # createReactive
  *
  * @description a method with automatic subscription and effect scheduling *
- * @param {*} initialValue the initial value for the state *
+ * @template T
+ * @param {T} initialValue the initial value for the state *
+ * @returns {Reactive<T>}
  * @example
  *
     // create reactive message state and read current state
@@ -101,6 +121,7 @@ function scheduleEffect(listeners) {
  */
 export function createReactive(initialValue) {
   let state = initialValue;
+  /** @type {Set<Listener>} */
   const listeners = new Set();
 
   function read() {
@@ -112,13 +133,13 @@ export function createReactive(initialValue) {
   /**
    * dispatch
    *
-   * @param {*|function} newValue update state with `newValue`
+   * @param {T | (() => T)} newValue update state with `newValue`
    */
   function dispatch(newValue) {
     const prevState = state;
     const currentState = checkType(newValue) === "function"
-      ? newValue()
-      : newValue;
+      ? /** @type {() => T} */ (newValue)()
+      : /** @type {T} */ (newValue);
     if (prevState !== currentState) {
       state = currentState;
     }
@@ -137,16 +158,16 @@ export function createReactive(initialValue) {
  *
  * a method for storing state defined as an object
  *
- * @param {object} value - the initial state represented as an object
- * @returns
+ * @param {Record<string, any>} value - the initial state represented as an object
+ * @returns {[(key?: string) => any, (key: string, value: any) => void]} getter and setter
  */
 export function store(value) {
   let state = value;
+  /** @type {Record<string, any> | null} */
   let prevState = null;
-  const listeners = new Set();
   /**
    * @param {string} [key] - optional key defined on state object
-   * @returns
+   * @returns {any}
    */
   const getStore = (key) => {
     if (key && Object.hasOwn(state, key)) {
@@ -158,8 +179,8 @@ export function store(value) {
    * # writeStore
    *
    * @param {string} key - a key on state object to change
-   * @param {object|fn} value - state changes represented either by a new object directly or as result by a function
-   * @returns
+   * @param {any} value - state changes represented either by a new object directly or as result by a function
+   * @returns {void}
    */
   const setStore = (key, value) => {
     if (key && typeof key !== "string") {
@@ -195,7 +216,9 @@ export const createStore = store;
  * # signal
  *
  * @description a thin wrapper around store method with an api similar to solid.js
- * @param {*} value
+ * @template T
+ * @param {T} value
+ * @returns {[() => T, (newValue: T | (() => T)) => void]} getter and setter
  * @example
  *
     const [counter, setCounter] = createSignal(0);
@@ -214,7 +237,8 @@ export const makeSignal = signal;
 /**
  * # effect
  *
- * @param {function} fn a callback function that runs whenever the state updates
+ * @param {Listener} fn a callback function that runs whenever the state updates
+ * @returns {void}
  * @example
  *
     const [counter,setCounter] = signal(0);
@@ -226,6 +250,7 @@ export const makeSignal = signal;
 function effect(fn) {
   // console.log('createListenerEffect:', effects.entries());
   console.time("effect");
+  /** @type {Listener} */
   const run = (prevState, currentState) => {
     effects.clear();
     // effects.add(fn);
@@ -248,18 +273,33 @@ export const createEffect = effect;
 export const makeEffect = effect;
 export const useEffect = effect;
 
-function createReactiveRoot() {}
+/**
+ * Items that were added, removed or modified between two arrays.
+ *
+ * @typedef {{ added: any[], removed: any[], modified: any[] }} ChangeResults
+ */
 
+/**
+ * @overload
+ * @param {any[]} prev previous state
+ * @param {any[]} current current state
+ * @returns {ChangeResults}
+ */
+/**
+ * @template R
+ * @overload
+ * @param {any[]} prev previous state
+ * @param {any[]} current current state
+ * @param {(results: ChangeResults) => R} fn callback receiving the results
+ * @returns {R}
+ */
 /**
  * # onChange
  *
- * @typedef {{added: [], removed: [], modified: []}} results - foobar
- * @typedef {*} prevState
- * @typedef {*} currentState
- * @param {prevState} prev previous state
- * @param {currentState} current current state
- * @param {(results)} fn callback
- * @returns {results|function(results)}
+ * @param {any[]} prev previous state
+ * @param {any[]} current current state
+ * @param {(results: ChangeResults) => unknown} [fn] callback receiving the results
+ * @returns {unknown}
  */
 export function onChange(prev, current, fn) {
   const added = [];
@@ -303,10 +343,11 @@ export function onChange(prev, current, fn) {
 /**
  * # memo
  *
- * @param {function} fn
- * @returns {*} result
+ * @template {(...args: any[]) => any} F
+ * @param {F} [fn]
+ * @returns {(F & { cache: Map<string, ReturnType<F>> }) | undefined} memoized function, or `undefined` if `fn` is not a function
  */
-export function memo(fn = () => {}) {
+export function memo(fn = /** @type {F} */ (() => {})) {
   if (!fn || fn === null || typeof fn !== "function") {
     return createError(
       "memo: expected argument to be a function",
@@ -315,8 +356,10 @@ export function memo(fn = () => {}) {
   }
   // const cache = new WeakMap();
   const cache = new Map();
+  /** @param {...any} args */
   const ref = (...args) => {
-    const key = JSON.stringify(...args);
+    // NOTE: args are spread into JSON.stringify(value, replacer, space), so only the first one forms the key
+    const key = JSON.stringify(.../** @type {[any]} */ (args));
     // const key = [...args];
     console.log("memo: key", key);
     if (cache.has(key)) {
@@ -329,7 +372,9 @@ export function memo(fn = () => {}) {
     return result;
   };
   ref.cache = cache;
-  return ref;
+  return /** @type {F & { cache: Map<string, ReturnType<F>> }} */ (
+    /** @type {unknown} */ (ref)
+  );
 }
 
 export const createMemo = memo;

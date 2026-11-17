@@ -9,11 +9,11 @@
     "url": "https://carlrafting.com"
   },
   "license": "MIT",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "node --test-reporter=spec --test",
     "test:watch": "npm t -- --watch",
+    "types": "node scripts/clean-types.js && npx --yes --package typescript@6.0.3 tsc -p tsconfig.types.json",
     "preversion": "npm test",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
@@ -29,12 +29,31 @@
   ],
   "main": "./vanillapod.js",
   "module": "./vanillapod.js",
+  "types": "./vanillapod.d.ts",
   "exports": {
-    ".": "./vanillapod.js",
-    "./state": "./src/state.js",
-    "./dom": "./src/dom.js",
-    "./error": "./src/error.js",
-    "./debug": "./src/debug.js",
-    "./utils": "./src/utils.js"
+    ".": {
+      "types": "./vanillapod.d.ts",
+      "default": "./vanillapod.js"
+    },
+    "./state": {
+      "types": "./src/state.d.ts",
+      "default": "./src/state.js"
+    },
+    "./dom": {
+      "types": "./src/dom.d.ts",
+      "default": "./src/dom.js"
+    },
+    "./error": {
+      "types": "./src/error.d.ts",
+      "default": "./src/error.js"
+    },
+    "./debug": {
+      "types": "./src/debug.d.ts",
+      "default": "./src/debug.js"
+    },
+    "./utils": {
+      "types": "./src/utils.d.ts",
+      "default": "./src/utils.js"
+    }
   }
 }

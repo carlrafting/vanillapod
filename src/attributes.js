@@ -1,10 +1,14 @@
+// @ts-self-types="./attributes.d.ts"
 import debug from "./debug.js";
+
+/** @import { ElementProps } from "./element.js" */
 
 /**
  * setElementAttributes
  *
  * @param {HTMLElement} element - HTMLElement to set attributes on
- * @param {object} attributes - attributes to set on element
+ * @param {ElementProps} attributes - uses `attributes` / `attrs`, `classList` / `classNames` and `data`
+ * @returns {void}
  */
 export default function setElementAttributes(
   element,
@@ -12,13 +16,9 @@ export default function setElementAttributes(
 ) {
   debug() && console.log(`Setting attributes for ${element}`);
 
-  if (classList || classNames) {
-    if (!classList) {
-      classList = classNames;
-      classNames = [];
-    }
-
-    for (const className of classList) {
+  const classes = classList || classNames;
+  if (classes) {
+    for (const className of classes) {
       element.classList.add(className);
     }
   }
@@ -26,20 +26,13 @@ export default function setElementAttributes(
   if (data) {
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
-        if (Array.isArray(key)) {
-          setElementAttributes(element, key);
-        }
-        element.dataset[key] = data[key];
+        element.dataset[key] = /** @type {string} */ (data[key]);
       }
     }
   }
 
-  if (attrs || attributes) {
-    if (!attrs) {
-      attrs = attributes;
-      attributes = null;
-    }
-
+  attrs = attrs || attributes;
+  if (attrs) {
     if (typeof attrs === "function") {
       const attrsObj = attrs();
       setElementAttributes(element, { ...attrsObj });
@@ -49,10 +42,6 @@ export default function setElementAttributes(
     if (typeof attrs === "object") {
       debug() && console.log(attrs);
       for (const key in attrs) {
-        if (typeof key === "object") {
-          setElementAttributes(element, key);
-          // return;
-        }
         if (Object.prototype.hasOwnProperty.call(attrs, key)) {
           // NOTE: the following if statement prevents from setting for example a 'for' attribute
           // the reason is most likely because we are checking for a property
@@ -65,8 +54,11 @@ export default function setElementAttributes(
       return;
     }
 
-    for (const attribute of attrs) {
-      element.setAttribute(attribute);
+    for (
+      const attribute
+        of /** @type {Iterable<string>} */ (/** @type {unknown} */ (attrs))
+    ) {
+      element.setAttribute(attribute, "");
     }
   }
 }

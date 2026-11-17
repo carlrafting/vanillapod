@@ -1,12 +1,26 @@
+// @ts-self-types="./mount.d.ts"
 import { registerHooks, triggerHook } from "./hooks.js";
 import { createError } from "./error.js";
 import { checkType } from "./utils.js";
 import { createComponentInstance, createElement } from "./element.js";
-import debug from "./debug.js";
 
+/** @import { Component, CreatedElement, ElementProps } from "./element.js" */
+/** @import { HookTarget } from "./hooks.js" */
+
+/**
+ * mount
+ *
+ * Mount components to `root`, or to `document.body` when `root` is falsy.
+ *
+ * @param {Node | null | undefined} root - node to mount to
+ * @param {...unknown} args - components, `[component, props]` tuples, props objects or nodes
+ * @returns {undefined}
+ */
 export default function mount(root, ...args) {
   let index = 0;
+  /** @type {Component | undefined} */
   let vanillapodComponent;
+  /** @type {unknown} */
   let props = {};
   const argsLength = args.length;
 
@@ -29,6 +43,7 @@ export default function mount(root, ...args) {
       );
     }
 
+    /** @type {any} */
     let { el, element } = instance;
 
     if (!el) {
@@ -39,13 +54,15 @@ export default function mount(root, ...args) {
 
     // if el is a string, use implicit render approach
     if (checkType(el) === "string") {
-      const props = createElement(el, instance);
+      const props = /** @type {CreatedElement} */ (
+        createElement(el, instance)
+      );
       el = props.el || props.element;
     }
 
     registerHooks(el, instance);
 
-    const hooks = el._vanillapod_hooks;
+    const hooks = /** @type {HookTarget} */ (el)._vanillapod_hooks;
 
     // trigger element before hook
     if (hooks && hooks.before) {
@@ -73,12 +90,26 @@ export default function mount(root, ...args) {
   }
 }
 
+/**
+ * init
+ *
+ * Normalize a mount argument into a component and its props.
+ *
+ * @param {unknown} arg - component, `[component, props]` tuple, props object or node
+ * @param {Component | undefined} vanillapodComponent - current component
+ * @param {unknown} props - current props
+ * @returns {[Component | undefined, unknown]}
+ */
 export function init(arg, vanillapodComponent, props) {
   // console.log({arg, vanillapodComponent, props});
-  checkType(arg) === "array" && ([vanillapodComponent, props] = arg);
-  checkType(arg) === "function" && (vanillapodComponent = arg);
-  checkType(arg) === "asyncfunction" && (vanillapodComponent = arg);
-  checkType(arg) === "object" && (vanillapodComponent = () => arg);
+  checkType(arg) === "array" &&
+    ([vanillapodComponent, props] = /** @type {[Component, unknown]} */ (arg));
+  checkType(arg) === "function" &&
+    (vanillapodComponent = /** @type {Component} */ (arg));
+  checkType(arg) === "asyncfunction" &&
+    (vanillapodComponent = /** @type {Component} */ (arg));
+  checkType(arg) === "object" &&
+    (vanillapodComponent = () => /** @type {ElementProps} */ (arg));
   arg instanceof Node && (vanillapodComponent = () => ({ el: arg }));
   return [vanillapodComponent, props];
 }

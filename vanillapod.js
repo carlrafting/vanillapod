@@ -1,3 +1,5 @@
+// @ts-self-types="./vanillapod.d.ts"
+/** @type {string} */
 export const version = "0.11.2";
 
 // legacy

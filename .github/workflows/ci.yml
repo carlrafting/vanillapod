@@ -43,9 +43,27 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Check formatting
-        run: deno fmt --check src test vanillapod.js mod.ts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
 
-      # TODO: drop --no-check and --allow-slow-types once mod.ts type-checks cleanly.
+      - name: Check formatting
+        run: deno fmt --check src test scripts vanillapod.js mod.ts
+
+      - name: Lint
+        run: deno lint src test scripts vanillapod.js mod.ts
+
+      # Type-checks the JS sources (JSDoc, checkJs) and regenerates the .d.ts
+      # files; fails if the committed declarations are out of date.
+      - name: Check type declarations are up to date
+        run: |
+          npm run types
+          if [ -n "$(git status --porcelain -- vanillapod.d.ts src)" ]; then
+            git status --short -- vanillapod.d.ts src
+            git diff -- vanillapod.d.ts src
+            echo "::error::Generated .d.ts files are out of date. Run 'npm run types' and commit the result."
+            exit 1
+          fi
+
       - name: Verify JSR package
-        run: deno publish --dry-run --no-check --allow-slow-types
+        run: deno publish --dry-run

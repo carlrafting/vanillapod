@@ -1,0 +1,19 @@
+// Used by `npm run types` to type-check the JS sources and generate the
+// .d.ts files next to them. The .d.ts files are committed and referenced
+// from each module with `@ts-self-types`, which is what JSR reads.
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "types": [],
+    "skipLibCheck": true
+  },
+  "files": ["vanillapod.js"]
+}

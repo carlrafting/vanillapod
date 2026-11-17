@@ -3,11 +3,34 @@
   "version": "0.11.2",
   "exports": "./mod.ts",
   "compilerOptions": {
-    "allowJs": true,
     "checkJs": true,
     "lib": [
-      "dom"
+      "esnext",
+      "dom",
+      "dom.iterable"
     ]
   },
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "fmt": {
+    "exclude": [
+      "vanillapod.d.ts",
+      "src/*.d.ts"
+    ]
+  },
+  "lint": {
+    "exclude": [
+      "vanillapod.d.ts",
+      "src/*.d.ts"
+    ]
+  },
+  "publish": {
+    "include": [
+      "mod.ts",
+      "vanillapod.js",
+      "vanillapod.d.ts",
+      "src/",
+      "readme.md",
+      "LICENSE"
+    ]
+  }
 }

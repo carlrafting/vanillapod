@@ -1,3 +1,4 @@
+// @ts-self-types="./utils.d.ts"
 import { createError } from "./error.js";
 
 /**
@@ -5,9 +6,10 @@ import { createError } from "./error.js";
  *
  * delay execution of a function/method
  *
- * @param {function} fn - function to execute later
+ * @param {(...args: any[]) => unknown} fn - function to execute later
  * @param {number} timeout - amount of timeout in milliseconds
  * @param {...any} args - arguments to pass on to fn
+ * @returns {ReturnType<typeof setTimeout>} timeout id
  */
 export function delay(fn, timeout, ...args) {
   return setTimeout(() => {
@@ -24,13 +26,16 @@ export function delay(fn, timeout, ...args) {
  *
  * http://unscriptable.com/2009/03/20/debouncing-javascript-methods/
  *
- * @param {function} fn - function to debounce
- * @param {number} treshold - value in milliseconds
- * @param {boolean} asap - fn should execute asap or not
+ * @param {(...args: any[]) => unknown} fn - function to debounce
+ * @param {number} [treshold] - value in milliseconds
+ * @param {boolean} [asap] - fn should execute asap or not
+ * @returns {(...args: any[]) => void} debounced function
  */
 export function debounce(fn, treshold = 100, asap = false) {
-  let timeout;
+  /** @type {ReturnType<typeof setTimeout> | null} */
+  let timeout = null;
 
+  /** @param {...any} args */
   return function debounced(...args) {
     const delayed = () => {
       if (!asap) {
@@ -52,11 +57,14 @@ export function debounce(fn, treshold = 100, asap = false) {
 /**
  * debounceRAF
  *
- * @param {function} fn - function to debounce
+ * @param {(...args: any[]) => unknown} fn - function to debounce
+ * @returns {(...args: any[]) => void} debounced function
  */
 export function debounceRAF(fn) {
+  /** @type {number | undefined} */
   let timeout;
 
+  /** @param {...any} args */
   return function debounced(...args) {
     if (timeout) {
       globalThis.cancelAnimationFrame(timeout);
@@ -73,7 +81,8 @@ export function debounceRAF(fn) {
  *
  * A more reliable way of checking type of values.
  *
- * @param {*} value - value to check type of
+ * @param {unknown} [value] - value to check type of
+ * @returns {string} lowercase type name, e.g. `"array"`, `"object"`, `"function"`
  */
 export function checkType(value = null) {
   const sliceStart = 8;
@@ -88,8 +97,9 @@ export function checkType(value = null) {
 /**
  * traverseChildNodes
  *
- * @param {HTMLElement} parent
- * @param {function} callback
+ * @param {Node | null} [parent]
+ * @param {(child: ChildNode) => void} [callback]
+ * @returns {undefined}
  */
 export function traverseChildNodes(parent = null, callback = () => {}) {
   if (!parent) {
@@ -118,9 +128,29 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
 }
 
 /**
+ * An array wrapper returned by `createArray`.
+ *
+ * @template T
+ * @typedef {{
+ *   get(index: number): T,
+ *   first(): T,
+ *   last(): T,
+ *   add(item: T): number,
+ *   remove(index: number): T[],
+ *   clone(): T[],
+ *   entries(): T[],
+ *   clear(): boolean,
+ *   [Symbol.iterator](): Generator<T, void, unknown>,
+ *   readonly [Symbol.toStringTag]: string,
+ * }} ArrayPlus
+ */
+
+/**
  * createArray
  *
- * @param  {...any} items items to spread into a new array
+ * @template T
+ * @param  {...T} items items to spread into a new array
+ * @returns {ArrayPlus<T>}
  * @example
  *
     // methods
@@ -142,6 +172,7 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
 export function createArray(...items) {
   const arr = [...items];
   let count = 0;
+  /** @type {ArrayPlus<T>} */
   const prototype = {
     get(index) {
       return arr[index];
@@ -206,13 +237,15 @@ createEffect(() => {
 
 /**
  * # createPersistedStorage
+ *
+ * @returns {Promise<{ grant(): Promise<boolean> } | undefined>}
  */
 async function createPersistedStorage() {
   if (navigator.storage && navigator.storage.persisted) {
     await navigator.storage.persisted();
     return {
-      async grant() {
-        await navigator.storage.persist();
+      grant() {
+        return navigator.storage.persist();
       },
     };
   }
@@ -221,21 +254,24 @@ async function createPersistedStorage() {
 /**
  * # createLocalStorage
  *
- * @param {string} key
- * @param {*} initialData
- * @returns
+ * @param {string} [key]
+ * @param {*} [initialData]
+ * @returns {{ read(): any, write(data: unknown): void }}
  */
 export function createLocalStorage(key = "app", initialData = null) {
   createPersistedStorage()
-    .then(({ grant }) => {
-      const granted = grant();
+    .then(async (storage) => {
+      if (!storage) return;
+      const granted = await storage.grant();
       console.log("Granted persisted storage?", granted ? "yes" : "no");
     })
     .catch((err) => console.log(err));
 
   return {
     read() {
-      const parsed = JSON.parse(localStorage.getItem(key));
+      const parsed = JSON.parse(
+        /** @type {string} */ (localStorage.getItem(key)),
+      );
       const dataType = checkType(parsed);
       console.log({ dataType });
       if (
@@ -255,9 +291,9 @@ export function createLocalStorage(key = "app", initialData = null) {
 /**
  * # isEqual
  *
- * @param {(Array|Object)} first
- * @param {Array} second
- * @returns
+ * @param {any} first
+ * @param {any} second
+ * @returns {boolean}
  */
 export function isEqual(first, second) {
   if (typeof first !== "object" || typeof second !== "object") {
