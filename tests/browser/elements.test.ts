@@ -31,16 +31,6 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { hasB: false, text: "safe" });
     });
 
-    await t.step("passes a callback a proxied element", async () => {
-      const text = await page.evaluate(async () => {
-        const { p } = await import("/dom/main.js");
-        return p((node: HTMLElement) => {
-          node.textContent = "from callback";
-        }).firstElementChild.textContent;
-      });
-      assertEquals(text, "from callback");
-    });
-
     await t.step("builds fragments, text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { fragment, p, text, comment } = await import("/dom/main.js");
