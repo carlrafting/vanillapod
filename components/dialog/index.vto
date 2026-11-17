@@ -1,0 +1,28 @@
+---
+title: Dialog
+description: Modal dialog built on the native dialog element. A small script opens it with showModal(). Escape and the backdrop are handled by the browser.
+tags: [overlay, accessibility, css]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<button type="button" data-dialog-open="example-dialog">Open dialog</button>
+
+<dialog id="example-dialog" class="dialog" aria-labelledby="example-dialog-title">
+  <form method="dialog">
+    <h3 id="example-dialog-title">Dialog title</h3>
+    <p>Dialog content goes here.</p>
+    <menu>
+      <button value="cancel">Cancel</button>
+      <button value="confirm" autofocus>Confirm</button>
+    </menu>
+  </form>
+</dialog>
+
+<script>
+  for (const button of document.querySelectorAll("[data-dialog-open]")) {
+    button.addEventListener("click", () => {
+      document.getElementById(button.dataset.dialogOpen)?.showModal();
+    });
+  }
+</script>

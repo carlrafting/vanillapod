@@ -1,0 +1,5 @@
+@scope (.flow) {
+  :scope > * + * {
+    margin-block-start: var(--flow-space, 1lh);
+  }
+}

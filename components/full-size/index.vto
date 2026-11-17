@@ -1,0 +1,19 @@
+---
+title: Full Size
+description:
+    Component that provides authors and developers to display contents that stretches across the whole viewport width/size. Useful for banners, headers or footers. Combine with background colors or images to help make the element stand out visually on the page.
+tags: [layout, utility, css]
+---
+
+<full-size>
+  <style>
+    @scope (full-size) {
+      :scope {
+        color: color-contrast(red);
+        background-color: red;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="./styles.css" media="screen">
+  <span>Look at me, i'm <strong>fully sized</strong>!</span>
+</full-size>

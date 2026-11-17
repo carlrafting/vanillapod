@@ -1,0 +1,13 @@
+{
+  "name": "@vanillapod/vanillapod",
+  "version": "0.11.2",
+  "exports": "./mod.ts",
+  "compilerOptions": {
+    "checkJs": true,
+    "lib": [
+      "dom",
+      "esnext"
+    ]
+  },
+  "publish": false
+}

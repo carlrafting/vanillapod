@@ -1,0 +1,24 @@
+---
+title: Breadcrumbs
+---
+<style>
+@scope (.breadcrumbs) {
+  ol {
+    list-style: none;
+    display: flex;
+  }
+  li + li::before {
+    content: "/";
+    padding-inline: .25rem;
+    opacity: 50%;
+  }
+}
+</style>
+
+<nav aria-label="Breadcrumbs" class="breadcrumbs">
+  <ol>
+    <li><a href="#">#1</a></li>
+    <li><a href="#">#2</a></li>
+    <li><a aria-current="page" href="#">#3</a></li>
+  </ol>
+</nav>
