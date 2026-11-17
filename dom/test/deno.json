@@ -8,5 +8,6 @@
       "esnext",
       "deno.ns"
     ]
-  }
+  },
+  "lock": false
 }
