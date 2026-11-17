@@ -67,19 +67,26 @@ export function buildElement(element, props = {}) {
 }
 
 /**
- * @type {{ element: null; event: any[]; }[]}
+ * @type {{ element: any; event: any[]; }[]}
  */
 const eventHandlers = [];
+/** @type {Set<PropertyKey>} */
 const elPropsBlacklist = new Set(["innerHTML"]);
 
+/**
+ * @param {any} [element] - tag name, node, component, or props object; null creates a fragment
+ * @param {boolean} [template]
+ */
 export function createMountable(
-  /** @type {HTMLElement|null} */ element = null,
-  /** @type {Boolean} */ template = true,
+  element = null,
+  template = true,
 ) {
   return function inner(
     /** @type {any[]} */ ...params
   ) {
-    const templateEl = template ? document.createElement("template") : null;
+    const templateEl = template
+      ? /** @type {HTMLTemplateElement} */ (document.createElement("template"))
+      : null;
     if (!element || element === null) {
       element = document.createDocumentFragment();
     }
@@ -147,7 +154,7 @@ export function createMountable(
           }
         }
         if (typeof param === "string" || typeof param === "number") {
-          const text = document.createTextNode(param);
+          const text = document.createTextNode(String(param));
           element.textContent = text.data;
         }
         if (param instanceof Node) {
@@ -166,7 +173,9 @@ export function createMountable(
                             } */
               const value = target[prop];
               if (typeof value === "function") {
-                return function (...args) {
+                return /** @this {any} */ function (
+                  /** @type {any[]} */ ...args
+                ) {
                   return value.apply(
                     this === receiver ? target : this,
                     args,
@@ -191,16 +200,18 @@ export function createMountable(
       }
     }
     if (template) {
-      templateEl.content.append(element);
+      /** @type {HTMLTemplateElement} */ (templateEl).content.append(element);
       // return template.content.cloneNode(true);
-      return templateEl.content; // NOTE: this makes the event handling work since we do not loose the reference to the element.
+      return /** @type {HTMLTemplateElement} */ (templateEl).content; // NOTE: this makes the event handling work since we do not loose the reference to the element.
     }
     return element;
   };
 }
 
-export const createTemplate = (el, ...params) =>
-  createMountable(el, true)(...params);
+export const createTemplate = (
+  /** @type {any} */ el,
+  /** @type {any[]} */ ...params
+) => createMountable(el, true)(...params);
 
 const dom = new Map();
 
@@ -274,10 +285,13 @@ function cleanupElements() {
   }
 }
 
+/**
+ * @param {(() => void) | null} [done]
+ */
 function createDOMMap(done = null) {
   // const memo = createMemo((fn, ...params) => fn(...params));
   for (const el of elements) {
-    const fn = (...params) => {
+    const fn = (/** @type {any[]} */ ...params) => {
       const mountable = createMountable(el, true);
       // return memo(fn, ...params);
       return mountable(...params);
@@ -400,7 +414,7 @@ function createRoot(
 
 /**
  * @param {any[] | (() => any)} mountables
- * @param {HTMLElement | { (): any; append: (arg0: any) => void; querySelectorAll: (arg0: string) => any; } | null | undefined} root
+ * @param {HTMLElement | (() => HTMLElement | null | undefined) | null | undefined} root
  */
 export function render(
   mountables,
@@ -414,6 +428,8 @@ export function render(
       "render: root element could not be found in this document!",
     );
   }
+  // narrowing does not carry into the closures below, so keep a non-null copy
+  const target = /** @type {HTMLElement} */ (root);
   if (typeof mountables === "function") {
     mountables = mountables();
     if (checkType(mountables) !== "array") {
@@ -424,8 +440,9 @@ export function render(
    * @type {any[]}
    */
   const results = [];
+  /** @type {(done?: (() => void) | null) => void} */
   const loop = (done = null) => {
-    for (const mountable of mountables) {
+    for (const mountable of /** @type {any[]} */ (mountables)) {
       if (mountable || mountable !== null) {
         results.push(mountable);
       }
@@ -433,10 +450,10 @@ export function render(
     if (done && typeof done === "function") done();
   };
   loop(function done() {
-    root.append(...results);
+    target.append(...results);
     results.length = 0; // clear results array since all items are mounted and we no longer have any use for it
     // console.log({ root });
-    createRoot(root);
+    createRoot(target);
   });
   return function destroy(position = null) {
     if (position !== null && typeof position !== "number") {
