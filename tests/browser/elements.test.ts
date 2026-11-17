@@ -136,8 +136,8 @@ Deno.test("DOM elements in Chromium", async (t) => {
           render([button({ onclick: () => count++ }, "go")], root);
           const outside = document.createElement("div");
           root.append(outside);
-          const errors = [];
-          const onError = (e) => errors.push(e.message);
+          const errors: string[] = [];
+          const onError = (e: ErrorEvent) => errors.push(e.message);
           window.addEventListener("error", onError);
           outside.click();
           window.removeEventListener("error", onError);
