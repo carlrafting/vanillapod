@@ -1,17 +1,60 @@
 name: Publish
+
+# Publish only from a version tag such as dom-v0.1.0, never on a plain push.
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "dom-v*"
+
+permissions:
+  contents: read
+
 jobs:
-  publish:
+  test:
+    name: Check before publishing
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Check tag matches package version
+        run: |
+          version=$(deno eval 'console.log(JSON.parse(Deno.readTextFileSync("dom/deno.json")).version)')
+          if [ "dom-v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match dom/deno.json version $version"
+            exit 1
+          fi
+
+      - name: Check formatting
+        run: deno fmt --check dom
+
+      - name: Run unit tests
+        working-directory: dom/test
+        run: deno test -A
+
+      - name: Verify package
+        working-directory: dom
+        run: deno publish --dry-run
+
+  publish:
+    name: Publish to JSR
+    needs: test
+    runs-on: ubuntu-latest
+    # Create this environment in the repository settings and add required reviewers.
+    environment: publish
     permissions:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Publish package
+        working-directory: dom
         run: deno publish
