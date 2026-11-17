@@ -81,8 +81,5 @@
   "workspace": [
     "./dom",
     "./tests/browser"
-  ],
-  "exclude": [
-    "./legacy"
   ]
 }

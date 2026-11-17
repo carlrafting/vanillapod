@@ -39,25 +39,6 @@ jobs:
       - name: Verify JSR package
         run: deno publish --dry-run --no-check --allow-slow-types
 
-  legacy:
-    name: Legacy package
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: Check formatting
-        run: deno fmt --check legacy
-
-      # legacy/ is excluded from the root workspace, so run its tests from its own directory.
-      # TODO: drop --no-check once legacy/ type-checks cleanly (checkJs is on).
-      - name: Run unit tests
-        working-directory: legacy
-        run: deno test -A --no-check
-
   browser:
     name: Browser tests and site build
     runs-on: ubuntu-latest
