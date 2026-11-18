@@ -3,7 +3,7 @@
     "playwright": "npm:playwright@^1.65.0"
   },
   "tasks": {
-    "install-browser": "deno run -A npm:playwright@^1.65.0 install chromium",
+    "install-browser": "deno run -A playwright install chromium",
     "test": "deno test -A"
   }
 }
