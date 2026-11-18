@@ -160,6 +160,7 @@ export class Playground extends HTMLElement {
         <section class="pg-pane" aria-labelledby="${id}-code">
           <h2 id="${id}-code">Code</h2>
           <pre class="pg-editor language-javascript" data-part="editor" role="textbox"
+            autocapitalize="off" autocorrect="off"
             aria-multiline="true" aria-label="Code editor" tabindex="0"></pre>
           <p class="pg-hint">
             Import from <code>"vanillapod"</code>. Render into <code>#app</code>.

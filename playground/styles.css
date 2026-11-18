@@ -1,5 +1,7 @@
 vp-playground {
   display: grid;
+  /* minmax(0, ...) lets the column shrink below its widest child (the picker). */
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 .pg-toolbar {
@@ -99,4 +101,12 @@ kbd {
 
 vp-playground [hidden] {
   display: none;
+}
+
+vp-playground .pg-toolbar label {
+  max-inline-size: 100%;
+}
+vp-playground .pg-toolbar select {
+  min-inline-size: 0;
+  max-inline-size: 100%;
 }
