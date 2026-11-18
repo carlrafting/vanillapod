@@ -1,0 +1,54 @@
+---
+layout: layouts/page.vto
+title: Playground
+description: Write vanillapod code and see it run, right in your browser.
+---
+
+<link rel="stylesheet" href="/playground/vendor/prism.min.css" media="screen">
+<link rel="stylesheet" href="/playground/styles.css" media="screen">
+
+<main class="playground" id="playground">
+  <div class="pg-toolbar" role="toolbar" aria-label="Playground controls">
+    <label>
+      Example
+      <select id="pg-example"></select>
+    </label>
+    <button type="button" id="pg-run">Run <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button>
+    <label class="pg-auto">
+      <input type="checkbox" id="pg-auto" checked>
+      Run as I type
+    </label>
+    <button type="button" id="pg-share">Copy share link</button>
+    <button type="button" id="pg-reset">Reset</button>
+    <span id="pg-status" role="status" aria-live="polite"></span>
+  </div>
+
+  <div class="pg-panes">
+    <section class="pg-pane" aria-labelledby="pg-editor-label">
+      <h2 id="pg-editor-label">Code</h2>
+      <pre id="pg-editor" class="language-javascript" role="textbox"
+        aria-multiline="true" aria-label="Code editor" tabindex="0"></pre>
+      <p class="pg-hint">
+        Import from <code>"vanillapod"</code>. Render into
+        <code>#app</code>. <kbd>Tab</kbd> indents, <kbd>Esc</kbd> then
+        <kbd>Tab</kbd> moves focus.
+      </p>
+    </section>
+
+    <section class="pg-pane" aria-labelledby="pg-preview-label">
+      <h2 id="pg-preview-label">Preview</h2>
+      <iframe id="pg-preview" title="Playground preview"
+        sandbox="allow-scripts"></iframe>
+      <h2 id="pg-console-label">Console</h2>
+      <ol id="pg-console" aria-labelledby="pg-console-label"
+        aria-live="polite"></ol>
+    </section>
+  </div>
+
+  <noscript>The playground requires JavaScript to run code.</noscript>
+</main>
+
+<script data-manual src="/playground/vendor/prism-core.min.js"></script>
+<script src="/playground/vendor/prism-clike.min.js"></script>
+<script src="/playground/vendor/prism-javascript.min.js"></script>
+<script type="module" src="/playground/playground.js"></script>
