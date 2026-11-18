@@ -70,7 +70,8 @@ const add = form(
   {
     onSubmit(event) {
       event.preventDefault();
-      state.items.push({ id: nextId++, text: field.value });
+      // assign a new array: bind() re-runs when the "items" key is written
+      state.items = [...state.items, { id: nextId++, text: field.value }];
       field.value = "";
     },
   },
