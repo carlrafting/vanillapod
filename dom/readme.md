@@ -76,13 +76,14 @@ render(
 );
 ```
 
-`render(mountables, root)` appends the elements to `root` and attaches event
-handlers at the root.
+`render(mountables, root)` appends the elements to `root`. Entries that are
+`null`, `undefined` or a boolean are skipped, so `isAdmin && panel()` is safe.
 
 A props object sets DOM properties on the element, such as `className`, `id`,
-`value` or `type`. Keys starting with `on` that hold a function are delegated
-from the root. For attributes or `data-*` values, set them in your own code with
-`setAttribute` or `dataset`. `innerHTML` is not allowed through props.
+`value` or `type`. Keys starting with `on` that hold a function are added to the
+element as event listeners. For attributes or `data-*` values, set them in your
+own code with `setAttribute` or `dataset`. `innerHTML` is not allowed through
+props.
 
 ### State
 

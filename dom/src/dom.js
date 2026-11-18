@@ -1,18 +1,12 @@
 import { checkType } from "./utils.js";
 import { normalizeEvent } from "./events.js";
 
-/**
- * @type {{ element: any; event: any[]; }[]}
- */
-const eventHandlers = [];
-
 /** @type {Set<PropertyKey>} */
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 /**
  * Sets properties from a props object. Keys starting with `on` that hold a
- * function are registered for delegation from the root in `render`, not set on
- * the element directly, so the handler does not fire twice.
+ * function are added to the element as event listeners.
  *
  * @param {any} element
  * @param {Record<string, any>} props
@@ -21,7 +15,7 @@ function applyProps(element, props) {
   for (const [key, value] of Object.entries(props)) {
     if (elPropsBlacklist.has(key)) continue;
     if (key.startsWith("on") && typeof value === "function") {
-      eventHandlers.push({ element, event: [normalizeEvent(key), value] });
+      element.addEventListener(normalizeEvent(key), value);
     } else {
       element[key] = value;
     }
@@ -188,66 +182,6 @@ export const text = (text) => document.createTextNode(text);
 export const comment = (text) => document.createComment(text);
 
 /**
- * @param {Node | null} parentNode
- * @param {HTMLElement} element
- */
-function elementIsParentNode(
-  parentNode,
-  element,
-) {
-  if (!element && !parentNode) {
-    throw new Error(
-      `elementIsParentNode requires 2 arguments, ${elementIsParentNode.length} was provided`,
-    );
-  }
-
-  if (parentNode === element) {
-    return true;
-  }
-
-  if (parentNode === null) {
-    return false;
-  }
-  // walk up one level; recursing with the same parentNode never terminates
-  return elementIsParentNode(parentNode.parentNode, element);
-}
-
-function createRoot(
-  /** @type {HTMLElement|null} */ root = null,
-) {
-  if (!root) {
-    throw "root must be provided in order to render elements";
-  }
-  if (root instanceof Node) {
-    // return console.log({ eventHandlers });
-    for (const { element, event } of eventHandlers) {
-      // console.log({ element, event });
-      if (!element && !event) return;
-      const [name, fn] = event;
-      // log(element, event);
-      root.addEventListener(
-        name,
-        (e) => {
-          // log({ e, target: e.target, element });
-          if (
-            e.target === element ||
-            elementIsParentNode(e.target.parentNode, element)
-          ) {
-            // log('match!');
-            fn(e);
-          }
-        },
-        {
-          capture: true,
-        },
-      );
-    }
-    return (eventHandlers.length = 0);
-  }
-  throw new Error("dom: Expected root to be an instance of Node");
-}
-
-/**
  * @param {any[] | (() => any)} mountables
  * @param {HTMLElement | (() => HTMLElement | null | undefined) | null | undefined} root
  */
@@ -263,31 +197,15 @@ export function render(
       "render: root element could not be found in this document!",
     );
   }
-  // narrowing does not carry into the closures below, so keep a non-null copy
-  const target = /** @type {HTMLElement} */ (root);
   if (typeof mountables === "function") {
     mountables = mountables();
     if (checkType(mountables) !== "array") {
       mountables = [mountables];
     }
   }
-  /**
-   * @type {any[]}
-   */
-  const results = [];
-  /** @type {(done?: (() => void) | null) => void} */
-  const loop = (done = null) => {
-    for (const mountable of /** @type {any[]} */ (mountables)) {
-      if (mountable || mountable !== null) {
-        results.push(mountable);
-      }
-    }
-    if (done && typeof done === "function") done();
-  };
-  loop(function done() {
-    target.append(...results);
-    results.length = 0; // clear results array since all items are mounted and we no longer have any use for it
-    // console.log({ root });
-    createRoot(target);
-  });
+  const results = /** @type {any[]} */ (mountables).filter((mountable) =>
+    mountable !== null && mountable !== undefined &&
+    typeof mountable !== "boolean"
+  );
+  root.append(...results);
 }

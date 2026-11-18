@@ -115,6 +115,75 @@ Deno.test("DOM elements in Chromium", async (t) => {
         assertEquals(result, { count: 0, errors: [] });
       },
     );
+
+    await t.step(
+      "fires handlers on elements added without render",
+      async () => {
+        const clicks = await page.evaluate(async () => {
+          const { button, render } = await import("/dom/main.js");
+          const root = document.createElement("main");
+          document.body.append(root);
+          let count = 0;
+          render([], root);
+          root.append(button({ onclick: () => count++ }, "go"));
+          root.querySelector("button")?.click();
+          return count;
+        });
+        assertEquals(clicks, 1);
+      },
+    );
+
+    await t.step(
+      "keeps handlers when rendering into separate roots",
+      async () => {
+        const clicks = await page.evaluate(async () => {
+          const { button, p, render } = await import("/dom/main.js");
+          const first = document.createElement("main");
+          const second = document.createElement("main");
+          document.body.append(first, second);
+          let count = 0;
+          const action = button({ onclick: () => count++ }, "go");
+          render([p("first")], first);
+          render([action], second);
+          action.click();
+          return count;
+        });
+        assertEquals(clicks, 1);
+      },
+    );
+
+    await t.step("stopPropagation keeps a click from parents", async () => {
+      const result = await page.evaluate(async () => {
+        const { button, div, render } = await import("/dom/main.js");
+        const root = document.createElement("main");
+        document.body.append(root);
+        const calls: string[] = [];
+        render([
+          div(
+            { onclick: () => calls.push("parent") },
+            button({
+              onclick: (event: Event) => {
+                event.stopPropagation();
+                calls.push("child");
+              },
+            }, "go"),
+          ),
+        ], root);
+        root.querySelector("button")?.click();
+        return calls;
+      });
+      assertEquals(result, ["child"]);
+    });
+
+    await t.step("render skips empty and boolean entries", async () => {
+      const result = await page.evaluate(async () => {
+        const { p, render } = await import("/dom/main.js");
+        const root = document.createElement("main");
+        render([false, null, undefined, true, p("shown"), 0], root);
+        return root.textContent;
+      });
+      assertEquals(result, "shown0");
+    });
   } finally {
     await browser.close();
     await server?.kill();
