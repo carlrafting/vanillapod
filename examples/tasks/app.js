@@ -27,7 +27,7 @@ const taskInput = input({
   id: "task-input",
   name: "task",
   type: "text",
-  maxlength: 120,
+  maxLength: 120,
   placeholder: "e.g. Water the plants",
   autocomplete: "off",
 });
