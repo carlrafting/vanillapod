@@ -485,6 +485,25 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
         });
       },
     );
+
+    await t.step(
+      "share link survives code whose base64 contains + and /",
+      async () => {
+        // "?>>" encodes to Pz4+ and "???" to Pz8/ in standard base64.
+        const text = 'console.log("?>>???")';
+        await open(async (page) => {
+          await clear(page);
+          await page.keyboard.type(text);
+          await page.locator(part("share")).click();
+          await page.waitForFunction(() => location.hash.startsWith("#code="));
+          assert(!/[+/ ]/.test(await page.evaluate(() => location.hash)));
+          await page.reload();
+          await page.locator(`${root} .token`).first().waitFor();
+          await waitForConsole(page, 1);
+          assertEquals(await code(page), text);
+        });
+      },
+    );
   } finally {
     await browser.close();
     server?.kill();
