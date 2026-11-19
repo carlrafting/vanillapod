@@ -56,14 +56,6 @@ jobs:
       - name: Build site
         run: deno task build
 
-      # Playwright keeps downloaded browsers here. The install step below still
-      # runs on a cache hit: it skips the download but installs system deps.
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('tests/browser/deno.json') }}
-
       - name: Install Chromium
         working-directory: tests/browser
         run: deno run -A npm:playwright@^1.65.0 install --with-deps chromium
