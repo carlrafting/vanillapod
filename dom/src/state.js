@@ -66,6 +66,8 @@ function notify(raw, key) {
  * @param {() => void} run
  */
 function subscribe(raw, key, run) {
+  // The proxy sees property keys as strings, so `bind(list, 0)` must too.
+  if (typeof key === "number") key = String(key);
   let map = channels.get(raw);
   if (!map) channels.set(raw, map = new Map());
   let subs = map.get(key);
@@ -82,7 +84,11 @@ function subscribe(raw, key, run) {
 /** @type {ProxyHandler<any>} */
 const handler = {
   get(target, key, receiver) {
-    return wrap(Reflect.get(target, key, receiver));
+    const value = Reflect.get(target, key, receiver);
+    // A frozen property must be returned as is, or the Proxy throws.
+    const desc = Reflect.getOwnPropertyDescriptor(target, key);
+    if (desc && !desc.configurable && !desc.writable) return value;
+    return wrap(value);
   },
   set(target, key, value) {
     const next = toRaw(value);

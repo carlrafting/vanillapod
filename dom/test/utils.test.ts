@@ -11,6 +11,7 @@ Deno.test("checkType returns lowercase type names", () => {
   assertEquals(checkType([]), "array");
   assertEquals(checkType({}), "object");
   assertEquals(checkType(null), "null");
+  assertEquals(checkType(undefined), "undefined");
   assertEquals(checkType("a"), "string");
   assertEquals(checkType(1), "number");
   assertEquals(checkType(() => {}), "function");
@@ -23,6 +24,10 @@ Deno.test("isEqual compares nested objects and arrays", () => {
   assertFalse(isEqual([1, 2, 3], [1, 2]));
   assertFalse(isEqual([1], { 0: 1 }));
   assertFalse(isEqual(1 as never, 1 as never));
+  assertFalse(isEqual(null as never, {}));
+  assertFalse(isEqual({}, null as never));
+  assert(isEqual({ a: null }, { a: null }));
+  assertFalse(isEqual({ a: null }, { a: {} }));
 });
 
 Deno.test("delay runs fn with args after timeout", async () => {
