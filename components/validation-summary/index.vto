@@ -30,7 +30,10 @@ tags: [forms, accessibility, javascript]
       list.replaceChildren();
       const invalid = [...form.elements].filter((el) => el.willValidate && !el.checkValidity());
       for (const el of form.elements) el.removeAttribute("aria-invalid");
-      if (invalid.length === 0) return;
+      if (invalid.length === 0) {
+        summary.hidden = true;
+        return;
+      }
       event.preventDefault();
       for (const el of invalid) {
         el.setAttribute("aria-invalid", "true");

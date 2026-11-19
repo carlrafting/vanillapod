@@ -251,3 +251,20 @@ Deno.test("writes made while flushing are applied in the same flush", () => {
   flush();
   assertEquals(seen, [0, 20]);
 });
+
+Deno.test("bind with a numeric key follows writes to that array index", () => {
+  const store = createStore({ items: ["a", "b"] });
+  const seen: string[] = [];
+  bind(store.items, 0, (value: string) => seen.push(value));
+
+  store.items[0] = "c";
+  flush();
+  assertEquals(seen, ["a", "c"]);
+});
+
+Deno.test("frozen nested objects can be read from a store", () => {
+  const settings = Object.freeze({ theme: { name: "dark" } });
+  const store = createStore({ settings });
+  assertStrictEquals(store.settings.theme, settings.theme);
+  assertEquals(store.settings.theme.name, "dark");
+});
