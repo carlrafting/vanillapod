@@ -79,7 +79,7 @@ export function debounceRAF(fn) {
  *
  * @param {*} value - value to check type of
  */
-export function checkType(value = null) {
+export function checkType(value) {
   const sliceStart = 8;
   const sliceEnd = -1;
 
@@ -184,7 +184,10 @@ export function createLocalStorage(key = "app", initialData = null) {
  * @param {{ [x: string]: any; }} second
  */
 export function isEqual(first, second) {
-  if (typeof first !== "object" || typeof second !== "object") {
+  if (
+    typeof first !== "object" || typeof second !== "object" ||
+    first === null || second === null
+  ) {
     return false;
   }
 
@@ -209,7 +212,11 @@ export function isEqual(first, second) {
     const firstValue = first[key];
     const secondValue = second[key];
 
-    if (typeof firstValue === "object" && typeof secondValue === "object") {
+    if (firstValue === secondValue) {
+      continue;
+    } else if (
+      typeof firstValue === "object" && typeof secondValue === "object"
+    ) {
       if (!isEqual(firstValue, secondValue)) {
         return false;
       }
