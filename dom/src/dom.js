@@ -82,9 +82,15 @@ const elements = new Set([
   "menu",
   "pre",
   // 3. Inline Text Semantics
+  "a",
+  "code",
+  "em",
+  "small",
   "span",
+  "strong",
   "br",
   // 4. Image And Multimedia
+  "img",
   // 5. Embedded content
   // 6. SVG
   // 7. Demarcating Edits
@@ -146,6 +152,18 @@ export const h4 = el("h4");
 export const h5 = el("h5");
 export const h6 = el("h6");
 export const hr = el("hr");
+export const address = el("address");
+export const blockquote = el("blockquote");
+export const figure = el("figure");
+export const figcaption = el("figcaption");
+export const menu = el("menu");
+export const pre = el("pre");
+export const a = el("a");
+export const code = el("code");
+export const em = el("em");
+export const small = el("small");
+export const strong = el("strong");
+export const img = el("img");
 export const article = el("article");
 export const aside = el("aside");
 export const footer = el("footer");

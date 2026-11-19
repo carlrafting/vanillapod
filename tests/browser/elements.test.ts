@@ -22,6 +22,21 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { count: 2, last: "two" });
     });
 
+    await t.step("exports links, text and figure helpers", async () => {
+      const result = await page.evaluate(async () => {
+        const { a, pre, figure, figcaption, strong } = await import(
+          "/dom/main.js"
+        );
+        return [
+          a({ href: "#x" }, "link"),
+          pre("code"),
+          figure(figcaption("caption")),
+          strong("bold"),
+        ].map((el) => el.tagName);
+      });
+      assertEquals(result, ["A", "PRE", "FIGURE", "STRONG"]);
+    });
+
     await t.step("does not allow innerHTML through props", async () => {
       const result = await page.evaluate(async () => {
         const { div } = await import("/dom/main.js");
