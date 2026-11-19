@@ -3,7 +3,6 @@ import prismPlugin from "lume/plugins/prism.ts";
 import { escape } from "@std/html";
 
 const site = lume();
-site.ignore("./legacy");
 site.loadPages([".html.vto"]);
 site.use(prismPlugin());
 site.copy("./assets");

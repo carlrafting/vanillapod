@@ -79,6 +79,12 @@ jobs:
         with:
           deno-version: v2.x
 
+      # 0.0.0 marks the package as unreleased, and JSR versions are immutable.
       - name: Publish package
         working-directory: dom
-        run: deno publish
+        run: |
+          if [ "$(jq -r .version deno.json)" = "0.0.0" ]; then
+            echo "Skipping publish: dom/deno.json is still at version 0.0.0."
+            exit 0
+          fi
+          deno publish

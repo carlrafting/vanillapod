@@ -27,23 +27,21 @@ const taskInput = input({
   id: "task-input",
   name: "task",
   type: "text",
-  maxlength: 120,
+  maxLength: 120,
   placeholder: "e.g. Water the plants",
   autocomplete: "off",
-}).firstElementChild;
+});
 taskInput.setAttribute("required", "");
 taskInput.setAttribute("aria-describedby", "task-hint");
 
-const list = ul({ className: "task-list" }).firstElementChild;
-const emptyState = p({ className: "empty-state" }).firstElementChild;
-const taskList = div({ className: "task-list-region" }, list, emptyState)
-  .firstElementChild;
-const taskCount =
-  span({ className: "task-count" }, "0 tasks").firstElementChild;
-const feedback = p({ className: "feedback", role: "status" }).firstElementChild;
+const list = ul({ className: "task-list" });
+const emptyState = p({ className: "empty-state" });
+const taskList = div({ className: "task-list-region" }, list, emptyState);
+const taskCount = span({ className: "task-count" }, "0 tasks");
+const feedback = p({ className: "feedback", role: "status" });
 const filterButtons = new Map();
 
-const filterNav = div({ className: "filters" }).firstElementChild;
+const filterNav = div({ className: "filters" });
 filterNav.setAttribute("role", "group");
 filterNav.setAttribute("aria-label", "Filter tasks");
 
@@ -51,7 +49,7 @@ for (const filter of filters) {
   const filterButton = button(
     { className: "filter-button", type: "button" },
     filter[0].toUpperCase() + filter.slice(1),
-  ).firstElementChild;
+  );
   filterButton.dataset.filter = filter;
   filterButton.addEventListener("click", () => {
     store.filter = filter;
@@ -63,7 +61,7 @@ for (const filter of filters) {
 const clearCompletedButton = button(
   { className: "clear-button", type: "button" },
   "Clear completed",
-).firstElementChild;
+);
 clearCompletedButton.addEventListener("click", () => {
   store.tasks = store.tasks.filter(({ completed }) => !completed);
   persist();
@@ -81,7 +79,7 @@ const taskForm = form(
     { className: "hint", id: "task-hint" },
     "Keep it small. You can always add another.",
   ),
-).firstElementChild;
+);
 
 taskForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -102,7 +100,7 @@ taskForm.addEventListener("submit", (event) => {
   taskInput.focus();
 });
 
-const taskCard = section({ className: "task-card" }).firstElementChild;
+const taskCard = section({ className: "task-card" });
 taskCard.setAttribute("aria-label", "Your tasks");
 taskCard.append(
   taskForm,
@@ -223,20 +221,20 @@ function refreshSummary() {
 }
 
 function createTaskItem(task, { onCleanup }) {
-  const item = li({ className: "task-item" }).firstElementChild;
+  const item = li({ className: "task-item" });
   item.dataset.taskId = task.id;
 
   const toggle = input({
     className: "task-toggle",
     type: "checkbox",
-  }).firstElementChild;
+  });
   toggle.setAttribute("aria-label", `Toggle completion for "${task.title}"`);
 
-  const title = span({ className: "task-title" }, task.title).firstElementChild;
+  const title = span({ className: "task-title" }, task.title);
   const remove = button(
     { className: "delete-button", type: "button" },
     "Delete",
-  ).firstElementChild;
+  );
   remove.setAttribute("aria-label", `Delete "${task.title}"`);
 
   item.append(toggle, title, remove);

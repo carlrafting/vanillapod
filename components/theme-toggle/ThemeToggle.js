@@ -28,24 +28,16 @@ export class ThemeToggle extends HTMLElement {
       this.enableFormElements();
     }
     this.updateCheckedState();
-    this.addEventListener("change", this.handleEvent);
-    this.target.setAttribute("data-theme", this.value);
+    this.addEventListener("change", this);
+    const theme = this.value;
+    if (theme) this.target.setAttribute("data-theme", theme);
     this.removeAttribute("loading");
     this.setAttribute("loaded", "");
   }
-  createEventHandler(event) {
-    if (event.type === "change") {
-      return {
-        name: "onChange",
-        handleEvent(event) {
-          event.preventDefault();
-          const theme = event.target.value;
-          console.log("onChange", { theme });
-          this.target.setAttribute("data-theme", theme);
-          this.value = theme;
-        },
-      };
-    }
+  handleEvent(event) {
+    const theme = event.target.value;
+    this.target.setAttribute("data-theme", theme);
+    this.value = theme;
   }
   getDisabledElements() {
     const selector = "[disabled]";
@@ -77,17 +69,10 @@ export class ThemeToggle extends HTMLElement {
     }
   }
   updateCheckedState() {
-    const checkboxes = this.querySelectorAll("input[type=checkbox]");
     const theme = this.value;
-    console.log(theme);
-    for (const checkbox of checkboxes) {
-      if (checkbox.value !== theme) {
-        checkbox.removeAttribute("checked");
-        break;
-      }
-      if (checkbox.value === theme) {
-        checkbox.setAttribute("checked", "");
-      }
+    if (!theme) return;
+    for (const radio of this.querySelectorAll("input[type=radio]")) {
+      radio.checked = radio.value === theme;
     }
   }
   getSupportedThemes(from = this.querySelectorAll("fieldset>menu>li>input")) {
@@ -99,7 +84,7 @@ export class ThemeToggle extends HTMLElement {
       const typeAttr = field?.type;
       const name = field?.name;
       const value = field?.value;
-      if (lowercaseNodeName === "input" && typeAttr === "checkbox") {
+      if (lowercaseNodeName === "input" && typeAttr === "radio") {
         results.push({
           name,
           value,

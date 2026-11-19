@@ -87,8 +87,16 @@ const handler = {
   set(target, key, value) {
     const next = toRaw(value);
     const prev = toRaw(target[key]);
+    const prevLength = Array.isArray(target) ? target.length : 0;
     const ok = Reflect.set(target, key, next);
     if (ok && !Object.is(prev, next)) notify(target, key);
+    // Writing past the end grows the array without a write to `length`.
+    if (
+      ok && key !== "length" && Array.isArray(target) &&
+      target.length !== prevLength
+    ) {
+      notify(target, "length");
+    }
     return ok;
   },
   deleteProperty(target, key) {
@@ -102,6 +110,8 @@ const handler = {
 /**
  * Runs all pending binding updates. Called automatically in a microtask after
  * writes; call it directly to apply updates synchronously.
+ *
+ * @returns {void}
  */
 export function flush() {
   while (scheduler.pending.size) {
@@ -144,9 +154,10 @@ export function bind(source, key, updater) {
 }
 
 /**
- * Renders an array as a keyed list. Items are created once per key, reused
- * when the array changes, and only removed or moved when needed. Each item's
- * own bindings are untouched by list changes.
+ * Renders an array as a keyed list. Items are reused while their key holds the
+ * same object, and only removed or moved when needed. Each reused item's own
+ * bindings are untouched by list changes. When a key gets a different object,
+ * the old item is disposed and the new object is rendered in its place.
  *
  * The `parent` element is owned by the list: all of its children are managed
  * here, and items are kept in array order at the end of `parent`. Do not place
@@ -167,7 +178,7 @@ export function bindList(source, key, {
   render,
   onUpdate,
 }) {
-  /** @type {Map<PropertyKey, { node: any; dispose(): void }>} */
+  /** @type {Map<PropertyKey, { item: any; node: any; dispose(): void }>} */
   const entries = new Map();
   /** @type {any} */
   let arrayRaw;
@@ -182,6 +193,7 @@ export function bindList(source, key, {
       onCleanup: (fn) => cleanups.push(fn),
     });
     return {
+      item: toRaw(item),
       node,
       dispose() {
         for (const fn of cleanups) fn();
@@ -206,17 +218,20 @@ export function bindList(source, key, {
     }
 
     const next = new Map();
-    /** @type {{ node: any; dispose(): void }[]} */
+    /** @type {{ item: any; node: any; dispose(): void }[]} */
     const ordered = [];
     items.forEach((/** @type {any} */ item, /** @type {number} */ index) => {
       const itemKey = keys[index];
-      const entry = entries.get(itemKey) ?? createEntry(item);
+      const existing = entries.get(itemKey);
+      const entry = existing && Object.is(existing.item, toRaw(item))
+        ? existing
+        : createEntry(item);
       next.set(itemKey, entry);
       ordered.push(entry);
     });
 
     for (const [itemKey, entry] of entries) {
-      if (!next.has(itemKey)) {
+      if (next.get(itemKey) !== entry) {
         entry.dispose();
         entry.node.remove();
       }

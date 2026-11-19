@@ -1,0 +1,13 @@
+{
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "esnext",
+      "deno.ns"
+    ]
+  },
+  "lock": false
+}

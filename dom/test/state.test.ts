@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
-import { bind, bindList, createStore, flush } from "./state.js";
+import { bind, bindList, createStore, flush } from "../src/state.js";
 
 // Minimal stand-in for the DOM operations bindList relies on.
 class FakeParent {
@@ -118,10 +118,51 @@ Deno.test("bindList disposes item bindings when items are removed", () => {
     },
   });
 
-  store.items = [{ id: 2 }];
+  store.items = store.items.filter((item: { id: number }) => item.id === 2);
   flush();
   assertEquals(disposed, 1);
   assertEquals(parent.children.length, 1);
+});
+
+Deno.test("bindList renders a new object that replaces an item with the same key", () => {
+  const store = createStore({ items: [{ id: 1, done: false }] });
+  const parent = new FakeParent();
+  const rendered: { id: number; done: boolean }[] = [];
+  let disposed = 0;
+  bindList(store, "items", {
+    parent: parent as unknown as Element,
+    key: (item: { id: number }) => item.id,
+    render: (
+      item: { id: number; done: boolean },
+      { onCleanup }: { onCleanup: (fn: () => void) => void },
+    ) => {
+      rendered.push(item);
+      onCleanup(() => disposed++);
+      return new FakeNode(String(item.done)) as unknown as Node;
+    },
+  });
+
+  store.items = [{ id: 1, done: true }];
+  flush();
+  assertEquals(disposed, 1);
+  assertEquals(parent.children.map((n) => n.label), ["true"]);
+  assertStrictEquals(rendered[1], store.items[0]);
+});
+
+Deno.test("bind on an array length follows push, pop and truncation", () => {
+  const store = createStore({ items: [] as string[] });
+  const seen: number[] = [];
+  bind(store.items, "length", (value: number) => seen.push(value));
+
+  store.items.push("a");
+  flush();
+  store.items.push("b");
+  flush();
+  store.items.pop();
+  flush();
+  store.items.length = 0;
+  flush();
+  assertEquals(seen, [0, 1, 2, 1, 0]);
 });
 
 Deno.test("bindList rejects duplicate keys without rendering or touching the DOM", () => {

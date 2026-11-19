@@ -26,37 +26,17 @@ jobs:
         with:
           deno-version: v2.x
 
-      # TODO: widen to the whole repo once tests/browser and the site files are formatted.
       - name: Check formatting
         run: deno fmt --check dom
 
-      # TODO: drop --no-check once dom/ type-checks cleanly (checkJs is on).
+      # Tests live in dom/test, which has its own config with the Deno namespace.
       - name: Run unit tests
-        working-directory: dom
-        run: deno test -A --no-check
+        working-directory: dom/test
+        run: deno test -A
 
-      # TODO: drop --no-check and --allow-slow-types once dom/ type-checks cleanly.
+      # Type-checks dom/ (checkJs). The JS entrypoint warning is non-blocking.
       - name: Verify JSR package
-        run: deno publish --dry-run --no-check --allow-slow-types
-
-  legacy:
-    name: Legacy package
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: Check formatting
-        run: deno fmt --check legacy
-
-      # legacy/ is excluded from the root workspace, so run its tests from its own directory.
-      # TODO: drop --no-check once legacy/ type-checks cleanly (checkJs is on).
-      - name: Run unit tests
-        working-directory: legacy
-        run: deno test -A --no-check
+        run: deno publish --dry-run
 
   browser:
     name: Browser tests and site build
