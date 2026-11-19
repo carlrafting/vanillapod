@@ -13,6 +13,14 @@ const encode = (code) =>
 const decode = (b64) =>
   new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)));
 
+// Share links use URL-safe base64: "+" in a query string is read as a space,
+// which corrupted any code whose base64 contained one.
+const encodeShared = (code) =>
+  encode(code).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+const decodeShared = (value) =>
+  // Also accept links made before this change, whose "+" arrived as " ".
+  decode(value.replaceAll(" ", "+").replaceAll("-", "+").replaceAll("_", "/"));
+
 /**
  * Library modules as data: URLs so the iframe can stay fully sandboxed
  * (no same-origin access, so shared links can't touch the docs site).
@@ -356,7 +364,7 @@ export class Playground extends HTMLElement {
     const shared = new URLSearchParams(location.hash.slice(1)).get("code");
     if (!shared) return false;
     try {
-      this.#setCode(decode(shared));
+      this.#setCode(decodeShared(shared));
       this.#parts.example.value = "";
     } catch {
       return false;
@@ -367,7 +375,7 @@ export class Playground extends HTMLElement {
 
   async #copyShareLink() {
     const url = `${location.origin}${location.pathname}#code=${
-      encode(this.#jar.toString())
+      encodeShared(this.#jar.toString())
     }`;
     history.replaceState(null, "", url);
     try {

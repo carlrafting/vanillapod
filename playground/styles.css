@@ -52,6 +52,10 @@ vp-playground .pg-editor {
   color: #000;
   text-shadow: none;
 }
+/* iOS Safari zooms the page when focusing a field with a font under 16px. */
+@media (pointer: coarse) {
+  vp-playground .pg-editor { font-size: 1rem; }
+}
 vp-playground .pg-editor:focus-visible {
   outline: 2px solid #1a73e8;
   outline-offset: 1px;
