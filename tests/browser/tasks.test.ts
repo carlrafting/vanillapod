@@ -1,6 +1,6 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { chromium } from "playwright";
-import { baseURL, startServer } from "./helpers.ts";
+import { baseURL, saveFailure, startServer } from "./helpers.ts";
 
 const storageKey = "vanillapod-example-tasks";
 
@@ -45,6 +45,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         );
         assertEquals(await countText(page), "0 tasks left");
         assertEquals(await page.locator(".clear-button").isDisabled(), true);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -65,6 +68,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
           "First thing",
         ]);
         assertEquals(saved.every((task: any) => task.completed === false), true);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -76,6 +82,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         await addTask(page, "    ");
         assertEquals(await titles(page), []);
         assertEquals(await stored(page), null);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -97,6 +106,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         await page.locator(".task-toggle").uncheck();
         assertEquals(await countText(page), "1 task left");
         assertEquals((await stored(page))[0].completed, false);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -122,6 +134,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
 
         await page.click("[data-filter=all]");
         assertEquals(await titles(page), ["Open one", "Done one"]);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -143,6 +158,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
           await page.locator(".empty-state").textContent() ?? "",
           "all caught up",
         );
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -160,6 +178,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         assertEquals((await stored(page)).map((task: any) => task.title), [
           "Keep me",
         ]);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -181,6 +202,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
           "Pending",
         ]);
         assertEquals(await page.locator(".clear-button").isDisabled(), true);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -192,6 +216,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         await addTask(page, "Survives reload");
         await page.reload();
         assertEquals(await titles(page), ["Survives reload"]);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -209,6 +236,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
       try {
         assertEquals(await titles(page), ["Valid", "Also valid"]);
         assertEquals(await countText(page), "1 task left");
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }
@@ -220,6 +250,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
         try {
           assertEquals(await titles(page), []);
           assertEquals(await countText(page), "0 tasks left");
+        } catch (err) {
+          await saveFailure(page, "tasks");
+          throw err;
         } finally {
           await context.close();
         }
@@ -242,6 +275,9 @@ Deno.test("Tasks example app in Chromium", async (t) => {
           "Your changes could not be saved on this device.",
         );
         assertEquals(await titles(page), ["Unsaved"]);
+      } catch (err) {
+        await saveFailure(page, "tasks");
+        throw err;
       } finally {
         await context.close();
       }

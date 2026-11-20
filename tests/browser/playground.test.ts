@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertStringIncludes } from "@std/assert";
 import { chromium, firefox, webkit } from "playwright";
 import type { Page } from "playwright";
-import { baseURL, startServer } from "./helpers.ts";
+import { baseURL, saveFailure, startServer } from "./helpers.ts";
 
 // Run against another engine with e.g. `BROWSER=webkit deno task test`.
 const engines = { chromium, firefox, webkit };
@@ -73,6 +73,9 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
       await page.locator(part("auto")).uncheck();
       await run(page);
       assertEquals(errors, [], "uncaught page errors");
+    } catch (err) {
+      await saveFailure(page, "playground");
+      throw err;
     } finally {
       await context.close();
     }
