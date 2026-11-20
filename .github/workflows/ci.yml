@@ -66,7 +66,7 @@ jobs:
         run: deno task test
 
       # Failing steps save screenshots here (see saveFailure in helpers.ts).
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: browser-test-artifacts
