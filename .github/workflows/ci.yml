@@ -20,7 +20,7 @@ jobs:
     name: DOM package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: denoland/setup-deno@v2
         with:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Caches DENO_DIR so Lume's modules (pinned by URL in deno.json) are
       # fetched from cdn.jsdelivr.net only when the imports change.
