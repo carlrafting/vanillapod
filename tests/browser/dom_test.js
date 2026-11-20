@@ -4,6 +4,8 @@ import { baseURL, startServer } from "./helpers.ts";
 Deno.test("DOM API runs in Chromium", async (t) => {
   const server = await startServer();
 
+  throw new Error("BOOM!");
+
   try {
     const browser = await chromium.launch({ channel: "chromium" });
     try {
