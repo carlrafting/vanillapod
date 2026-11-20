@@ -45,9 +45,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Caches DENO_DIR so Lume's modules (pinned by URL in deno.json) are
+      # fetched from cdn.jsdelivr.net only when the imports change.
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+          cache: true
+          cache-hash: ${{ hashFiles('deno.json', 'tests/browser/deno.json') }}
 
       - name: Build site
         run: deno task build
