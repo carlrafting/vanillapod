@@ -17,26 +17,42 @@ Deno.test("Theme toggle in Chromium", async (t) => {
     await page.reload();
     await page.waitForSelector("theme-toggle[loaded]");
 
-    await stepWithShot(t, page, "keeps the default theme on a first visit", async () => {
-      assertEquals(await theme(), "auto");
-    });
+    await stepWithShot(
+      t,
+      page,
+      "keeps the default theme on a first visit",
+      async () => {
+        throw new Error("BOOM!");
+        assertEquals(await theme(), "auto");
+      },
+    );
 
-    await stepWithShot(t, page, "applies and stores the selected theme", async () => {
-      await page.check("#theme-dark");
-      assertEquals(await theme(), "dark");
-      assertEquals(
-        await page.evaluate(() => localStorage.getItem("theme")),
-        "dark",
-      );
-    });
+    await stepWithShot(
+      t,
+      page,
+      "applies and stores the selected theme",
+      async () => {
+        await page.check("#theme-dark");
+        assertEquals(await theme(), "dark");
+        assertEquals(
+          await page.evaluate(() => localStorage.getItem("theme")),
+          "dark",
+        );
+      },
+    );
 
-    await stepWithShot(t, page, "restores the stored theme after a reload", async () => {
-      await page.reload();
-      await page.waitForSelector("theme-toggle[loaded]");
-      assertEquals(await theme(), "dark");
-      assertEquals(await page.isChecked("#theme-dark"), true);
-      assertEquals(await page.isChecked("#theme-auto"), false);
-    });
+    await stepWithShot(
+      t,
+      page,
+      "restores the stored theme after a reload",
+      async () => {
+        await page.reload();
+        await page.waitForSelector("theme-toggle[loaded]");
+        assertEquals(await theme(), "dark");
+        assertEquals(await page.isChecked("#theme-dark"), true);
+        assertEquals(await page.isChecked("#theme-auto"), false);
+      },
+    );
   } finally {
     await browser.close();
     await server?.kill();
