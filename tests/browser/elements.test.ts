@@ -1,6 +1,6 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { chromium } from "playwright";
-import { baseURL, startServer } from "./helpers.ts";
+import { baseURL, startServer, stepWithShot } from "./helpers.ts";
 
 Deno.test("DOM elements in Chromium", async (t) => {
   const server = await startServer();
@@ -10,7 +10,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
     const page = await browser.newPage();
     await page.goto(`${baseURL}/examples/tasks/`);
 
-    await t.step("nests children inside tag helpers", async () => {
+    await stepWithShot(t, page, "nests children inside tag helpers", async () => {
       const result = await page.evaluate(async () => {
         const { ul, li } = await import("/dom/main.js");
         const list = ul(li("one"), li("two"));
@@ -22,7 +22,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { count: 2, last: "two" });
     });
 
-    await t.step("exports links, text and figure helpers", async () => {
+    await stepWithShot(t, page, "exports links, text and figure helpers", async () => {
       const result = await page.evaluate(async () => {
         const { a, pre, figure, figcaption, strong } = await import(
           "/dom/main.js"
@@ -37,7 +37,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["A", "PRE", "FIGURE", "STRONG"]);
     });
 
-    await t.step("does not allow innerHTML through props", async () => {
+    await stepWithShot(t, page, "does not allow innerHTML through props", async () => {
       const result = await page.evaluate(async () => {
         const { div } = await import("/dom/main.js");
         const el = div({ innerHTML: "<b>bad</b>" }, "safe");
@@ -46,7 +46,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { hasB: false, text: "safe" });
     });
 
-    await t.step("builds text and comments", async () => {
+    await stepWithShot(t, page, "builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");
         return { text: text("hi").nodeType, comment: comment("c").nodeType };
@@ -54,7 +54,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { text: 3, comment: 8 });
     });
 
-    await t.step("render appends every mountable to the root", async () => {
+    await stepWithShot(t, page, "render appends every mountable to the root", async () => {
       const result = await page.evaluate(async () => {
         const { p, render } = await import("/dom/main.js");
         const root = document.createElement("main");
@@ -64,7 +64,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["one", "two"]);
     });
 
-    await t.step("render throws without a root", async () => {
+    await stepWithShot(t, page, "render throws without a root", async () => {
       const message = await page.evaluate(async () => {
         const { p, render } = await import("/dom/main.js");
         try {
@@ -77,7 +77,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertStringIncludes(message, "root element");
     });
 
-    await t.step("fires handlers for clicks on nested elements", async () => {
+    await stepWithShot(t, page, "fires handlers for clicks on nested elements", async () => {
       const clicks = await page.evaluate(async () => {
         const { button, span, render } = await import("/dom/main.js");
         const root = document.createElement("main");
@@ -90,7 +90,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(clicks, 1);
     });
 
-    await t.step(
+    await stepWithShot(t, page, 
       "fires handlers for clicks deeply nested in the element",
       async () => {
         const clicks = await page.evaluate(async () => {
@@ -109,7 +109,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       },
     );
 
-    await t.step(
+    await stepWithShot(t, page, 
       "clicks outside the element do not throw or fire it",
       async () => {
         const result = await page.evaluate(async () => {
@@ -131,7 +131,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       },
     );
 
-    await t.step(
+    await stepWithShot(t, page, 
       "fires handlers on elements added without render",
       async () => {
         const clicks = await page.evaluate(async () => {
@@ -148,7 +148,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       },
     );
 
-    await t.step(
+    await stepWithShot(t, page, 
       "keeps handlers when rendering into separate roots",
       async () => {
         const clicks = await page.evaluate(async () => {
@@ -167,7 +167,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       },
     );
 
-    await t.step("stopPropagation keeps a click from parents", async () => {
+    await stepWithShot(t, page, "stopPropagation keeps a click from parents", async () => {
       const result = await page.evaluate(async () => {
         const { button, div, render } = await import("/dom/main.js");
         const root = document.createElement("main");
@@ -190,7 +190,7 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["child"]);
     });
 
-    await t.step("render skips empty and boolean entries", async () => {
+    await stepWithShot(t, page, "render skips empty and boolean entries", async () => {
       const result = await page.evaluate(async () => {
         const { p, render } = await import("/dom/main.js");
         const root = document.createElement("main");

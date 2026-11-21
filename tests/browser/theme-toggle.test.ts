@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { chromium } from "playwright";
-import { baseURL, startServer } from "./helpers.ts";
+import { baseURL, startServer, stepWithShot } from "./helpers.ts";
 
 Deno.test("Theme toggle in Chromium", async (t) => {
   const server = await startServer();
@@ -17,11 +17,11 @@ Deno.test("Theme toggle in Chromium", async (t) => {
     await page.reload();
     await page.waitForSelector("theme-toggle[loaded]");
 
-    await t.step("keeps the default theme on a first visit", async () => {
+    await stepWithShot(t, page, "keeps the default theme on a first visit", async () => {
       assertEquals(await theme(), "auto");
     });
 
-    await t.step("applies and stores the selected theme", async () => {
+    await stepWithShot(t, page, "applies and stores the selected theme", async () => {
       await page.check("#theme-dark");
       assertEquals(await theme(), "dark");
       assertEquals(
@@ -30,7 +30,7 @@ Deno.test("Theme toggle in Chromium", async (t) => {
       );
     });
 
-    await t.step("restores the stored theme after a reload", async () => {
+    await stepWithShot(t, page, "restores the stored theme after a reload", async () => {
       await page.reload();
       await page.waitForSelector("theme-toggle[loaded]");
       assertEquals(await theme(), "dark");
