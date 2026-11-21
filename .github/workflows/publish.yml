@@ -1,22 +1,89 @@
 name: Publish
+
+# Publish when the version in dom/deno.json changes on dev. No tags needed.
+# If the version did not change, nothing runs past the first job.
 on:
   push:
     branches:
-      - main
+      - dev
+    paths:
+      - "dom/deno.json"
+
+permissions:
+  contents: read
+
 jobs:
-  publish:
+  check-version:
+    name: Check for a version change
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compare version with the previous commit
+        id: check
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          new=$(jq -r .version dom/deno.json)
+          old=""
+          if [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            old=$(git show "$BEFORE":dom/deno.json 2>/dev/null | jq -r .version 2>/dev/null || true)
+          fi
+          echo "Previous version: ${old:-none}, current version: $new"
+          if [ "$old" != "$new" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  test:
+    name: Check before publishing
+    needs: check-version
+    if: needs.check-version.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Check formatting
+        run: deno fmt --check dom
+
+      - name: Run unit tests
+        working-directory: dom/test
+        run: deno test -A
+
+      - name: Verify package
+        working-directory: dom
+        run: deno publish --dry-run
+
+  publish:
+    name: Publish to JSR
+    needs: test
+    runs-on: ubuntu-latest
+    # Create this environment in the repository settings and add required reviewers.
+    environment: publish
     permissions:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       # 0.0.0 marks the package as unreleased, and JSR versions are immutable.
       - name: Publish package
+        working-directory: dom
         run: |
-          if [ "$(jq -r .version dom/deno.json)" = "0.0.0" ]; then
+          if [ "$(jq -r .version deno.json)" = "0.0.0" ]; then
             echo "Skipping publish: dom/deno.json is still at version 0.0.0."
             exit 0
           fi
