@@ -27,10 +27,11 @@ function place(trigger, tip) {
 /**
  * Shows the popover named by `data-tooltip` on hover or focus of each trigger.
  *
- * @param {ParentNode} [root]
+ * @param {ParentNode} [root] where to look, defaults to the document
+ * @param {string} [selector] CSS selector for the elements to enhance
  */
-export function initTooltips(root = document) {
-  for (const trigger of root.querySelectorAll("[data-tooltip]")) {
+export function initTooltips(root = document, selector = "[data-tooltip]") {
+  for (const trigger of root.querySelectorAll(selector)) {
     const tip = document.getElementById(trigger.dataset.tooltip);
     const show = () => {
       if (tip.matches(":popover-open")) return;

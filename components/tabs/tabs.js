@@ -2,10 +2,11 @@
  * Adds selection and arrow/Home/End key navigation to every `.tabs` under
  * `root`.
  *
- * @param {ParentNode} [root]
+ * @param {ParentNode} [root] where to look, defaults to the document
+ * @param {string} [selector] CSS selector for the elements to enhance
  */
-export function initTabs(root = document) {
-  for (const el of root.querySelectorAll(".tabs")) {
+export function initTabs(root = document, selector = ".tabs") {
+  for (const el of root.querySelectorAll(selector)) {
     const tabs = [...el.querySelectorAll('[role="tab"]')];
     const select = (tab) => {
       for (const t of tabs) {

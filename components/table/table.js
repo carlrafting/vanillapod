@@ -2,10 +2,11 @@
  * Makes every `.table` under `root` sortable through the buttons inside its
  * `th[aria-sort]` headers.
  *
- * @param {ParentNode} [root]
+ * @param {ParentNode} [root] where to look, defaults to the document
+ * @param {string} [selector] CSS selector for the elements to enhance
  */
-export function initTables(root = document) {
-  for (const table of root.querySelectorAll(".table")) {
+export function initTables(root = document, selector = ".table") {
+  for (const table of root.querySelectorAll(selector)) {
     const headers = [...table.querySelectorAll("th[aria-sort]")];
     headers.forEach((th, index) => {
       th.querySelector("button").addEventListener("click", () => {

@@ -38,8 +38,9 @@ customElements.define(ThemeToggle.tagName, ThemeToggle);
 Use an init function when the component only adds behavior to native markup, for
 example `tabs`, `dialog` or `table`.
 
-- The module exports `init<Name>(root = document)`, plural because it scans
-  `root` for every match: `initTabs`, `initDialogs`, `initTables`.
+- The module exports `init<Name>(root = document, selector = "<default>")`,
+  plural because it scans `root` for every element matching `selector`:
+  `initTabs`, `initDialogs`, `initTables`.
 - Importing the module has no side effects. Nothing happens until the function
   is called.
 - Markup is found through a class or a `data-*` attribute documented on the

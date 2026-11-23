@@ -2,10 +2,14 @@
  * Replaces native validation bubbles on every `.validated-form` under `root`
  * with a summary of links to the invalid fields.
  *
- * @param {ParentNode} [root]
+ * @param {ParentNode} [root] where to look, defaults to the document
+ * @param {string} [selector] CSS selector for the elements to enhance
  */
-export function initValidationSummaries(root = document) {
-  for (const form of root.querySelectorAll(".validated-form")) {
+export function initValidationSummaries(
+  root = document,
+  selector = ".validated-form",
+) {
+  for (const form of root.querySelectorAll(selector)) {
     const summary = form.querySelector(".validation-summary");
     const list = summary.querySelector("ul");
     form.addEventListener("submit", (event) => {

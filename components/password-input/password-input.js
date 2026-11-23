@@ -1,10 +1,14 @@
 /**
  * Adds a show/hide toggle to every `.password-input` under `root`.
  *
- * @param {ParentNode} [root]
+ * @param {ParentNode} [root] where to look, defaults to the document
+ * @param {string} [selector] CSS selector for the elements to enhance
  */
-export function initPasswordInputs(root = document) {
-  for (const el of root.querySelectorAll(".password-input")) {
+export function initPasswordInputs(
+  root = document,
+  selector = ".password-input",
+) {
+  for (const el of root.querySelectorAll(selector)) {
     const input = el.querySelector("input");
     const button = el.querySelector("button");
     button.addEventListener("click", () => {
