@@ -5,11 +5,33 @@ import { normalizeEvent } from "./events.js";
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 /**
- * Sets properties from a props object. Keys starting with `on` that hold a
- * function are added to the element as event listeners. `dataset` is merged
- * into the element's dataset, `class` sets the class attribute, and keys with
- * a dash (`aria-*`, `data-*`) are set as attributes. Everything else is
- * assigned as a property.
+ * Adds an event listener. The handler is a function, or a
+ * `[function, options]` pair where options are passed to `addEventListener`
+ * (`once`, `capture`, `passive`, `signal`).
+ *
+ * @param {any} element
+ * @param {string} type
+ * @param {any} handler
+ */
+function listen(element, type, handler) {
+  if (typeof handler === "function") {
+    element.addEventListener(type, handler);
+  } else if (Array.isArray(handler) && typeof handler[0] === "function") {
+    element.addEventListener(type, handler[0], handler[1]);
+  }
+}
+
+/**
+ * Sets properties from a props object.
+ *
+ * - `on<event>` adds a listener for the lowercased event name. The value is a
+ *   function, or `[function, options]` to pass listener options.
+ * - `on` takes an object of `{ [eventName]: handler }` and uses the event
+ *   names as written, so custom events like `"my-event"` work.
+ * - `dataset` is merged into the element's dataset.
+ * - `class` sets the class attribute, and keys with a dash (`aria-*`,
+ *   `data-*`) are set as attributes.
+ * - Everything else is assigned as a property.
  *
  * @param {any} element
  * @param {Record<string, any>} props
@@ -17,8 +39,15 @@ const elPropsBlacklist = new Set(["innerHTML"]);
 function applyProps(element, props) {
   for (const [key, value] of Object.entries(props)) {
     if (elPropsBlacklist.has(key)) continue;
-    if (key.startsWith("on") && typeof value === "function") {
-      element.addEventListener(normalizeEvent(key), value);
+    if (key === "on" && value && typeof value === "object") {
+      for (const [type, handler] of Object.entries(value)) {
+        listen(element, type, handler);
+      }
+    } else if (
+      key.startsWith("on") &&
+      (typeof value === "function" || Array.isArray(value))
+    ) {
+      listen(element, normalizeEvent(key), value);
     } else if (key === "dataset" && value && typeof value === "object") {
       Object.assign(element.dataset, value);
     } else if (key === "class") {

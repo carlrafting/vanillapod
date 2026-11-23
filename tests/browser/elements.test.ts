@@ -145,6 +145,41 @@ Deno.test("DOM elements in Chromium", async (t) => {
       },
     );
 
+    await t.step(
+      "passes listener options with [handler, options]",
+      async () => {
+        const clicks = await page.evaluate(async () => {
+          const { enhance, button } = await import("/dom/main.js");
+          let count = 0;
+          const el = enhance(button("go"), {
+            onclick: [() => count++, { once: true }],
+          });
+          el.click();
+          el.click();
+          return count;
+        });
+        assertEquals(clicks, 1);
+      },
+    );
+
+    await t.step("registers custom events through the on map", async () => {
+      const result = await page.evaluate(async () => {
+        const { enhance, div } = await import("/dom/main.js");
+        const calls: string[] = [];
+        const el = enhance(div(), {
+          on: {
+            "my-event": () => calls.push("custom"),
+            click: [() => calls.push("once"), { once: true }],
+          },
+        });
+        el.dispatchEvent(new Event("my-event"));
+        el.click();
+        el.click();
+        return calls;
+      });
+      assertEquals(result, ["custom", "once"]);
+    });
+
     await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");

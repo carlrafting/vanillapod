@@ -105,6 +105,17 @@ Props are assigned as properties, with a few conveniences: `on<event>` adds a
 listener, `dataset` is merged into the element's dataset, `class` sets the class
 attribute, and keys with a dash (`aria-*`, `data-*`) are set as attributes.
 
+Pass `[handler, options]` to give a listener options such as `once`, `capture`
+or `passive`. The `on` prop takes a map of event names, used exactly as written,
+which is how you listen for custom events:
+
+```js
+enhance(element, {
+  onclick: [save, { once: true }],
+  on: { "item-added": refresh },
+});
+```
+
 ### State
 
 `createStore` returns a reactive object. Writes to it re-run only the bindings
