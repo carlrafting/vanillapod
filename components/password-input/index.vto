@@ -14,14 +14,8 @@ tags: [forms, accessibility, javascript]
   </div>
 </div>
 
-<script>
-  for (const root of document.querySelectorAll(".password-input")) {
-    const input = root.querySelector("input");
-    const button = root.querySelector("button");
-    button.addEventListener("click", () => {
-      const show = input.type === "password";
-      input.type = show ? "text" : "password";
-      button.textContent = show ? "Hide password" : "Show password";
-    });
-  }
+<script type="module">
+  import { initPasswordInputs } from "./password-input.js";
+
+  initPasswordInputs();
 </script>
