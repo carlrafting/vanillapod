@@ -5,8 +5,43 @@ import { normalizeEvent } from "./events.js";
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 /**
- * Sets properties from a props object. Keys starting with `on` that hold a
- * function are added to the element as event listeners.
+ * @param {any} handler
+ * @returns {boolean} whether it can be passed to `addEventListener`
+ */
+function isListener(handler) {
+  return typeof handler === "function" ||
+    (!!handler && typeof handler.handleEvent === "function");
+}
+
+/**
+ * Adds an event listener. The handler is a function, an object with a
+ * `handleEvent` method, or a `[handler, options]` pair where options are
+ * passed to `addEventListener` (`once`, `capture`, `passive`, `signal`).
+ *
+ * @param {any} element
+ * @param {string} type
+ * @param {any} handler
+ */
+function listen(element, type, handler) {
+  if (isListener(handler)) {
+    element.addEventListener(type, handler);
+  } else if (Array.isArray(handler) && isListener(handler[0])) {
+    element.addEventListener(type, handler[0], handler[1]);
+  }
+}
+
+/**
+ * Sets properties from a props object.
+ *
+ * - `on<event>` adds a listener for the lowercased event name. The value is a
+ *   function, an object with `handleEvent`, or `[handler, options]` to pass
+ *   listener options.
+ * - `on` takes an object of `{ [eventName]: handler }` and uses the event
+ *   names as written, so custom events like `"my-event"` work.
+ * - `dataset` is merged into the element's dataset.
+ * - `class` sets the class attribute, and keys with a dash (`aria-*`,
+ *   `data-*`) are set as attributes.
+ * - Everything else is assigned as a property.
  *
  * @param {any} element
  * @param {Record<string, any>} props
@@ -14,8 +49,20 @@ const elPropsBlacklist = new Set(["innerHTML"]);
 function applyProps(element, props) {
   for (const [key, value] of Object.entries(props)) {
     if (elPropsBlacklist.has(key)) continue;
-    if (key.startsWith("on") && typeof value === "function") {
-      element.addEventListener(normalizeEvent(key), value);
+    if (key === "on" && value && typeof value === "object") {
+      for (const [type, handler] of Object.entries(value)) {
+        listen(element, type, handler);
+      }
+    } else if (
+      key.startsWith("on") && (isListener(value) || Array.isArray(value))
+    ) {
+      listen(element, normalizeEvent(key), value);
+    } else if (key === "dataset" && value && typeof value === "object") {
+      Object.assign(element.dataset, value);
+    } else if (key === "class") {
+      element.setAttribute("class", value);
+    } else if (key.includes("-")) {
+      element.setAttribute(key, value);
     } else {
       element[key] = value;
     }
@@ -23,15 +70,15 @@ function applyProps(element, props) {
 }
 
 /**
- * Builds an element from a tag name. Strings and numbers become text, Nodes
- * are appended, and a props object sets properties.
+ * Applies params to an element: strings and numbers are appended as text,
+ * Nodes are appended, and a props object sets properties.
  *
- * @param {string} tagName
+ * @template {Element} T
+ * @param {T} element
  * @param {any[]} params - an optional props object, then children
- * @returns {HTMLElement}
+ * @returns {T}
  */
-function build(tagName, params) {
-  const element = document.createElement(tagName);
+function apply(element, params) {
   for (const param of params) {
     if (typeof param === "string" || typeof param === "number") {
       element.append(document.createTextNode(String(param)));
@@ -42,6 +89,33 @@ function build(tagName, params) {
     }
   }
   return element;
+}
+
+/**
+ * Builds an element from a tag name.
+ *
+ * @param {string} tagName
+ * @param {any[]} params - an optional props object, then children
+ * @returns {HTMLElement}
+ */
+function build(tagName, params) {
+  return apply(document.createElement(tagName), params);
+}
+
+/**
+ * Applies props, event handlers and children to an element that already
+ * exists, using the same params as the element helpers. Children are appended.
+ *
+ * @template {Element} T
+ * @param {T} element
+ * @param {...any} params - an optional props object, then children
+ * @returns {T} the same element
+ */
+export function enhance(element, ...params) {
+  if (!(element instanceof Element)) {
+    throw new TypeError("enhance: first argument must be an Element");
+  }
+  return apply(element, params);
 }
 
 const dom = new Map();

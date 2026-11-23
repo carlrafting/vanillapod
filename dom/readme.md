@@ -85,6 +85,52 @@ element as event listeners. For attributes or `data-*` values, set them in your
 own code with `setAttribute` or `dataset`. `innerHTML` is not allowed through
 props.
 
+### Existing elements
+
+`enhance(element, props, ...children)` takes the same params as the element
+helpers but applies them to an element that is already in the document, and
+returns it. Children are appended.
+
+```js
+import { enhance } from "@vanillapod/dom";
+
+enhance(document.querySelector("#save"), {
+  onclick: save,
+  dataset: { state: "idle" },
+  "aria-busy": "false",
+});
+```
+
+Props are assigned as properties, with a few conveniences: `on<event>` adds a
+listener, `dataset` is merged into the element's dataset, `class` sets the class
+attribute, and keys with a dash (`aria-*`, `data-*`) are set as attributes.
+
+Pass `[handler, options]` to give a listener options such as `once`, `capture`
+or `passive`. The `on` prop takes a map of event names, used exactly as written,
+which is how you listen for custom events:
+
+```js
+enhance(element, {
+  onclick: [save, { once: true }],
+  on: { "item-added": refresh },
+});
+```
+
+A handler can also be an object with a `handleEvent` method, as
+`addEventListener` allows. `this` is that object, so one object can handle
+several events:
+
+```js
+const widget = {
+  count: 0,
+  handleEvent(event) {
+    if (event.type === "click") this.count++;
+  },
+};
+
+enhance(element, { on: { click: widget, keydown: widget } });
+```
+
 ### State
 
 `createStore` returns a reactive object. Writes to it re-run only the bindings
