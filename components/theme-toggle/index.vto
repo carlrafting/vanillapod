@@ -48,3 +48,11 @@ tags: [theme, theme-toggle]
     </fieldset>
   </form>
 </theme-toggle>
+
+<script type="module">
+  import { ThemeToggle } from "./ThemeToggle.js";
+
+  if (!customElements.get(ThemeToggle.tagName)) {
+    customElements.define(ThemeToggle.tagName, ThemeToggle);
+  }
+</script>

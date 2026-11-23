@@ -80,6 +80,7 @@
   "lock": false,
   "workspace": [
     "./dom",
+    "./components",
     "./tests/browser"
   ]
 }
