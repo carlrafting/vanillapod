@@ -10,6 +10,6 @@ site.copy("./dom/src", "./dom/src");
 site.copy("./dom/main.js", "./dom/main.js");
 site.copy([".css", ".js", ".png", ".avif"]);
 site.filter("escape", (input: string) => escape(input));
-site.ignore(".claude/");
+site.ignore(".claude/", "components/README.md");
 
 export default site;

@@ -19,10 +19,8 @@ tags: [overlay, accessibility, css]
   </form>
 </dialog>
 
-<script>
-  for (const button of document.querySelectorAll("[data-dialog-open]")) {
-    button.addEventListener("click", () => {
-      document.getElementById(button.dataset.dialogOpen)?.showModal();
-    });
-  }
+<script type="module">
+  import { initDialogs } from "./dialog.js";
+
+  initDialogs();
 </script>

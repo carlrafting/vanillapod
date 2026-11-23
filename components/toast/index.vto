@@ -1,6 +1,6 @@
 ---
 title: Toast
-description: Transient notifications announced through an aria-live region. Call showToast(message, { variant, timeout }) to add one, it removes itself after a timeout, which pauses while hovered, or when clicked or activated with Enter or Space while focused. Variants are info, success, warning and danger (or error). Configure animation with data-animation="slide|fade|none" on the region or a single toast, and tune it with --toast-duration, --toast-easing and --toast-offset.
+description: Transient notifications announced through an aria-live region. Import showToast from ./toast.js and call showToast(message, { variant, timeout }) to add one, it removes itself after a timeout, which pauses while hovered, or when clicked or activated with Enter or Space while focused. Variants are info, success, warning and danger (or error). Configure animation with data-animation="slide|fade|none" on the region or a single toast, and tune it with --toast-duration, --toast-easing and --toast-offset.
 tags: [feedback, accessibility, javascript]
 ---
 
@@ -24,41 +24,8 @@ tags: [feedback, accessibility, javascript]
 
 <div class="toasts" role="status" aria-live="polite" data-animation="slide"></div>
 
-<script>
-  function showToast(message, { variant = "info", timeout = 4000 } = {}) {
-    const region = document.querySelector(".toasts");
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.tabIndex = 0;
-    toast.dataset.variant = variant;
-    toast.textContent = message;
-    region.append(toast);
-
-    const remove = () => {
-      if (toast.dataset.leaving !== undefined) return;
-      toast.dataset.leaving = "";
-      const duration = Math.max(
-        ...getComputedStyle(toast).transitionDuration.split(",").map((value) => parseFloat(value) * (value.includes("ms") ? 1 : 1000)),
-      );
-      if (!duration) return toast.remove();
-      toast.addEventListener("transitionend", () => toast.remove(), { once: true });
-      setTimeout(() => toast.remove(), duration + 50);
-    };
-
-    let timer;
-    const start = () => (timer = setTimeout(remove, timeout));
-    const pause = () => clearTimeout(timer);
-    toast.addEventListener("mouseenter", pause);
-    toast.addEventListener("mouseleave", start);
-    toast.addEventListener("click", remove);
-    toast.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        remove();
-      }
-    });
-    start();
-  }
+<script type="module">
+  import { showToast } from "./toast.js";
 
   const messages = {
     info: "A new version is available",
