@@ -5,18 +5,27 @@ import { normalizeEvent } from "./events.js";
 const elPropsBlacklist = new Set(["innerHTML"]);
 
 /**
- * Adds an event listener. The handler is a function, or a
- * `[function, options]` pair where options are passed to `addEventListener`
- * (`once`, `capture`, `passive`, `signal`).
+ * @param {any} handler
+ * @returns {boolean} whether it can be passed to `addEventListener`
+ */
+function isListener(handler) {
+  return typeof handler === "function" ||
+    (!!handler && typeof handler.handleEvent === "function");
+}
+
+/**
+ * Adds an event listener. The handler is a function, an object with a
+ * `handleEvent` method, or a `[handler, options]` pair where options are
+ * passed to `addEventListener` (`once`, `capture`, `passive`, `signal`).
  *
  * @param {any} element
  * @param {string} type
  * @param {any} handler
  */
 function listen(element, type, handler) {
-  if (typeof handler === "function") {
+  if (isListener(handler)) {
     element.addEventListener(type, handler);
-  } else if (Array.isArray(handler) && typeof handler[0] === "function") {
+  } else if (Array.isArray(handler) && isListener(handler[0])) {
     element.addEventListener(type, handler[0], handler[1]);
   }
 }
@@ -25,7 +34,8 @@ function listen(element, type, handler) {
  * Sets properties from a props object.
  *
  * - `on<event>` adds a listener for the lowercased event name. The value is a
- *   function, or `[function, options]` to pass listener options.
+ *   function, an object with `handleEvent`, or `[handler, options]` to pass
+ *   listener options.
  * - `on` takes an object of `{ [eventName]: handler }` and uses the event
  *   names as written, so custom events like `"my-event"` work.
  * - `dataset` is merged into the element's dataset.
@@ -44,8 +54,7 @@ function applyProps(element, props) {
         listen(element, type, handler);
       }
     } else if (
-      key.startsWith("on") &&
-      (typeof value === "function" || Array.isArray(value))
+      key.startsWith("on") && (isListener(value) || Array.isArray(value))
     ) {
       listen(element, normalizeEvent(key), value);
     } else if (key === "dataset" && value && typeof value === "object") {

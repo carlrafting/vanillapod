@@ -180,6 +180,28 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["custom", "once"]);
     });
 
+    await t.step("accepts handleEvent objects as listeners", async () => {
+      const result = await page.evaluate(async () => {
+        const { enhance, div } = await import("/dom/main.js");
+        const widget = {
+          calls: [] as string[],
+          handleEvent(event: Event) {
+            this.calls.push(event.type);
+          },
+        };
+        const el = enhance(div(), {
+          onclick: widget,
+          on: { "my-event": widget, keydown: [widget, { once: true }] },
+        });
+        el.click();
+        el.dispatchEvent(new Event("my-event"));
+        el.dispatchEvent(new Event("keydown"));
+        el.dispatchEvent(new Event("keydown"));
+        return widget.calls;
+      });
+      assertEquals(result, ["click", "my-event", "keydown"]);
+    });
+
     await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");

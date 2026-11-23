@@ -116,6 +116,21 @@ enhance(element, {
 });
 ```
 
+A handler can also be an object with a `handleEvent` method, as
+`addEventListener` allows. `this` is that object, so one object can handle
+several events:
+
+```js
+const widget = {
+  count: 0,
+  handleEvent(event) {
+    if (event.type === "click") this.count++;
+  },
+};
+
+enhance(element, { on: { click: widget, keydown: widget } });
+```
+
 ### State
 
 `createStore` returns a reactive object. Writes to it re-run only the bindings
