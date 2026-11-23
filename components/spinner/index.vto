@@ -1,0 +1,24 @@
+---
+title: Spinner
+description: Indeterminate loading indicator for waits of unknown length. It uses role="status" with a visually hidden label so the state is announced. Set data-size to small or large, and use Progress instead when you know how far along the work is.
+tags: [feedback, accessibility, css]
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<span class="spinner" role="status">
+  <span class="spinner-label">Loading</span>
+</span>
+<span class="spinner" role="status" data-size="small">
+  <span class="spinner-label">Loading</span>
+</span>
+<span class="spinner" role="status" data-size="large">
+  <span class="spinner-label">Loading</span>
+</span>
+
+<p>
+  <span class="spinner" role="status" data-size="small">
+    <span class="spinner-label">Saving</span>
+  </span>
+  <span aria-hidden="true">Saving&hellip;</span>
+</p>
