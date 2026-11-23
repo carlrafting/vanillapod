@@ -85,6 +85,26 @@ element as event listeners. For attributes or `data-*` values, set them in your
 own code with `setAttribute` or `dataset`. `innerHTML` is not allowed through
 props.
 
+### Existing elements
+
+`enhance(element, props, ...children)` takes the same params as the element
+helpers but applies them to an element that is already in the document, and
+returns it. Children are appended.
+
+```js
+import { enhance } from "@vanillapod/dom";
+
+enhance(document.querySelector("#save"), {
+  onclick: save,
+  dataset: { state: "idle" },
+  "aria-busy": "false",
+});
+```
+
+Props are assigned as properties, with a few conveniences: `on<event>` adds a
+listener, `dataset` is merged into the element's dataset, `class` sets the class
+attribute, and keys with a dash (`aria-*`, `data-*`) are set as attributes.
+
 ### State
 
 `createStore` returns a reactive object. Writes to it re-run only the bindings

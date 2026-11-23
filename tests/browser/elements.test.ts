@@ -46,6 +46,105 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, { hasB: false, text: "safe" });
     });
 
+    await t.step(
+      "enhance applies props and handlers to an existing element",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { enhance } = await import("/dom/main.js");
+          const existing = document.createElement("button");
+          existing.textContent = "go";
+          document.body.append(existing);
+          let clicks = 0;
+          const returned = enhance(existing, {
+            id: "enhanced",
+            onclick: () => clicks++,
+            onmouseenter: () => clicks += 10,
+          });
+          existing.click();
+          existing.dispatchEvent(new Event("mouseenter"));
+          return {
+            same: returned === existing,
+            id: existing.id,
+            clicks,
+            text: existing.textContent,
+          };
+        });
+        assertEquals(result, {
+          same: true,
+          id: "enhanced",
+          clicks: 11,
+          text: "go",
+        });
+      },
+    );
+
+    await t.step(
+      "enhance appends children and accepts dataset, class and aria props",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { enhance, span } = await import("/dom/main.js");
+          const existing = document.createElement("div");
+          enhance(
+            existing,
+            {
+              dataset: { variant: "info" },
+              class: "toast",
+              "aria-invalid": "true",
+              "data-extra": "1",
+            },
+            "text ",
+            span("child"),
+          );
+          return {
+            variant: existing.dataset.variant,
+            extra: existing.dataset.extra,
+            className: existing.className,
+            aria: existing.getAttribute("aria-invalid"),
+            text: existing.textContent,
+          };
+        });
+        assertEquals(result, {
+          variant: "info",
+          extra: "1",
+          className: "toast",
+          aria: "true",
+          text: "text child",
+        });
+      },
+    );
+
+    await t.step(
+      "enhance throws when given something that is not an element",
+      async () => {
+        const message = await page.evaluate(async () => {
+          const { enhance } = await import("/dom/main.js");
+          try {
+            enhance(null, { id: "x" });
+          } catch (err) {
+            return (err as Error).message;
+          }
+          return "";
+        });
+        assertStringIncludes(message, "Element");
+      },
+    );
+
+    await t.step(
+      "element helpers accept dataset, class and aria props",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { div } = await import("/dom/main.js");
+          const el = div({
+            dataset: { a: "1" },
+            class: "x y",
+            "aria-label": "hi",
+          });
+          return [el.dataset.a, el.className, el.getAttribute("aria-label")];
+        });
+        assertEquals(result, ["1", "x y", "hi"]);
+      },
+    );
+
     await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");
