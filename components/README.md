@@ -65,3 +65,11 @@ from `toast/toast.js`.
 - Modules do not touch globals and do not run on import.
 - Every component has a demo page, `index.vto`, whose `<script type="module">`
   is the reference for how to use it.
+
+## Dependencies
+
+Most modules have no imports. `tabs`, `tooltip`, `toast` and
+`validation-summary` use `enhance` and the element helpers from
+`@vanillapod/dom`, imported by relative path (`../../dom/main.js`) so they work
+on the docs site without an import map. They need `dom/` to be served next to
+`components/`.
