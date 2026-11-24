@@ -202,6 +202,30 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["click", "my-event", "keydown"]);
     });
 
+    await t.step("signals and effects drive the DOM", async () => {
+      const result = await page.evaluate(async () => {
+        const { $state, $effect, $derived, flush, div, enhance } = await import(
+          "/dom/main.js"
+        );
+        const element = div({ className: "element" });
+        document.body.append(element);
+        const count = $state(0);
+        const double = $derived(() => count() * 2);
+        $effect(() => {
+          element.textContent = `${count()}:${double()}`;
+        });
+        enhance(element, {
+          onclick: () => count((value: number) => value + 1),
+        });
+        const before = element.textContent;
+        element.click();
+        element.click();
+        flush();
+        return [before, element.textContent];
+      });
+      assertEquals(result, ["0:0", "2:4"]);
+    });
+
     await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");

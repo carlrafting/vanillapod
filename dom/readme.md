@@ -161,6 +161,45 @@ store.items.push({ id: 1, label: "First task" });
 Notifications are batched and run in a microtask. Call `flush()` to apply them
 synchronously.
 
+### Signals and effects
+
+For single values, `$state` creates a signal. Call it with no arguments to read,
+with a value to set, or with a function to update from the current value.
+`$effect` runs a function now and again whenever a signal or store property it
+read changes, so there are no keys or per-property bindings to wire up:
+
+```js
+import { $derived, $effect, $state, enhance } from "@vanillapod/dom";
+
+const count = $state(0);
+const double = $derived(() => count() * 2);
+
+const element = document.querySelector("div.element");
+$effect(() => {
+  element.textContent = `${count()} (${double()})`;
+});
+enhance(element, { onclick: () => count((value) => value + 1) });
+```
+
+- `count()` reads, `count(5)` sets and `count((n) => n + 1)` updates. The
+  updater's return value is the new value, so write `n + 1`, not `n++`. A
+  function can't be stored as the value directly (it is treated as an updater):
+  wrap it in an object.
+- Writes are batched and effects re-run in a microtask, like store
+  notifications. Call `flush()` to run them synchronously.
+- An effect tracks what it reads on each run, so a branch it no longer takes is
+  forgotten. It may return a cleanup function, which runs before the next run
+  and on dispose. `$effect` returns a dispose function.
+- Inside an effect, reading `store.title` or `store.user.name` subscribes to
+  that property of a store from `createStore`. Only property reads are tracked:
+  adding a key to an object does not re-run an effect that listed its keys.
+- `$derived(fn)` is a read-only signal computed from others. It updates in the
+  same flush as the write that changed it, so an effect that reads both a signal
+  and a value derived from it may run once per step in that flush. Call its
+  `dispose()` to stop it.
+- `untracked(fn)` reads without subscribing the running effect. `bind` and
+  `bindList` still work as before and do not subscribe an enclosing effect.
+
 ## Errors
 
 Invalid input throws an `Error`, for example `render` without a root, or
