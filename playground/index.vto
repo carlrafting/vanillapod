@@ -19,29 +19,28 @@ render(
   document.querySelector("#app"),
 );</pre>
 
-  <pre id="counter" data-title="Counter (createStore + bind)">import { bind, button, createStore, p, render } from "vanillapod";
+  <pre id="counter" data-title="Counter ($state + $effect)">import { $effect, $state, button, p, render } from "vanillapod";
 
-const state = createStore({ count: 0 });
+const count = $state(0);
 
 const output = p();
-// bind runs now, and again only when state.count is written
-bind(state, "count", (count) => {
-  output.textContent = `Count: ${count}`;
+// $effect runs now, and again whenever a signal it read changes
+$effect(() => {
+  output.textContent = `Count: ${count()}`;
 });
 
 render(
   [
     output,
-    button({ onClick: () => state.count++ }, "Increment"),
-    button({ onClick: () => state.count-- }, "Decrement"),
-    button({ onClick: () => (state.count = 0) }, "Reset"),
+    button({ onClick: () => count((n) => n + 1) }, "Increment"),
+    button({ onClick: () => count((n) => n - 1) }, "Decrement"),
+    button({ onClick: () => count(0) }, "Reset"),
   ],
   document.querySelector("#app"),
 );</pre>
 
-  <pre id="list" data-title="List (bindList)">import {
-  bind,
-  bindList,
+  <pre id="list" data-title="List (createStore + $effect)">import {
+  $effect,
   button,
   createStore,
   form,
@@ -56,23 +55,25 @@ const state = createStore({ items: [{ id: 1, text: "Try vanillapod" }] });
 let nextId = 2;
 
 const list = ul();
-bindList(state, "items", {
-  parent: list,
-  key: (item) => item.id,
-  render: (item) =>
-    li(
-      item.text + " ",
-      button({
-        onClick: () => {
-          state.items = state.items.filter((i) => i.id !== item.id);
-        },
-      }, "Remove"),
+// reads state.items, so it re-runs when the array is replaced or changed
+$effect(() => {
+  list.replaceChildren(
+    ...state.items.map((item) =>
+      li(
+        item.text + " ",
+        button({
+          onClick: () => {
+            state.items = state.items.filter((i) => i.id !== item.id);
+          },
+        }, "Remove"),
+      )
     ),
+  );
 });
 
 const count = p();
-bind(state, "items", (items) => {
-  count.textContent = `${items.length} item(s)`;
+$effect(() => {
+  count.textContent = `${state.items.length} item(s)`;
 });
 
 const field = input({ placeholder: "New item", required: true });
@@ -80,8 +81,7 @@ const add = form(
   {
     onSubmit(event) {
       event.preventDefault();
-      // assign a new array: bind() re-runs when the "items" key is written
-      state.items = [...state.items, { id: nextId++, text: field.value }];
+      state.items.push({ id: nextId++, text: field.value });
       field.value = "";
     },
   },

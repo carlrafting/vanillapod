@@ -156,26 +156,28 @@ enhance(element, { on: { click: widget, keydown: widget } });
 
 ### State
 
-`createStore` returns a reactive object. Writes to it re-run only the bindings
-that read that property:
+`createStore` returns a reactive object for grouped state. Reading a property
+inside an `$effect` subscribes the effect to it, and writes re-run only the
+effects that read that property. Nested objects and arrays are reactive too:
 
 ```js
-import { bind, bindList, createStore } from "@vanillapod/dom";
+import { $effect, createStore } from "@vanillapod/dom";
 
 const store = createStore({ title: "Tasks", items: [] });
 
-bind(store, "title", (value) => {
-  document.title = value;
+$effect(() => {
+  document.title = store.title;
 });
 
-bindList(store, "items", {
-  parent: document.getElementById("list"),
-  key: (item) => item.id,
-  render: (item) => {
-    const li = document.createElement("li");
-    li.textContent = item.label;
-    return li;
-  },
+const list = document.getElementById("list");
+$effect(() => {
+  list.replaceChildren(
+    ...store.items.map((item) => {
+      const li = document.createElement("li");
+      li.textContent = item.label;
+      return li;
+    }),
+  );
 });
 
 store.items.push({ id: 1, label: "First task" });
@@ -220,8 +222,7 @@ enhance(element, { onclick: () => count((value) => value + 1) });
   same flush as the write that changed it, so an effect that reads both a signal
   and a value derived from it may run once per step in that flush. Call its
   `dispose()` to stop it.
-- `untracked(fn)` reads without subscribing the running effect. `bind` and
-  `bindList` still work as before and do not subscribe an enclosing effect.
+- `untracked(fn)` reads without subscribing the running effect.
 
 ## Errors
 

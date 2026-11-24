@@ -111,8 +111,8 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
             );
           assertEquals(options, [
             "hello|Hello, world",
-            "counter|Counter (createStore + bind)",
-            "list|List (bindList)",
+            "counter|Counter ($state + $effect)",
+            "list|List (createStore + $effect)",
             "console|Console output",
           ]);
           assertEquals(
@@ -179,7 +179,7 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
           );
           assertStringIncludes(
             (await bare.locator("[data-part=editor]").textContent()) ?? "",
-            "createStore",
+            "$state",
           );
         });
       },
@@ -437,7 +437,7 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
     await t.step(
       "the list example adds (Enter and button), counts and removes",
       async () => {
-        // Needs allow-forms on the sandbox and a re-assigned array for bind().
+        // Needs allow-forms on the sandbox for the form submit.
         await open(async (page) => {
           await pick(page, "list");
           const frame = preview(page);

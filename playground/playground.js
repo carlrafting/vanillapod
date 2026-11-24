@@ -64,21 +64,21 @@ const frameStyles =
 
 /** Shown only when a <vp-playground> has no <pre> examples of its own. */
 const FALLBACK_EXAMPLE =
-  `import { bind, button, createStore, p, render } from "vanillapod";
+  `import { $effect, $state, button, p, render } from "vanillapod";
 
-const state = createStore({ count: 0 });
+const count = $state(0);
 
 const output = p();
-// bind runs now, and again only when state.count is written
-bind(state, "count", (count) => {
-  output.textContent = \`Count: \${count}\`;
+// $effect runs now, and again whenever a signal it read changes
+$effect(() => {
+  output.textContent = \`Count: \${count()}\`;
 });
 
 render(
   [
     output,
-    button({ onClick: () => state.count++ }, "Increment"),
-    button({ onClick: () => state.count-- }, "Decrement"),
+    button({ onClick: () => count((n) => n + 1) }, "Increment"),
+    button({ onClick: () => count((n) => n - 1) }, "Decrement"),
   ],
   document.querySelector("#app"),
 );
