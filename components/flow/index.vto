@@ -1,7 +1,13 @@
 ---
-title: Flow
-description: Adds vertical rhythm by giving every child after the first a block-start margin. Set --flow-space on the container or any child to change the spacing locally. Use for prose and stacked content in normal flow.
+title: "Flow"
+description: "Adds vertical rhythm by spacing every child after the first."
 tags: [layout, typography, css]
+usage: |
+  Add the `flow` class to a container of content in normal flow, such as prose.
+  Set `--flow-space` on the container to change all gaps, or on one child to
+  change the space above it.
+customProperties:
+  "--flow-space": "Space above each child after the first."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

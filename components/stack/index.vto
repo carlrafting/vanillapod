@@ -1,7 +1,12 @@
 ---
-title: Stack
-description: Vertical layout primitive that spaces its children evenly using gap. Override the spacing with the --stack-space custom property.
+title: "Stack"
+description: "Spaces its children evenly in a vertical column."
 tags: [layout, css]
+usage: |
+  Add the `stack` class to a container. It uses `gap`, so the spacing is the same
+  between every child regardless of their margins.
+customProperties:
+  "--stack-space": "Gap between children."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

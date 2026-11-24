@@ -1,19 +1,16 @@
 ---
-title: Breadcrumbs
+title: "Breadcrumbs"
+description: "Shows where the current page sits in the site's hierarchy, as a list of links."
+tags: [navigation, accessibility, css]
+usage: |
+  Put an ordered list of links inside a `<nav>` with the `breadcrumbs` class. The
+  separators are drawn with CSS, so they are not read out.
+accessibility: |
+  - Label the `<nav>`, for example `aria-label="Breadcrumbs"`, so it can be told
+    apart from other navigation landmarks.
+  - Mark the link to the current page with `aria-current="page"`.
 ---
-<style>
-@scope (.breadcrumbs) {
-  ol {
-    list-style: none;
-    display: flex;
-  }
-  li + li::before {
-    content: "/";
-    padding-inline: .25rem;
-    opacity: 50%;
-  }
-}
-</style>
+<link rel="stylesheet" href="./styles.css" media="screen">
 
 <nav aria-label="Breadcrumbs" class="breadcrumbs">
   <ol>

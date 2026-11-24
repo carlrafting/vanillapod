@@ -1,7 +1,22 @@
 ---
-title: Spinner
-description: Indeterminate loading indicator for waits of unknown length. It uses role="status" with a visually hidden label so the state is announced. Set data-size to small or large, and use Progress instead when you know how far along the work is.
+title: "Spinner"
+description: "Indeterminate loading indicator for waits of unknown length."
 tags: [feedback, accessibility, css]
+usage: |
+  Add the `spinner` class and `role="status"` to an element, with a
+  `spinner-label` child holding the text to announce. Set `data-size` to `small`
+  or `large`. Use Progress instead when you know how far along the work is.
+accessibility: |
+  - The label is visually hidden but announced through the status role.
+  - When text is shown next to the spinner, hide that copy with
+    `aria-hidden="true"` so it is not read twice.
+  - The rotation slows down when the person prefers reduced motion.
+customProperties:
+  "--spinner-size": "Diameter; `data-size` changes it."
+  "--spinner-width": "Width of the ring."
+  "--spinner-color": "Color of the moving part."
+  "--spinner-track": "Color of the rest of the ring."
+  "--spinner-speed": "Time for one rotation."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

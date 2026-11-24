@@ -1,0 +1,11 @@
+@scope (.breadcrumbs) {
+  ol {
+    list-style: none;
+    display: flex;
+  }
+  li + li::before {
+    content: "/";
+    padding-inline: .25rem;
+    opacity: 50%;
+  }
+}

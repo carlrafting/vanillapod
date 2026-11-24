@@ -1,12 +1,38 @@
 ---
-title: Table
-description: Base layout styles apply to every table element. Add the table class for borders, zebra rows and sortable headers, and wrap the table in a focusable container so keyboard users can scroll it horizontally on small viewports.
+title: "Table"
+description: "Readable tables, with optional borders, zebra rows and sortable columns."
 tags: [data, accessibility, javascript]
+usage: |
+  Base styles apply to every `<table>`. Add the `table` class for borders and
+  zebra rows. To make a column sortable, give its `<th>` `aria-sort="none"` and a
+  `<button>` inside, then call `initTables()`:
+
+  ```js
+  import { initTables } from "./table.js";
+
+  initTables(); // or initTables(root, ".table")
+  ```
+
+  Sorting compares cell text, with numbers in numeric order.
+accessibility: |
+  - Give every table a `<caption>`, and use `<th scope="col">` and
+    `<th scope="row">` for headers.
+  - Wrap wide tables in an element with `tabindex="0"`, `role="region"` and a
+    label, so keyboard users can scroll them on small screens.
+  - `aria-sort` on the sorted header is updated to `ascending` or `descending`,
+    and screen readers announce it.
+customProperties:
+  "--table-cell-padding": "Padding of every cell."
+  "--table-caption-gap": "Space between the caption and the table."
+  "--table-border-color": "Color of the row borders."
+  "--table-head-border": "Border under the header row."
+  "--table-stripe": "Background of every other row."
+  "--table-focus-ring": "Outline of the focused scroll container."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">
 
-<h2>Standard table</h2>
+<h3>Standard table</h3>
 
 <div class="table-wrapper" tabindex="0" role="region" aria-label="Browser support">
 <table>
@@ -27,7 +53,7 @@ tags: [data, accessibility, javascript]
 </table>
 </div>
 
-<h2>Sortable table</h2>
+<h3>Sortable table</h3>
 
 <div class="table-wrapper" tabindex="0" role="region" aria-label="Components">
   <table class="table">

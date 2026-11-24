@@ -1,7 +1,22 @@
 ---
-title: Card
-description: Container that groups related content with an optional header and footer. Built on semantic article, header and footer elements.
+title: "Card"
+description: "Container that groups related content, with an optional header and footer."
 tags: [layout, css]
+usage: |
+  Use an `<article>` with the `card` class. A `<header>` and `<footer>` inside it
+  are styled as the card's header and footer.
+accessibility: |
+  - Start the card with a heading at the right level for its place on the page.
+  - If the whole card should be clickable, keep a single real link (usually on
+    the heading) rather than wrapping the card in one.
+customProperties:
+  "--card-border": "Border around the card."
+  "--card-radius": "Corner radius."
+  "--card-padding": "Inner spacing."
+  "--card-gap": "Space between header, content and footer."
+  "--card-header-font-weight": "Font weight of the header."
+  "--card-footer-font-size": "Font size of the footer."
+  "--card-footer-opacity": "Opacity of the footer text."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

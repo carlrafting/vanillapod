@@ -1,7 +1,19 @@
 ---
-title: Progress
-description: Styled native progress element for determinate and indeterminate states. Always pair it with a label so the value is announced.
+title: "Progress"
+description: "Styled native progress element, for determinate and indeterminate states."
 tags: [feedback, css]
+usage: |
+  Add the `progress` class to a `<progress>`. Set `value` and `max` for a known
+  amount of work; leave `value` out for an indeterminate state. The text inside is
+  a fallback for browsers that cannot render it.
+accessibility: |
+  - Always pair it with a `<label>`, so the value is announced with a name.
+  - For waits of unknown length with no visible progress, consider the Spinner.
+customProperties:
+  "--progress-color": "Color of the filled part."
+  "--progress-track": "Color of the track."
+  "--progress-size": "Height of the bar."
+  "--progress-radius": "Corner radius."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

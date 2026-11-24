@@ -65,3 +65,37 @@ from `toast/toast.js`.
 - Modules do not touch globals and do not run on import.
 - Every component has a demo page, `index.vto`, whose `<script type="module">`
   is the reference for how to use it.
+
+## Documentation pages
+
+Each component's `index.vto` is its documentation page on the site. The
+`component` layout (`_includes/layouts/component.vto`) renders the page's own
+content as the demo, then adds sections from the front matter and from the
+component's files:
+
+```yaml
+---
+title: "Tabs"
+description: "One or two sentences, shown on the card in the list."
+tags: [navigation, accessibility, javascript]
+usage: |
+  Markdown: the markup to write, attributes and options, and how to call the
+  module, with a code example.
+accessibility: |
+  Markdown, usually a list: keyboard support, ARIA and what to watch out for.
+customProperties:
+  "--tabs-gap": "Space between tabs."
+---
+```
+
+- `usage`, `accessibility` and `customProperties` are optional. A section is
+  left out when its field is missing.
+- The custom properties table lists every property the component's stylesheet
+  declares or reads with a `var()` fallback, with its default, so it stays in
+  sync with the CSS. `customProperties` only adds the descriptions.
+- The Source section shows the demo markup, the stylesheets and the scripts,
+  read from the component's folder at build time. Files starting with `_` are
+  left out.
+- Tags build the filter on the list page: each tag gets a page at
+  `/components/tags/<tag>/` (`components/tags.page.js`). End the list with `css`
+  or `javascript` to say whether the component needs a script.

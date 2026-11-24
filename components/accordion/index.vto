@@ -1,7 +1,29 @@
 ---
-title: Accordion
-description: Collapsible sections built on native details and summary elements. Give details the same name attribute to allow only one open at a time. Works without JavaScript.
+title: "Accordion"
+description: "Collapsible sections built on native details and summary elements. Works without JavaScript."
 tags: [disclosure, css]
+usage: |
+  Wrap one or more `<details>` elements in an element with the `accordion` class.
+  Each `<summary>` is the clickable heading.
+
+  - Give the `<details>` elements the same `name` attribute to allow only one open
+    section at a time.
+  - Add `open` to a `<details>` to expand it on load.
+accessibility: |
+  - Native `<details>` and `<summary>` are keyboard operable (Enter and Space) and
+    announce their expanded state, so no ARIA is needed.
+  - Keep summary text short; it is the accessible name of the toggle.
+  - The open and close animation is skipped when the person prefers reduced
+    motion.
+customProperties:
+  "--accordion-border": "Border around each section."
+  "--accordion-radius": "Corner radius of each section."
+  "--accordion-padding": "Padding of the summary and content."
+  "--accordion-summary-gap": "Space between the marker and the summary text."
+  "--accordion-summary-font-weight": "Font weight of the summary."
+  "--accordion-marker": "Character shown before the summary; it rotates when open."
+  "--accordion-duration": "Length of the open and close animation."
+  "--accordion-easing": "Timing function of the animation."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

@@ -17,9 +17,11 @@ nav: [
   <nav id="global-nav">
     {{ if nav && nav.length > 0 }}
       {{ for item of nav }}
-        <a href="{{ item.href }}">
+        {{ set current = url == item.href }}
+        {{ set inSection = item.href != "/" && url.startsWith(item.href) }}
+        <a href="{{ item.href }}"{{ if current }} aria-current="page"{{ /if }}>
           {{ set text = item.text }}
-          {{ if url == item.href }}
+          {{ if current || inSection }}
             <strong>{{ text }}</strong>
           {{ else }}
             {{ text }}

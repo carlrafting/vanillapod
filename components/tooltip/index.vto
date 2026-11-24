@@ -1,7 +1,36 @@
 ---
-title: Tooltip
-description: Short hint shown on hover or keyboard focus, built on the Popover API and positioned with CSS anchor positioning (anchor-name and position-anchor). It sits centered above its trigger and flips below when there is no room. Set data-placement to bottom, left or right to change the side. Content must be supplementary, never essential.
+title: "Tooltip"
+description: "Short hint shown on hover or keyboard focus, built on the Popover API."
 tags: [overlay, accessibility, javascript]
+usage: |
+  Give the trigger `data-tooltip` with the id of the tooltip, and the tooltip the
+  `tooltip` class, `role="tooltip"` and `popover="manual"`. Link them for anchor
+  positioning with `anchor-name` on the trigger and `position-anchor` on the
+  tooltip. Then call `initTooltips()`:
+
+  ```js
+  import { initTooltips } from "./tooltip.js";
+
+  initTooltips(); // or initTooltips(root, "[data-tooltip]")
+  ```
+
+  It sits above its trigger and flips below when there is no room. Set
+  `data-placement` to `bottom`, `left` or `right` to change the side. Browsers
+  without anchor positioning get a script fallback.
+accessibility: |
+  - Point the trigger's `aria-describedby` at the tooltip so its text is read
+    as a description.
+  - It shows on focus as well as hover, and Escape hides it.
+  - Tooltip content must be supplementary. Never put essential information or
+    interactive content in it.
+customProperties:
+  "--tooltip-offset": "Distance from the trigger."
+  "--tooltip-padding": "Inner spacing."
+  "--tooltip-radius": "Corner radius."
+  "--tooltip-font-size": "Font size."
+  "--tooltip-max-inline-size": "Maximum width."
+  "--tooltip-background": "Background color."
+  "--tooltip-color": "Text color."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

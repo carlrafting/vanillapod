@@ -1,8 +1,32 @@
 ---
-title: Theme Toggle
-description: 
-    Provides a convient way for developers to implement a control that people can use to toggle between available themes (color-scheme), that are available for a website or web app.
-tags: [theme, theme-toggle]
+title: "Theme Toggle"
+description: "Lets people choose a light, dark or automatic color theme, and remembers the choice."
+tags: [theme, accessibility, javascript]
+usage: |
+  `<theme-toggle>` is a custom element that wraps a form of radio buttons, one per
+  theme. Register it once, then use it in your markup:
+
+  ```js
+  import { ThemeToggle } from "./theme-toggle.js";
+
+  customElements.define(ThemeToggle.tagName, ThemeToggle);
+  ```
+
+  Attributes:
+
+  - `target`: selector of the element that gets `data-theme`, for example
+    `:root`.
+  - `store="localStorage"`: remember the choice across visits.
+  - `autodetect`: read the available themes from the radio buttons.
+  - `enable`: enable the form controls once the element has loaded. Render them
+    `disabled` so they do nothing without JavaScript.
+
+  While it starts the element has a `loading` attribute, then `loaded`.
+accessibility: |
+  - The choices are native radio buttons in a `<fieldset>` with a `<legend>`, so
+    they are grouped and announced together.
+  - The controls stay disabled until the script runs, so they never appear to
+    work when they cannot.
 ---
 
 <theme-toggle target=":root" store="localStorage" autodetect enable>
