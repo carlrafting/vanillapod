@@ -85,6 +85,29 @@ element as event listeners. For attributes or `data-*` values, set them in your
 own code with `setAttribute` or `dataset`. `innerHTML` is not allowed through
 props.
 
+### Creating from a selector
+
+`h(selector, props, ...children)` creates an element from a CSS-like selector: a
+tag name (default `div`), an optional `#id` and any number of `.class` names.
+Unlike the helpers above it can create any tag, including custom elements and
+tags that have no helper.
+
+```js
+import { h, render } from "@vanillapod/dom";
+
+render([
+  h("section.card.wide#main", { "aria-live": "polite" }, "Saved"),
+  h("theme-toggle", { autodetect: true }),
+  h("table.data"),
+], document.body);
+```
+
+The props and children work like the helpers. A props `id` overrides the
+selector's id, and a props `class` is kept alongside the selector's classes.
+Attributes such as `[type=text]` are not part of the selector: use props. An
+empty or invalid selector throws a `TypeError`. Namespaced elements such as SVG
+are not supported.
+
 ### Existing elements
 
 `enhance(element, props, ...children)` takes the same params as the element
