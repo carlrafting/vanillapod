@@ -127,7 +127,7 @@ function frameDocument(importMap, code) {
   return `<!doctype ${doc.doctype.name}>${doc.documentElement.outerHTML}`;
 }
 
-const TEMPLATE_ID = "vp-playground-template";
+const DEFAULT_TEMPLATE_ID = "vp-playground-template";
 
 let instances = 0;
 
@@ -151,6 +151,9 @@ let instances = 0;
  * - `example`: id of the example to start with (default: the first)
  * - `share`: sync code with the URL `#code=` hash and show "Copy share link"
  *   (use on one playground per page)
+ * - `template`: id of the `<template>` to clone for the editor, preview and
+ *   console markup (default: `vp-playground-template`). Instances can share
+ *   one template or use different ones.
  */
 export class Playground extends HTMLElement {
   static get tagName() {
@@ -187,10 +190,11 @@ export class Playground extends HTMLElement {
         code: FALLBACK_EXAMPLE,
       }];
     }
-    const template = document.getElementById(TEMPLATE_ID);
+    const templateId = this.getAttribute("template") || DEFAULT_TEMPLATE_ID;
+    const template = document.getElementById(templateId);
     if (!(template instanceof HTMLTemplateElement)) {
       throw new Error(
-        `<${Playground.tagName}> needs a <template id="${TEMPLATE_ID}"> in the page`,
+        `<${Playground.tagName}> needs a <template id="${templateId}"> in the page`,
       );
     }
     const content = document.importNode(template.content, true);

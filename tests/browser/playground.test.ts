@@ -495,6 +495,46 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
       },
     );
 
+    await t.step(
+      "the template attribute picks which template to clone",
+      async () => {
+        await open(async (page) => {
+          const result = await page.evaluate(() => {
+            const alt = document.getElementById(
+              "vp-playground-template",
+            )!.cloneNode(true) as HTMLTemplateElement;
+            alt.id = "compact-playground";
+            alt.content.querySelector("[data-part=code-heading]")!.textContent =
+              "Source";
+            const missing = document.createElement("vp-playground");
+            missing.setAttribute("template", "no-such-template");
+            const errors: string[] = [];
+            addEventListener("error", (event) => {
+              errors.push(event.message);
+              event.preventDefault();
+            }, { once: true });
+            const custom = document.createElement("vp-playground");
+            custom.id = "custom";
+            custom.setAttribute("template", "compact-playground");
+            const main = document.querySelector("main")!;
+            main.append(alt, custom, missing);
+            return {
+              heading: custom.querySelector("[data-part=code-heading]")
+                ?.textContent,
+              defaultHeading: document.querySelector(
+                "vp-playground:not(#custom) [data-part=code-heading]",
+              )?.textContent,
+              errors,
+            };
+          });
+          assertEquals(result.heading, "Source");
+          assertEquals(result.defaultHeading, "Code");
+          assertEquals(result.errors.length, 1);
+          assertStringIncludes(result.errors[0], "no-such-template");
+        });
+      },
+    );
+
     await t.step("the preview can't reach the page", async () => {
       await open(async (page) => {
         await clear(page);
