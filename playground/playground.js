@@ -95,6 +95,40 @@ function dedent(text) {
     .join("\n") + "\n";
 }
 
+/**
+ * Builds the iframe's document with the DOM API and serializes it for
+ * `srcdoc`. Script and style text is serialized as written, so `code` must
+ * already have any `</script` escaped.
+ *
+ * @param {string} importMap JSON for the import map
+ * @param {string} code the module to run
+ */
+function frameDocument(importMap, code) {
+  const doc = document.implementation.createHTMLDocument();
+  const element = (tag, attributes = {}, text = "") => {
+    const el = doc.createElement(tag);
+    for (const [name, value] of Object.entries(attributes)) {
+      el.setAttribute(name, value);
+    }
+    el.textContent = text;
+    return el;
+  };
+
+  doc.head.replaceChildren(
+    element("meta", { charset: "utf-8" }),
+    element("style", {}, frameStyles),
+    element("script", { type: "importmap" }, importMap),
+    element("script", {}, bridge),
+  );
+  doc.body.replaceChildren(
+    element("div", { id: "app" }),
+    element("script", { type: "module" }, code),
+  );
+  return `<!doctype ${doc.doctype.name}>${doc.documentElement.outerHTML}`;
+}
+
+const TEMPLATE_ID = "vp-playground-template";
+
 let instances = 0;
 
 /**
@@ -153,41 +187,24 @@ export class Playground extends HTMLElement {
         code: FALLBACK_EXAMPLE,
       }];
     }
-    this.innerHTML = `
-      <div class="pg-toolbar" role="toolbar" aria-label="Playground controls">
-        <label>Example <select data-part="example"></select></label>
-        <button type="button" data-part="run">Run <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button>
-        <label class="pg-auto">
-          <input type="checkbox" data-part="auto" checked> Run as I type
-        </label>
-        <button type="button" data-part="share" hidden>Copy share link</button>
-        <button type="button" data-part="reset">Reset</button>
-        <span class="pg-status" data-part="status" role="status" aria-live="polite"></span>
-      </div>
-      <div class="pg-panes">
-        <section class="pg-pane" aria-labelledby="${id}-code">
-          <h2 id="${id}-code">Code</h2>
-          <pre class="pg-editor language-javascript" data-part="editor" role="textbox"
-            autocapitalize="off" autocorrect="off"
-            aria-multiline="true" aria-label="Code editor" tabindex="0"></pre>
-          <p class="pg-hint">
-            Import from <code>"vanillapod"</code>. Render into <code>#app</code>.
-            <kbd>Tab</kbd> indents, <kbd>Esc</kbd> then <kbd>Tab</kbd> moves focus.
-          </p>
-        </section>
-        <section class="pg-pane" aria-labelledby="${id}-preview">
-          <h2 id="${id}-preview">Preview</h2>
-          <iframe class="pg-preview" data-part="preview" title="Playground preview"
-            sandbox="allow-scripts allow-forms"></iframe>
-          <h2 id="${id}-console">Console</h2>
-          <ol class="pg-console" data-part="console" aria-labelledby="${id}-console"
-            aria-live="polite"></ol>
-        </section>
-      </div>`;
-
-    for (const el of this.querySelectorAll("[data-part]")) {
+    const template = document.getElementById(TEMPLATE_ID);
+    if (!(template instanceof HTMLTemplateElement)) {
+      throw new Error(
+        `<${Playground.tagName}> needs a <template id="${TEMPLATE_ID}"> in the page`,
+      );
+    }
+    const content = document.importNode(template.content, true);
+    for (const el of content.querySelectorAll("[data-part]")) {
       this.#parts[el.dataset.part] = el;
     }
+    // Headings get ids that are unique per instance, so the regions they
+    // label can point at them.
+    for (const el of content.querySelectorAll("[data-labelledby]")) {
+      const heading = this.#parts[el.dataset.labelledby];
+      heading.id = `${id}-${el.dataset.labelledby}`;
+      el.setAttribute("aria-labelledby", heading.id);
+    }
+    this.replaceChildren(content);
     const { editor, example, run, share, reset, auto } = this.#parts;
 
     for (const { id, title } of this.#examples) {
@@ -265,12 +282,7 @@ export class Playground extends HTMLElement {
     output.replaceChildren();
     this.#setStatus("");
     const code = this.#jar.toString().replaceAll("</script", "<\\/script");
-    preview.srcdoc = `<!doctype html><meta charset="utf-8">
-<style>${frameStyles}</style>
-<script type="importmap">${importMap}</script>
-<script>${bridge}</script>
-<div id="app"></div>
-<script type="module">${code}</script>`;
+    preview.srcdoc = frameDocument(importMap, code);
   }
 
   /**

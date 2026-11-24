@@ -128,21 +128,37 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
     );
 
     await t.step(
-      "dedents and unescapes <pre> code, falls back to a built-in example",
+      "dedents <pre> code, falls back to a built-in example",
       async () => {
         await open(async (page) => {
           await page.evaluate(() => {
-            document.querySelector("main")!.insertAdjacentHTML(
-              "beforeend",
-              `<vp-playground id="authored" example="nope">
-              <pre id="a" data-title="A">
-                import { render, p } from "vanillapod";
-                render([p("a &lt; b &amp; c")], document.querySelector("#app"));
-              </pre>
-              <pre id="b">console.log("b")</pre>
-            </vp-playground>
-            <vp-playground id="bare"></vp-playground>`,
+            // Built with the DOM API: the <pre> children must exist before the
+            // element connects, which is when it reads them.
+            const pre = (id: string, text: string, title?: string) => {
+              const el = document.createElement("pre");
+              el.id = id;
+              if (title) el.dataset.title = title;
+              el.textContent = text;
+              return el;
+            };
+            const authored = document.createElement("vp-playground");
+            authored.id = "authored";
+            authored.setAttribute("example", "nope");
+            authored.append(
+              pre(
+                "a",
+                [
+                  '                import { render, p } from "vanillapod";',
+                  '                render([p("a < b & c")], document.querySelector("#app"));',
+                  "              ",
+                ].join("\n"),
+                "A",
+              ),
+              pre("b", 'console.log("b")'),
             );
+            const bare = document.createElement("vp-playground");
+            bare.id = "bare";
+            document.querySelector("main")!.append(authored, bare);
           });
           const authored = page.locator("#authored");
           assertEquals(
@@ -452,6 +468,29 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
             .getByRole("button", { name: "Remove" }).click();
           assertEquals(await count.innerText(), "2 item(s)");
           assertEquals(await frame.locator("li").count(), 2);
+        });
+      },
+    );
+
+    await t.step(
+      "regions are labelled by their headings, with unique ids",
+      async () => {
+        await open(async (page) => {
+          const labels = await page.evaluate(() =>
+            [...document.querySelectorAll(
+              "vp-playground [aria-labelledby]",
+            )]
+              .map((el) =>
+                document.getElementById(el.getAttribute("aria-labelledby")!)
+                  ?.textContent
+              )
+          );
+          assertEquals(labels, ["Code", "Preview", "Console"]);
+          const ids = await page.evaluate(() =>
+            [...document.querySelectorAll("vp-playground h2")].map((h) => h.id)
+          );
+          assertEquals(new Set(ids).size, ids.length);
+          assertEquals(ids.every(Boolean), true);
         });
       },
     );

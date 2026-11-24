@@ -104,6 +104,42 @@ render(
 
 console.warn("console.warn and errors show up below the preview");</pre>
   </vp-playground>
+
+  <!-- The markup <vp-playground> clones for its own UI. Elements marked
+       data-part are looked up by name; data-labelledby names the part whose
+       heading labels the element (ids are made unique per instance). -->
+  <template id="vp-playground-template">
+    <div class="pg-toolbar" role="toolbar" aria-label="Playground controls">
+      <label>Example <select data-part="example"></select></label>
+      <button type="button" data-part="run">Run <kbd>Ctrl</kbd>+<kbd>Enter</kbd></button>
+      <label class="pg-auto">
+        <input type="checkbox" data-part="auto" checked> Run as I type
+      </label>
+      <button type="button" data-part="share" hidden>Copy share link</button>
+      <button type="button" data-part="reset">Reset</button>
+      <span class="pg-status" data-part="status" role="status" aria-live="polite"></span>
+    </div>
+    <div class="pg-panes">
+      <section class="pg-pane" data-labelledby="code-heading">
+        <h2 data-part="code-heading">Code</h2>
+        <pre class="pg-editor language-javascript" data-part="editor" role="textbox"
+          autocapitalize="off" autocorrect="off"
+          aria-multiline="true" aria-label="Code editor" tabindex="0"></pre>
+        <p class="pg-hint">
+          Import from <code>"vanillapod"</code>. Render into <code>#app</code>.
+          <kbd>Tab</kbd> indents, <kbd>Esc</kbd> then <kbd>Tab</kbd> moves focus.
+        </p>
+      </section>
+      <section class="pg-pane" data-labelledby="preview-heading">
+        <h2 data-part="preview-heading">Preview</h2>
+        <iframe class="pg-preview" data-part="preview" title="Playground preview"
+          sandbox="allow-scripts allow-forms"></iframe>
+        <h2 data-part="console-heading">Console</h2>
+        <ol class="pg-console" data-part="console" data-labelledby="console-heading"
+          aria-live="polite"></ol>
+      </section>
+    </div>
+  </template>
   <noscript>The playground requires JavaScript to run code.</noscript>
 </main>
 
