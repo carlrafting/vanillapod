@@ -202,6 +202,75 @@ Deno.test("DOM elements in Chromium", async (t) => {
       assertEquals(result, ["click", "my-event", "keydown"]);
     });
 
+    await t.step("h creates elements from a selector", async () => {
+      const result = await page.evaluate(async () => {
+        const { h, span } = await import("/dom/main.js");
+        const el = h(
+          "section.card.wide#main",
+          { title: "t" },
+          "hi ",
+          span("x"),
+        );
+        const bare = h(".only-class");
+        const custom = h("theme-toggle#tt");
+        const table = h("table");
+        return {
+          tag: el.tagName,
+          id: el.id,
+          className: el.className,
+          title: el.title,
+          text: el.textContent,
+          bare: [bare.tagName, bare.className],
+          custom: [custom.tagName, custom.id],
+          table: table.tagName,
+        };
+      });
+      assertEquals(result, {
+        tag: "SECTION",
+        id: "main",
+        className: "card wide",
+        title: "t",
+        text: "hi x",
+        bare: ["DIV", "only-class"],
+        custom: ["THEME-TOGGLE", "tt"],
+        table: "TABLE",
+      });
+    });
+
+    await t.step("h merges props with the selector", async () => {
+      const result = await page.evaluate(async () => {
+        const { h } = await import("/dom/main.js");
+        const el = h("div.a#from-selector", {
+          id: "from-props",
+          class: "b",
+          dataset: { k: "v" },
+          onclick: () => el.dataset.clicked = "1",
+        });
+        el.click();
+        return [el.id, el.className, el.dataset.k, el.dataset.clicked];
+      });
+      assertEquals(result, ["from-props", "b a", "v", "1"]);
+    });
+
+    await t.step("h rejects invalid selectors", async () => {
+      const messages = await page.evaluate(async () => {
+        const { h } = await import("/dom/main.js");
+        const out: string[] = [];
+        for (
+          const bad of ["", "div..x", "1div", "div#", "div[x=1]", "a b", null]
+        ) {
+          try {
+            h(bad as string);
+            out.push("no error: " + bad);
+          } catch (err) {
+            out.push((err as Error).name);
+          }
+        }
+        return out;
+      });
+      assertEquals(messages, Array(7).fill("TypeError"));
+    });
+
     await t.step("builds text and comments", async () => {
       const result = await page.evaluate(async () => {
         const { text, comment } = await import("/dom/main.js");

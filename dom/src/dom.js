@@ -118,6 +118,43 @@ export function enhance(element, ...params) {
   return apply(element, params);
 }
 
+const selectorPattern = /^([a-zA-Z][\w-]*)?((?:[#.][\w-]+)*)$/;
+
+/**
+ * Creates an element from a CSS-like selector: a tag name (default `div`),
+ * an optional `#id` and any number of `.class` names, e.g. `div.card#main`.
+ * The remaining params work like the element helpers: an optional props
+ * object, then children. Unlike the helpers it can create any tag, including
+ * custom elements.
+ *
+ * A props `id` overrides the selector's id, and a props `class` or
+ * `className` is kept alongside the selector's classes.
+ *
+ * @param {string} selector
+ * @param {...any} params - an optional props object, then children
+ * @returns {HTMLElement}
+ */
+export function h(selector, ...params) {
+  const match = typeof selector === "string" && selector !== "" &&
+    selectorPattern.exec(selector);
+  if (!match) {
+    throw new TypeError(
+      `h: invalid selector ${JSON.stringify(selector)}, expected tag#id.class`,
+    );
+  }
+  const [, tag = "div", rest] = match;
+  const element = document.createElement(tag);
+  /** @type {string[]} */
+  const classes = [];
+  for (const [, type, name] of rest.matchAll(/([#.])([\w-]+)/g)) {
+    if (type === "#") element.id = name;
+    else classes.push(name);
+  }
+  apply(element, params);
+  element.classList.add(...classes);
+  return element;
+}
+
 const dom = new Map();
 
 /**
