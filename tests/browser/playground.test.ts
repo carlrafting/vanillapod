@@ -111,8 +111,8 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
             );
           assertEquals(options, [
             "hello|Hello, world",
-            "counter|Counter ($state + $effect)",
-            "list|List (createStore + $effect)",
+            "counter|Counter (signal + effect)",
+            "list|List (createStore + effect)",
             "console|Console output",
           ]);
           assertEquals(
@@ -179,7 +179,7 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
           );
           assertStringIncludes(
             (await bare.locator("[data-part=editor]").textContent()) ?? "",
-            "$state",
+            "signal",
           );
         });
       },

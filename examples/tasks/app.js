@@ -1,8 +1,8 @@
 import {
-  $effect,
   button,
   createStore,
   div,
+  effect,
   form,
   h1,
   header,
@@ -139,18 +139,18 @@ const appContent = main(
 
 render([appContent], app);
 
-$effect(() => {
+effect(() => {
   const current = store.filter;
   for (const [filter, filterButton] of filterButtons) {
     filterButton.setAttribute("aria-pressed", String(filter === current));
   }
 });
 
-$effect(refreshSummary);
+effect(refreshSummary);
 
 // Re-renders the items only when tasks are added, removed or replaced: toggling
 // a task changes one item's own effect, so the other items are left alone.
-$effect(() => {
+effect(() => {
   const tasks = store.tasks;
   void tasks.length;
   /** @type {(() => void)[]} */
@@ -250,7 +250,7 @@ function createTaskItem(task, onCleanup) {
 
   item.append(toggle, title, remove);
 
-  onCleanup($effect(() => {
+  onCleanup(effect(() => {
     const completed = task.completed;
     item.classList.toggle("is-complete", completed);
     toggle.checked = completed;

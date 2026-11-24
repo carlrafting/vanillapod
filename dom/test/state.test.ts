@@ -1,17 +1,17 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
-  $derived,
-  $effect,
-  $state,
   createStore,
+  derived,
+  effect,
   flush,
+  signal,
   untracked,
 } from "../src/state.js";
 
 Deno.test("an effect runs once immediately and again only for the keys it read", () => {
   const store = createStore({ count: 0, other: 0 });
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.count);
   });
 
@@ -27,7 +27,7 @@ Deno.test("an effect runs once immediately and again only for the keys it read",
 Deno.test("writes of equal values do not notify", () => {
   const store = createStore({ count: 1 });
   let runs = 0;
-  $effect(() => {
+  effect(() => {
     store.count;
     runs++;
   });
@@ -40,7 +40,7 @@ Deno.test("writes of equal values do not notify", () => {
 Deno.test("writes in one tick are batched into a single update", async () => {
   const store = createStore({ count: 0 });
   let runs = 0;
-  $effect(() => {
+  effect(() => {
     store.count;
     runs++;
   });
@@ -55,7 +55,7 @@ Deno.test("writes in one tick are batched into a single update", async () => {
 Deno.test("nested objects are reactive and keep proxy identity", () => {
   const store = createStore({ user: { name: "a" } });
   const seen: string[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.user.name);
   });
 
@@ -68,7 +68,7 @@ Deno.test("nested objects are reactive and keep proxy identity", () => {
 Deno.test("an effect on an array length follows push, pop and truncation", () => {
   const store = createStore({ items: [] as string[] });
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.items.length);
   });
 
@@ -86,10 +86,10 @@ Deno.test("an effect on an array length follows push, pop and truncation", () =>
 Deno.test("writes made while flushing are applied in the same flush", () => {
   const store = createStore({ a: 0, b: 0 });
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     store.b = store.a * 10;
   });
-  $effect(() => {
+  effect(() => {
     seen.push(store.b);
   });
 
@@ -101,7 +101,7 @@ Deno.test("writes made while flushing are applied in the same flush", () => {
 Deno.test("an effect on an array index follows writes to that index", () => {
   const store = createStore({ items: ["a", "b"] });
   const seen: string[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.items[0]);
   });
 
@@ -113,7 +113,7 @@ Deno.test("an effect on an array index follows writes to that index", () => {
 Deno.test("replacing a nested array re-runs effects that read its items", () => {
   const store = createStore({ items: [{ id: 1 }, { id: 2 }] });
   const seen: number[][] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.items.map((item) => item.id));
   });
 
@@ -131,18 +131,18 @@ Deno.test("frozen nested objects can be read from a store", () => {
   assertEquals(store.settings.theme.name, "dark");
 });
 
-Deno.test("$state reads, sets and updates", () => {
-  const count = $state(0);
+Deno.test("signal reads, sets and updates", () => {
+  const count = signal(0);
   assertEquals(count(), 0);
   assertEquals(count(5), 5);
   assertEquals(count((value: number) => value + 1), 6);
   assertEquals(count(), 6);
 });
 
-Deno.test("$state can be set to undefined and ignores equal writes", () => {
-  const value = $state<number | undefined>(1);
+Deno.test("signal can be set to undefined and ignores equal writes", () => {
+  const value = signal<number | undefined>(1);
   const seen: unknown[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(value());
   });
   value(1);
@@ -152,10 +152,10 @@ Deno.test("$state can be set to undefined and ignores equal writes", () => {
   assertEquals(seen, [1, undefined]);
 });
 
-Deno.test("$effect runs now, then when a signal it read changes", () => {
-  const count = $state(0);
+Deno.test("effect runs now, then when a signal it read changes", () => {
+  const count = signal(0);
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(count());
   });
   assertEquals(seen, [0]);
@@ -164,10 +164,10 @@ Deno.test("$effect runs now, then when a signal it read changes", () => {
   assertEquals(seen, [0, 1]);
 });
 
-Deno.test("$effect batches writes made in one tick", async () => {
-  const count = $state(0);
+Deno.test("effect batches writes made in one tick", async () => {
+  const count = signal(0);
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(count());
   });
   count(1);
@@ -177,12 +177,12 @@ Deno.test("$effect batches writes made in one tick", async () => {
   assertEquals(seen, [0, 3]);
 });
 
-Deno.test("$effect only tracks what it reads, including after a branch change", () => {
-  const useA = $state(true);
-  const a = $state("a");
-  const b = $state("b");
+Deno.test("effect only tracks what it reads, including after a branch change", () => {
+  const useA = signal(true);
+  const a = signal("a");
+  const b = signal("b");
   const seen: string[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(useA() ? a() : b());
   });
   b("b2");
@@ -198,10 +198,10 @@ Deno.test("$effect only tracks what it reads, including after a branch change", 
   assertEquals(seen, ["a", "b2", "b3"]);
 });
 
-Deno.test("$effect cleanup runs before the next run and on dispose", () => {
-  const count = $state(0);
+Deno.test("effect cleanup runs before the next run and on dispose", () => {
+  const count = signal(0);
   const log: string[] = [];
-  const dispose = $effect(() => {
+  const dispose = effect(() => {
     const value = count();
     log.push(`run ${value}`);
     return () => log.push(`cleanup ${value}`);
@@ -214,10 +214,10 @@ Deno.test("$effect cleanup runs before the next run and on dispose", () => {
   assertEquals(log, ["run 0", "cleanup 0", "run 1", "cleanup 1"]);
 });
 
-Deno.test("$effect tracks store properties and nested objects", () => {
+Deno.test("effect tracks store properties and nested objects", () => {
   const store = createStore({ title: "a", user: { name: "x" }, other: 0 });
   const seen: string[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(`${store.title}/${store.user.name}`);
   });
   store.other = 1;
@@ -230,10 +230,10 @@ Deno.test("$effect tracks store properties and nested objects", () => {
   assertEquals(seen, ["a/x", "a/y", "b/y"]);
 });
 
-Deno.test("$effect follows array length and index reads", () => {
+Deno.test("effect follows array length and index reads", () => {
   const store = createStore({ items: [1, 2] });
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(store.items.length);
   });
   store.items.push(3);
@@ -242,10 +242,10 @@ Deno.test("$effect follows array length and index reads", () => {
 });
 
 Deno.test("untracked reads do not subscribe the effect", () => {
-  const a = $state(1);
-  const b = $state(10);
+  const a = signal(1);
+  const b = signal(10);
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(a() + untracked(() => b()));
   });
   b(20);
@@ -256,11 +256,11 @@ Deno.test("untracked reads do not subscribe the effect", () => {
   assertEquals(seen, [11, 22]);
 });
 
-Deno.test("$derived computes from signals and updates in the same flush", () => {
-  const count = $state(1);
-  const double = $derived(() => count() * 2);
+Deno.test("derived computes from signals and updates in the same flush", () => {
+  const count = signal(1);
+  const double = derived(() => count() * 2);
   const seen: number[] = [];
-  $effect(() => {
+  effect(() => {
     seen.push(double());
   });
   assertEquals(double(), 2);
@@ -275,15 +275,15 @@ Deno.test("$derived computes from signals and updates in the same flush", () => 
 });
 
 Deno.test("an effect that throws on a later run does not stop others", () => {
-  const count = $state(0);
+  const count = signal(0);
   const seen: number[] = [];
   const original = console.error;
   console.error = () => {};
   try {
-    $effect(() => {
+    effect(() => {
       if (count() === 1) throw new Error("boom");
     });
-    $effect(() => {
+    effect(() => {
       seen.push(count());
     });
     count(1);

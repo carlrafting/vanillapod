@@ -157,20 +157,20 @@ enhance(element, { on: { click: widget, keydown: widget } });
 ### State
 
 `createStore` returns a reactive object for grouped state. Reading a property
-inside an `$effect` subscribes the effect to it, and writes re-run only the
+inside an `effect` subscribes the effect to it, and writes re-run only the
 effects that read that property. Nested objects and arrays are reactive too:
 
 ```js
-import { $effect, createStore } from "@vanillapod/dom";
+import { createStore, effect } from "@vanillapod/dom";
 
 const store = createStore({ title: "Tasks", items: [] });
 
-$effect(() => {
+effect(() => {
   document.title = store.title;
 });
 
 const list = document.getElementById("list");
-$effect(() => {
+effect(() => {
   list.replaceChildren(
     ...store.items.map((item) => {
       const li = document.createElement("li");
@@ -188,19 +188,19 @@ synchronously.
 
 ### Signals and effects
 
-For single values, `$state` creates a signal. Call it with no arguments to read,
+For single values, `signal` creates a signal. Call it with no arguments to read,
 with a value to set, or with a function to update from the current value.
-`$effect` runs a function now and again whenever a signal or store property it
+`effect` runs a function now and again whenever a signal or store property it
 read changes, so there are no keys or per-property bindings to wire up:
 
 ```js
-import { $derived, $effect, $state, enhance } from "@vanillapod/dom";
+import { derived, effect, enhance, signal } from "@vanillapod/dom";
 
-const count = $state(0);
-const double = $derived(() => count() * 2);
+const count = signal(0);
+const double = derived(() => count() * 2);
 
 const element = document.querySelector("div.element");
-$effect(() => {
+effect(() => {
   element.textContent = `${count()} (${double()})`;
 });
 enhance(element, { onclick: () => count((value) => value + 1) });
@@ -214,11 +214,11 @@ enhance(element, { onclick: () => count((value) => value + 1) });
   notifications. Call `flush()` to run them synchronously.
 - An effect tracks what it reads on each run, so a branch it no longer takes is
   forgotten. It may return a cleanup function, which runs before the next run
-  and on dispose. `$effect` returns a dispose function.
+  and on dispose. `effect` returns a dispose function.
 - Inside an effect, reading `store.title` or `store.user.name` subscribes to
   that property of a store from `createStore`. Only property reads are tracked:
   adding a key to an object does not re-run an effect that listed its keys.
-- `$derived(fn)` is a read-only signal computed from others. It updates in the
+- `derived(fn)` is a read-only signal computed from others. It updates in the
   same flush as the write that changed it, so an effect that reads both a signal
   and a value derived from it may run once per step in that flush. Call its
   `dispose()` to stop it.

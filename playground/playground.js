@@ -64,13 +64,13 @@ const frameStyles =
 
 /** Shown only when a <vp-playground> has no <pre> examples of its own. */
 const FALLBACK_EXAMPLE =
-  `import { $effect, $state, button, p, render } from "vanillapod";
+  `import { effect, signal, button, p, render } from "vanillapod";
 
-const count = $state(0);
+const count = signal(0);
 
 const output = p();
-// $effect runs now, and again whenever a signal it read changes
-$effect(() => {
+// effect runs now, and again whenever a signal it read changes
+effect(() => {
   output.textContent = \`Count: \${count()}\`;
 });
 

@@ -1,7 +1,7 @@
 /**
  * Granular state for vanillapod.
  *
- * Signals (`$state`, `$derived`) and effects (`$effect`) track what they read:
+ * Signals (`signal`, `derived`) and effects (`effect`) track what they read:
  * an effect re-runs when any signal or store property it read is written.
  *
  * Plain objects and arrays in a store (`createStore`) are wrapped in a Proxy.
@@ -206,23 +206,23 @@ function createSignal(initial) {
 
 /**
  * Creates a signal. Call it with no arguments to read, with a value to set,
- * or with a function to update from the current value. Reads inside `$effect`
- * and `$derived` are tracked. A function cannot be stored as the value
+ * or with a function to update from the current value. Reads inside `effect`
+ * and `derived` are tracked. A function cannot be stored as the value
  * directly (it is treated as an updater); wrap it in an object instead.
  *
  * @template T
  * @param {T} initial
  * @returns {Signal<T>}
  */
-export function $state(initial) {
+export function signal(initial) {
   const [read, write] = createSignal(initial);
-  const signal = (/** @type {any[]} */ ...args) => {
+  const accessor = (/** @type {any[]} */ ...args) => {
     if (args.length === 0) return read();
     const [arg] = args;
     write(typeof arg === "function" ? arg(untracked(read)) : arg);
     return untracked(read);
   };
-  return /** @type {Signal<T>} */ (signal);
+  return /** @type {Signal<T>} */ (accessor);
 }
 
 /**
@@ -233,28 +233,28 @@ export function $state(initial) {
  * @param {() => void | (() => void)} fn
  * @returns {() => void} dispose function
  */
-export function $effect(fn) {
+export function effect(fn) {
   /** @type {(() => void) | undefined} */
   let cleanup;
   /** @type {Effect} */
-  const effect = {
+  const record = {
     deps: new Set(),
     sub: { active: true, run: () => execute() },
   };
 
   const release = () => {
-    for (const subs of effect.deps) subs.delete(effect.sub);
-    effect.deps.clear();
+    for (const subs of record.deps) subs.delete(record.sub);
+    record.deps.clear();
     const done = cleanup;
     cleanup = undefined;
     done?.();
   };
 
   const execute = () => {
-    if (!effect.sub.active) return;
+    if (!record.sub.active) return;
     release();
     const prev = activeEffect;
-    activeEffect = effect;
+    activeEffect = record;
     try {
       const result = fn();
       if (typeof result === "function") cleanup = result;
@@ -265,7 +265,7 @@ export function $effect(fn) {
 
   execute();
   return () => {
-    effect.sub.active = false;
+    record.sub.active = false;
     release();
   };
 }
@@ -279,8 +279,8 @@ export function $effect(fn) {
  * @param {() => T} fn
  * @returns {(() => T) & { dispose: () => void }}
  */
-export function $derived(fn) {
+export function derived(fn) {
   const [read, write] = createSignal(/** @type {T} */ (undefined));
-  const dispose = $effect(() => write(fn()));
+  const dispose = effect(() => write(fn()));
   return Object.assign(() => read(), { dispose });
 }

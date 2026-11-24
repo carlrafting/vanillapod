@@ -19,13 +19,13 @@ render(
   document.querySelector("#app"),
 );</pre>
 
-  <pre id="counter" data-title="Counter ($state + $effect)">import { $effect, $state, button, p, render } from "vanillapod";
+  <pre id="counter" data-title="Counter (signal + effect)">import { effect, signal, button, p, render } from "vanillapod";
 
-const count = $state(0);
+const count = signal(0);
 
 const output = p();
-// $effect runs now, and again whenever a signal it read changes
-$effect(() => {
+// effect runs now, and again whenever a signal it read changes
+effect(() => {
   output.textContent = `Count: ${count()}`;
 });
 
@@ -39,8 +39,8 @@ render(
   document.querySelector("#app"),
 );</pre>
 
-  <pre id="list" data-title="List (createStore + $effect)">import {
-  $effect,
+  <pre id="list" data-title="List (createStore + effect)">import {
+  effect,
   button,
   createStore,
   form,
@@ -56,7 +56,7 @@ let nextId = 2;
 
 const list = ul();
 // reads state.items, so it re-runs when the array is replaced or changed
-$effect(() => {
+effect(() => {
   list.replaceChildren(
     ...state.items.map((item) =>
       li(
@@ -72,7 +72,7 @@ $effect(() => {
 });
 
 const count = p();
-$effect(() => {
+effect(() => {
   count.textContent = `${state.items.length} item(s)`;
 });
 
