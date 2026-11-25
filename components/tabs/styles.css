@@ -1,0 +1,36 @@
+@scope (.tabs) {
+  :scope {
+    --tabs-gap: 0.25rem;
+    --tabs-border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    --tabs-tab-padding: 0.5rem 1rem;
+    --tabs-indicator-size: 2px;
+    --tabs-indicator-color: currentColor;
+    --tabs-selected-font-weight: 600;
+    --tabs-focus-ring: 2px solid currentColor;
+    --tabs-panel-padding: 1rem 0;
+  }
+  [role="tablist"] {
+    display: flex;
+    gap: var(--tabs-gap);
+    border-block-end: var(--tabs-border);
+  }
+  [role="tab"] {
+    background: none;
+    border: 0;
+    border-block-end: var(--tabs-indicator-size) solid transparent;
+    padding: var(--tabs-tab-padding);
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+  [role="tab"][aria-selected="true"] {
+    border-block-end-color: var(--tabs-indicator-color);
+    font-weight: var(--tabs-selected-font-weight);
+  }
+  [role="tab"]:focus-visible,
+  [role="tabpanel"]:focus-visible {
+    outline: var(--tabs-focus-ring);
+    outline-offset: 2px;
+  }
+  [role="tabpanel"] { padding: var(--tabs-panel-padding); }
+}

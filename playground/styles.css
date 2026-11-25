@@ -1,0 +1,116 @@
+vp-playground {
+  display: grid;
+  /* minmax(0, ...) lets the column shrink below its widest child (the picker). */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+.pg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+.pg-toolbar label {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.pg-status {
+  margin-inline-start: auto;
+  color: var(--color-lightgrey-hex, #666);
+}
+.pg-status[data-error] {
+  color: #b00020;
+}
+.pg-panes {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+.pg-pane {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  min-inline-size: 0;
+}
+.pg-pane h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+vp-playground .pg-editor {
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 28rem;
+  resize: vertical;
+  margin: 0;
+  font: 0.875rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+  overflow: auto;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #000;
+  text-shadow: none;
+}
+/* iOS Safari zooms the page when focusing a field with a font under 16px. */
+@media (pointer: coarse) {
+  vp-playground .pg-editor { font-size: 1rem; }
+}
+vp-playground .pg-editor:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 1px;
+}
+.pg-preview {
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: 18rem;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+.pg-console {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-block-size: 3rem;
+  max-block-size: 9rem;
+  overflow: auto;
+  border: 1px solid #ccc;
+  font: 0.8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.pg-console li {
+  padding: 0.125rem 0.5rem;
+  border-block-end: 1px solid #eee;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.pg-console li[data-level="error"] {
+  color: #b00020;
+  background: #fff0f0;
+}
+.pg-console li[data-level="warn"] {
+  background: #fffbe6;
+}
+.pg-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-lightgrey-hex, #666);
+}
+kbd {
+  font: inherit;
+  font-size: 0.8em;
+  padding: 0 0.25em;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+}
+
+vp-playground [hidden] {
+  display: none;
+}
+
+vp-playground .pg-toolbar label {
+  max-inline-size: 100%;
+}
+vp-playground .pg-toolbar select {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}

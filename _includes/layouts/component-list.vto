@@ -1,0 +1,47 @@
+---
+layout: ./page.vto
+---
+
+{{# Lists components as cards. On a tag page (`tag` is set) only components
+    with that tag are shown. The filter is plain links to one page per tag. #}}
+
+{{ set components = search.pages("type=component", "title=asc") }}
+{{ set allTags = [...new Set(components.flatMap((component) => component.tags ?? []))].sort() }}
+{{ set shown = tag ? components.filter((component) => (component.tags ?? []).includes(tag)) : components }}
+
+<link rel="stylesheet" href="/assets/components.css" media="screen">
+
+<div class="component-list flow">
+  <nav class="component-filter" aria-label="Filter components by tag">
+    <ul>
+      <li><a href="/components/" {{ if !tag }}aria-current="page"{{ /if }}>All</a></li>
+      {{ for name of allTags }}
+        <li>
+          <a href="/components/tags/{{ name }}/" {{ if name === tag }}aria-current="page"{{ /if }}>{{ name }}</a>
+        </li>
+      {{ /for }}
+    </ul>
+  </nav>
+
+  <p class="component-count">
+    {{ shown.length }} {{ shown.length === 1 ? "component" : "components" }}{{ if tag }} tagged <strong>{{ tag }}</strong>{{ /if }}
+  </p>
+
+  <ul class="component-grid">
+    {{ for component of shown }}
+      <li class="component-card">
+        <h2><a href="{{ component.url }}">{{ component.title }}</a></h2>
+        <p>{{ component.description }}</p>
+        {{ if component.tags && component.tags.length > 0 }}
+          <ul class="component-tags" aria-label="Tags">
+            {{ for name of component.tags }}
+              <li><a href="/components/tags/{{ name }}/">{{ name }}</a></li>
+            {{ /for }}
+          </ul>
+        {{ /if }}
+      </li>
+    {{ /for }}
+  </ul>
+
+  {{ content }}
+</div>

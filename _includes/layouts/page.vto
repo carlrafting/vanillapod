@@ -1,0 +1,45 @@
+---
+layout: ./document.vto
+nav: [
+  { href: /, text: Home },
+  { href: /docs/, text: Docs },
+  { href: /components/, text: Components },
+  { href: /playground/, text: Playground }
+]
+---
+
+<header>
+  <a href="/" class="logo">
+    <img src="/assets/logo.svg" alt="vanillapod logo" width="64"
+      height="64">
+    <span data-name>vanillapod</span>
+  </a>
+  <nav id="global-nav">
+    {{ if nav && nav.length > 0 }}
+      {{ for item of nav }}
+        {{ set current = url == item.href }}
+        {{ set inSection = item.href != "/" && url.startsWith(item.href) }}
+        <a href="{{ item.href }}"{{ if current }} aria-current="page"{{ /if }}>
+          {{ set text = item.text }}
+          {{ if current || inSection }}
+            <strong>{{ text }}</strong>
+          {{ else }}
+            {{ text }}
+          {{ /if }}
+        </a>
+      {{ /for }}
+    {{ else }}
+      no nav data was declared within the template hiearchy...
+    {{ /if }}
+  </nav>
+  <h1>{{ title }}</h1>
+  <p>{{ description }}</p>
+</header>
+
+<main>
+{{ content }}
+</main>
+
+<footer>
+  <p>Copyright &copy; 2026 vanillapod. All rigths reserved.</p>
+</footer>

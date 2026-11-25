@@ -1,0 +1,39 @@
+---
+title: "Password Input"
+description: "Password field with a button that shows or hides the value."
+tags: [forms, accessibility, javascript]
+usage: |
+  Wrap the label, the `<input type="password">` and a `<button type="button">` in
+  an element with the `password-input` class. Then call `initPasswordInputs()`:
+
+  ```js
+  import { initPasswordInputs } from "./password-input.js";
+
+  initPasswordInputs(); // or initPasswordInputs(root, ".password-input")
+  ```
+accessibility: |
+  - The button text switches between "Show password" and "Hide password", so it
+    always describes the action it performs.
+  - `aria-controls` on the button points at the input it changes.
+  - Keep `autocomplete` (`current-password` or `new-password`) so password
+    managers work.
+customProperties:
+  "--password-input-gap": "Space between the input and the button."
+  "--password-input-label-gap": "Space between the label and the field."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="password-input">
+  <label for="password">Password</label>
+  <div>
+    <input id="password" type="password" name="password" autocomplete="current-password">
+    <button type="button" aria-controls="password">Show password</button>
+  </div>
+</div>
+
+<script type="module">
+  import { initPasswordInputs } from "./password-input.js";
+
+  initPasswordInputs();
+</script>

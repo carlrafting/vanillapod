@@ -1,0 +1,22 @@
+---
+title: "Code Highlight"
+description: "Code examples with syntax highlighting, done at build time."
+tags: [typography, css]
+usage: |
+  Write a fenced code block in Markdown with a language name, for example
+  ` ```php `, inside a `<code-highlight>` element. The site build highlights it
+  with Prism, so no JavaScript runs in the browser.
+accessibility: |
+  - Make sure the highlighting colors keep enough contrast with the background.
+  - Long lines scroll horizontally; keep examples short so they can be read
+    without scrolling where possible.
+---
+
+<code-highlight>
+  <link
+    rel="stylesheet"
+    href="./styles.css"
+    media="screen"
+  >
+  {{ include "./_example.md" |> md }}
+</code-highlight>

@@ -1,0 +1,82 @@
+---
+title: "Toast"
+description: "Short notifications that appear in a corner and remove themselves."
+tags: [feedback, accessibility, javascript]
+usage: |
+  Add an empty `<div class="toasts" role="status" aria-live="polite">` to the
+  page, then call `showToast()`:
+
+  ```js
+  import { showToast } from "./toast.js";
+
+  showToast("Changes saved", { variant: "success", timeout: 4000 });
+  ```
+
+  - `variant`: `info` (default), `success`, `warning` or `danger`.
+  - `timeout`: milliseconds before it removes itself (default 4000).
+  - `region`: the element to add it to (default the first `.toasts`).
+
+  Set `data-animation` to `slide` (default), `fade` or `none` on the region or on
+  a single toast.
+accessibility: |
+  - The region's `role="status"` and `aria-live="polite"` announce each toast
+    without interrupting. It must be in the page before toasts are added.
+  - The timer pauses while the toast is hovered. Clicking it, or pressing Enter
+    or Space while it has focus, dismisses it.
+  - Do not put essential information or actions only in a toast; it goes away.
+  - When the person prefers reduced motion, toasts fade in and out without
+    sliding.
+customProperties:
+  "--toasts-gap": "Space between stacked toasts."
+  "--toasts-inset": "Distance of the stack from the viewport edges."
+  "--toasts-z-index": "Stacking order of the region."
+  "--toast-color": "Accent color; the variants set it."
+  "--toast-padding": "Inner spacing."
+  "--toast-radius": "Corner radius."
+  "--toast-border-width": "Width of the accent border."
+  "--toast-background": "Background, mixed from the accent color."
+  "--toast-text-color": "Text color."
+  "--toast-shadow": "Drop shadow."
+  "--toast-duration": "Length of the enter and leave animation."
+  "--toast-easing": "Timing function of the animation."
+  "--toast-offset": "Distance the slide animation travels."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<p>
+  <label for="toast-animation">Animation</label>
+  <select id="toast-animation">
+    <option value="slide">Slide</option>
+    <option value="fade">Fade</option>
+    <option value="none">None</option>
+  </select>
+</p>
+
+<div class="toast-demo">
+  <button type="button" data-variant="info">Info toast</button>
+  <button type="button" data-variant="success">Success toast</button>
+  <button type="button" data-variant="warning">Warning toast</button>
+  <button type="button" data-variant="danger">Danger toast</button>
+</div>
+
+<div class="toasts" role="status" aria-live="polite" data-animation="slide"></div>
+
+<script type="module">
+  import { showToast } from "./toast.js";
+
+  const messages = {
+    info: "A new version is available",
+    success: "Changes saved",
+    warning: "Your session expires soon",
+    danger: "Could not save changes",
+  };
+  for (const button of document.querySelectorAll(".toast-demo button")) {
+    button.addEventListener("click", () => {
+      showToast(messages[button.dataset.variant], { variant: button.dataset.variant });
+    });
+  }
+  document.getElementById("toast-animation").addEventListener("change", (event) => {
+    document.querySelector(".toasts").dataset.animation = event.target.value;
+  });
+</script>

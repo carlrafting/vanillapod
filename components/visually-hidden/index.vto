@@ -1,0 +1,21 @@
+---
+title: "Visually Hidden"
+description: "Hides content visually while keeping it available to screen readers."
+tags: [accessibility, utility, css]
+usage: |
+  Add the `visually-hidden` class to text that should be read but not seen, such
+  as the label of an icon-only button or extra context for a link.
+accessibility: |
+  - The content becomes visible while it has focus, so it also works for skip
+    links.
+  - Do not use it to hide content from everyone: use `hidden` for that.
+  - When the visible content is decorative, hide it with `aria-hidden="true"` so
+    it is not read twice.
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<button type="button">
+  <span aria-hidden="true">&times;</span>
+  <span class="visually-hidden">Close dialog</span>
+</button>

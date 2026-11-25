@@ -1,0 +1,79 @@
+---
+title: "Table"
+description: "Readable tables, with optional borders, zebra rows and sortable columns."
+tags: [data, accessibility, javascript]
+usage: |
+  Base styles apply to every `<table>`. Add the `table` class for borders and
+  zebra rows. To make a column sortable, give its `<th>` `aria-sort="none"` and a
+  `<button>` inside, then call `initTables()`:
+
+  ```js
+  import { initTables } from "./table.js";
+
+  initTables(); // or initTables(root, ".table")
+  ```
+
+  Sorting compares cell text, with numbers in numeric order.
+accessibility: |
+  - Give every table a `<caption>`, and use `<th scope="col">` and
+    `<th scope="row">` for headers.
+  - Wrap wide tables in an element with `tabindex="0"`, `role="region"` and a
+    label, so keyboard users can scroll them on small screens.
+  - `aria-sort` on the sorted header is updated to `ascending` or `descending`,
+    and screen readers announce it.
+customProperties:
+  "--table-cell-padding": "Padding of every cell."
+  "--table-caption-gap": "Space between the caption and the table."
+  "--table-border-color": "Color of the row borders."
+  "--table-head-border": "Border under the header row."
+  "--table-stripe": "Background of every other row."
+  "--table-focus-ring": "Outline of the focused scroll container."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<h3>Standard table</h3>
+
+<div class="table-wrapper" tabindex="0" role="region" aria-label="Browser support">
+<table>
+  <caption>Browser support</caption>
+  <thead>
+    <tr>
+      <th scope="col">Feature</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Safari</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">Popover</th><td>114</td><td>125</td><td>17</td></tr>
+    <tr><th scope="row">@scope</th><td>118</td><td>146</td><td>17.4</td></tr>
+    <tr><th scope="row">dialog</th><td>37</td><td>98</td><td>15.4</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Sortable table</h3>
+
+<div class="table-wrapper" tabindex="0" role="region" aria-label="Components">
+  <table class="table">
+    <caption>Components</caption>
+    <thead>
+      <tr>
+        <th scope="col" aria-sort="none"><button type="button">Name</button></th>
+        <th scope="col" aria-sort="none"><button type="button">Type</button></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Tabs</td><td>Navigation</td></tr>
+      <tr><td>Alert</td><td>Feedback</td></tr>
+      <tr><td>Card</td><td>Layout</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script type="module">
+  import { initTables } from "./table.js";
+
+  initTables();
+</script>

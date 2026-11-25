@@ -1,0 +1,82 @@
+---
+title: "Theme Toggle"
+description: "Lets people choose a light, dark or automatic color theme, and remembers the choice."
+tags: [theme, accessibility, javascript]
+usage: |
+  `<theme-toggle>` is a custom element that wraps a form of radio buttons, one per
+  theme. Register it once, then use it in your markup:
+
+  ```js
+  import { ThemeToggle } from "./theme-toggle.js";
+
+  customElements.define(ThemeToggle.tagName, ThemeToggle);
+  ```
+
+  Attributes:
+
+  - `target`: selector of the element that gets `data-theme`, for example
+    `:root`.
+  - `store="localStorage"`: remember the choice across visits.
+  - `autodetect`: read the available themes from the radio buttons.
+  - `enable`: enable the form controls once the element has loaded. Render them
+    `disabled` so they do nothing without JavaScript.
+
+  While it starts the element has a `loading` attribute, then `loaded`.
+accessibility: |
+  - The choices are native radio buttons in a `<fieldset>` with a `<legend>`, so
+    they are grouped and announced together.
+  - The controls stay disabled until the script runs, so they never appear to
+    work when they cannot.
+---
+
+<theme-toggle target=":root" store="localStorage" autodetect enable>
+  <link rel="stylesheet" href="./styles.css" media="screen">
+  <form action="/theme/update" method="post">
+    <fieldset>
+      <legend>Theme</legend>
+      <menu id="theme-menu">
+        <li>
+          <input
+            id="theme-auto"
+            type="radio"
+            name="theme"
+            value="auto"
+            checked
+            disabled
+          > <label
+            for="theme-auto"
+          >Auto (system)</label>
+        </li>
+        <li>
+          <input
+            id="theme-light"
+            type="radio"
+            name="theme"
+            value="light"
+            disabled
+          >
+          <label for="theme-light">Light</label>
+        </li>
+        <li>
+          <input
+            id="theme-dark"
+            type="radio"
+            name="theme"
+            value="dark"
+            disabled
+          >
+          <label for="theme-dark">Dark</label>
+        </li>
+      </menu>
+      <button disabled>Save Theme</button>
+    </fieldset>
+  </form>
+</theme-toggle>
+
+<script type="module">
+  import { ThemeToggle } from "./theme-toggle.js";
+
+  if (!customElements.get(ThemeToggle.tagName)) {
+    customElements.define(ThemeToggle.tagName, ThemeToggle);
+  }
+</script>

@@ -1,0 +1,53 @@
+---
+title: "Validation Summary"
+description: "Lists a form's invalid fields as links above the form when it is submitted."
+tags: [forms, accessibility, javascript]
+usage: |
+  Add the `validated-form` class and `novalidate` to a `<form>`, and put a
+  `<div class="validation-summary" tabindex="-1" hidden>` with a heading and an
+  empty `<ul>` at the top. Then call `initValidationSummaries()`:
+
+  ```js
+  import { initValidationSummaries } from "./validation-summary.js";
+
+  initValidationSummaries(); // or initValidationSummaries(root, ".validated-form")
+  ```
+
+  It uses the browser's constraint validation (`required`, `type`, `minlength`
+  and so on) and its messages.
+accessibility: |
+  - On a failed submit, focus moves to the summary so the errors are read out.
+  - Each error is a link that moves focus to its field.
+  - Invalid fields get `aria-invalid="true"`, cleared on the next submit.
+  - Every field needs a `<label for>`; its text is used in the summary.
+customProperties:
+  "--validation-summary-color": "Accent color."
+  "--validation-summary-border-width": "Width of the accent border."
+  "--validation-summary-background": "Background, mixed from the accent color."
+  "--validation-summary-padding": "Inner spacing."
+  "--validation-summary-margin-block-end": "Space below the summary."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<form class="validated-form" novalidate>
+  <div class="validation-summary" tabindex="-1" hidden>
+    <h3>Please fix the following</h3>
+    <ul></ul>
+  </div>
+  <p>
+    <label for="vs-email">Email</label>
+    <input id="vs-email" type="email" name="email" required>
+  </p>
+  <p>
+    <label for="vs-name">Name</label>
+    <input id="vs-name" type="text" name="name" required minlength="2">
+  </p>
+  <button>Submit</button>
+</form>
+
+<script type="module">
+  import { initValidationSummaries } from "./validation-summary.js";
+
+  initValidationSummaries();
+</script>

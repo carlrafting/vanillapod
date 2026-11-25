@@ -1,0 +1,51 @@
+---
+title: "Dialog"
+description: "Modal dialog built on the native dialog element."
+tags: [overlay, accessibility, javascript]
+usage: |
+  Add the `dialog` class to a `<dialog>`, and give the button that opens it
+  `data-dialog-open` with the dialog's id. Then call `initDialogs()`:
+
+  ```js
+  import { initDialogs } from "./dialog.js";
+
+  initDialogs(); // or initDialogs(root, "[data-dialog-open]")
+  ```
+
+  A `<form method="dialog">` inside closes the dialog when submitted; the
+  submitting button's `value` becomes `dialog.returnValue`.
+accessibility: |
+  - `showModal()` traps focus in the dialog, makes the rest of the page inert and
+    closes on Escape. Focus returns to the opening button when it closes.
+  - Label the dialog with `aria-labelledby` pointing at its heading.
+  - Put `autofocus` on the control that should receive focus first, usually the
+    least destructive action.
+customProperties:
+  "--dialog-border": "Border around the dialog."
+  "--dialog-radius": "Corner radius."
+  "--dialog-padding": "Inner spacing."
+  "--dialog-max-inline-size": "Maximum width."
+  "--dialog-backdrop": "Color of the backdrop behind the dialog."
+  "--dialog-actions-gap": "Space between the action buttons."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<button type="button" data-dialog-open="example-dialog">Open dialog</button>
+
+<dialog id="example-dialog" class="dialog" aria-labelledby="example-dialog-title">
+  <form method="dialog">
+    <h3 id="example-dialog-title">Dialog title</h3>
+    <p>Dialog content goes here.</p>
+    <menu>
+      <button value="cancel">Cancel</button>
+      <button value="confirm" autofocus>Confirm</button>
+    </menu>
+  </form>
+</dialog>
+
+<script type="module">
+  import { initDialogs } from "./dialog.js";
+
+  initDialogs();
+</script>

@@ -1,0 +1,113 @@
+---
+layout: layouts/page.vto
+title: Playground
+description: Write vanillapod code and see it run, right in your browser.
+---
+
+<link rel="stylesheet" href="/playground/vendor/prism.min.css" media="screen">
+<link rel="stylesheet" href="/playground/styles.css" media="screen">
+
+<main>
+  <vp-playground share example="counter">
+  <pre id="hello" data-title="Hello, world">import { render, h1, p } from "vanillapod";
+
+render(
+  [
+    h1("Hello, vanillapod!"),
+    p("Edit the code on the left and watch this change."),
+  ],
+  document.querySelector("#app"),
+);</pre>
+
+  <pre id="counter" data-title="Counter (signal + effect)">import { effect, signal, button, p, render } from "vanillapod";
+
+const count = signal(0);
+
+const output = p();
+// effect runs now, and again whenever a signal it read changes
+effect(() => {
+  output.textContent = `Count: ${count()}`;
+});
+
+render(
+  [
+    output,
+    button({ onClick: () => count((n) => n + 1) }, "Increment"),
+    button({ onClick: () => count((n) => n - 1) }, "Decrement"),
+    button({ onClick: () => count(0) }, "Reset"),
+  ],
+  document.querySelector("#app"),
+);</pre>
+
+  <pre id="list" data-title="List (createStore + effect)">import {
+  effect,
+  button,
+  createStore,
+  form,
+  input,
+  li,
+  p,
+  render,
+  ul,
+} from "vanillapod";
+
+const state = createStore({ items: [{ id: 1, text: "Try vanillapod" }] });
+let nextId = 2;
+
+const list = ul();
+// reads state.items, so it re-runs when the array is replaced or changed
+effect(() => {
+  list.replaceChildren(
+    ...state.items.map((item) =>
+      li(
+        item.text + " ",
+        button({
+          onClick: () => {
+            state.items = state.items.filter((i) => i.id !== item.id);
+          },
+        }, "Remove"),
+      )
+    ),
+  );
+});
+
+const count = p();
+effect(() => {
+  count.textContent = `${state.items.length} item(s)`;
+});
+
+const field = input({ placeholder: "New item", required: true });
+const add = form(
+  {
+    onSubmit(event) {
+      event.preventDefault();
+      state.items.push({ id: nextId++, text: field.value });
+      field.value = "";
+    },
+  },
+  field,
+  button({ type: "submit" }, "Add"),
+);
+
+render([add, count, list], document.querySelector("#app"));</pre>
+
+  <pre id="console" data-title="Console output">import { render, button } from "vanillapod";
+
+render(
+  [
+    button({
+      onClick: (event) => console.log("clicked", event.type, Date.now()),
+    }, "Log a click"),
+  ],
+  document.querySelector("#app"),
+);
+
+console.warn("console.warn and errors show up below the preview");</pre>
+  </vp-playground>
+  <noscript>The playground requires JavaScript to run code.</noscript>
+</main>
+
+<script data-manual src="/playground/vendor/prism-core.min.js"></script>
+<script src="/playground/vendor/prism-clike.min.js"></script>
+<script src="/playground/vendor/prism-javascript.min.js"></script>
+<script type="module" src="/playground/playground.js"></script>

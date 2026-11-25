@@ -1,0 +1,28 @@
+---
+title: "Badge"
+description: "Small inline label for a status, count or category."
+tags: [feedback, css]
+usage: |
+  Add the `badge` class to an inline element such as `<span>`. Set `data-variant`
+  to `info`, `success`, `warning` or `danger` to change its color.
+accessibility: |
+  - A badge is plain text, so it is read in place. Make sure it still makes sense
+    out of context, for example "3 unread" rather than "3".
+  - Do not rely on the color alone to convey meaning.
+customProperties:
+  "--badge-color": "Base color; the variants set it."
+  "--badge-padding": "Inner spacing."
+  "--badge-radius": "Corner radius."
+  "--badge-font-size": "Font size, relative to the surrounding text."
+  "--badge-font-weight": "Font weight."
+  "--badge-text-color": "Text color, mixed from the base color."
+  "--badge-background": "Background, mixed from the base color."
+  "--badge-border": "Border, mixed from the base color."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<span class="badge">Default</span>
+<span class="badge" data-variant="success">Stable</span>
+<span class="badge" data-variant="warning">Beta</span>
+<span class="badge" data-variant="danger">Deprecated</span>

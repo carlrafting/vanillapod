@@ -1,0 +1,51 @@
+---
+title: "Tabs"
+description: "Tabbed panels with arrow-key, Home and End navigation."
+tags: [navigation, accessibility, javascript]
+usage: |
+  Inside an element with the `tabs` class, mark up a `role="tablist"` of
+  `role="tab"` buttons and a `role="tabpanel"` for each tab. Link them with
+  `aria-controls` and `aria-labelledby`, and hide all panels but the selected
+  one. Then call `initTabs()`:
+
+  ```js
+  import { initTabs } from "./tabs.js";
+
+  initTabs(); // or initTabs(root, ".tabs")
+  ```
+accessibility: |
+  - Arrow Left and Right move between tabs, Home and End jump to the first and
+    last. Every tab is also in the tab order, so Tab and Shift+Tab work too.
+  - `aria-selected` and the panels' `hidden` attribute are kept in sync.
+  - Label the tablist with `aria-label` or `aria-labelledby`.
+  - Panels have `tabindex="0"` so their content can be reached when it has no
+    focusable element.
+customProperties:
+  "--tabs-gap": "Space between tabs."
+  "--tabs-border": "Border under the tablist."
+  "--tabs-tab-padding": "Padding of each tab."
+  "--tabs-indicator-size": "Thickness of the selected-tab indicator."
+  "--tabs-indicator-color": "Color of the selected-tab indicator."
+  "--tabs-selected-font-weight": "Font weight of the selected tab."
+  "--tabs-focus-ring": "Outline shown on keyboard focus."
+  "--tabs-panel-padding": "Padding of the panels."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="tabs">
+  <div role="tablist" aria-label="Example tabs">
+    <button type="button" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true">One</button>
+    <button type="button" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false">Two</button>
+    <button type="button" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false">Three</button>
+  </div>
+  <div role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0">First panel</div>
+  <div role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>Second panel</div>
+  <div role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden>Third panel</div>
+</div>
+
+<script type="module">
+  import { initTabs } from "./tabs.js";
+
+  initTabs();
+</script>

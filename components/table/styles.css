@@ -1,0 +1,36 @@
+:where(table) {
+  --table-cell-padding: 0.5rem 0.75rem;
+  --table-caption-gap: 0.5rem;
+  border-collapse: collapse;
+  inline-size: 100%;
+  font-variant-numeric: tabular-nums;
+}
+:where(table) :where(caption) {
+  text-align: start;
+  font-weight: 600;
+  padding-block-end: var(--table-caption-gap);
+}
+:where(table) :where(th, td) {
+  padding: var(--table-cell-padding);
+  text-align: start;
+  vertical-align: top;
+}
+:where(table) :where(th) { font-weight: 600; }
+
+.table-wrapper { overflow-x: auto; }
+
+@scope (.table) {
+  :scope {
+    --table-border-color: color-mix(in srgb, currentColor 20%, transparent);
+    --table-head-border: 2px solid currentColor;
+    --table-stripe: color-mix(in srgb, currentColor 6%, transparent);
+    --table-focus-ring: 2px solid currentColor;
+  }
+  thead { border-block-end: var(--table-head-border); }
+  tbody tr { border-block-end: 1px solid var(--table-border-color); }
+  tbody tr:nth-child(even) { background: var(--table-stripe); }
+  th button { all: unset; cursor: pointer; font-weight: inherit; }
+  th button:focus-visible { outline: var(--table-focus-ring); outline-offset: 2px; }
+  th[aria-sort="ascending"] button::after { content: " \25B2"; }
+  th[aria-sort="descending"] button::after { content: " \25BC"; }
+}

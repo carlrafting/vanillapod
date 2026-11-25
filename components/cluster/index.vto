@@ -1,0 +1,22 @@
+---
+title: "Cluster"
+description: "Lays children out in a row that wraps onto new lines, with even gaps."
+tags: [layout, css]
+usage: |
+  Add the `cluster` class to a container. Good for tags, button groups and
+  toolbars. Adjust it with the custom properties below, either in a stylesheet or
+  inline with `style`.
+customProperties:
+  "--cluster-align": "Vertical alignment of the items (`align-items`)."
+  "--cluster-justify": "Horizontal distribution of the items (`justify-content`)."
+  "--cluster-space": "Gap between items, in both directions."
+---
+
+<link rel="stylesheet" href="./styles.css" media="screen">
+
+<div class="cluster" style="--cluster-space: 0.5rem">
+  <span>One</span>
+  <span>Two</span>
+  <span>Three</span>
+  <span>Four</span>
+</div>
