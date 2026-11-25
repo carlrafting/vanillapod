@@ -12,5 +12,8 @@
       "dom",
       "esnext"
     ]
+  },
+  "publish": {
+    "exclude": ["test/"]
   }
 }
