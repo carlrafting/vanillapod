@@ -1,9 +1,8 @@
 import {
-  bind,
-  bindList,
   button,
   createStore,
   div,
+  effect,
   form,
   h1,
   header,
@@ -16,6 +15,7 @@ import {
   section,
   span,
   ul,
+  untracked,
 } from "../../dom/main.js";
 
 const storageKey = "vanillapod-example-tasks";
@@ -139,18 +139,29 @@ const appContent = main(
 
 render([appContent], app);
 
-bind(store, "filter", (current) => {
+effect(() => {
+  const current = store.filter;
   for (const [filter, filterButton] of filterButtons) {
     filterButton.setAttribute("aria-pressed", String(filter === current));
   }
-  refreshSummary();
 });
 
-bindList(store, "tasks", {
-  parent: list,
-  key: (task) => task.id,
-  render: createTaskItem,
-  onUpdate: refreshSummary,
+effect(refreshSummary);
+
+// Re-renders the items only when tasks are added, removed or replaced: toggling
+// a task changes one item's own effect, so the other items are left alone.
+effect(() => {
+  const tasks = store.tasks;
+  void tasks.length;
+  /** @type {(() => void)[]} */
+  const cleanups = [];
+  const items = untracked(() =>
+    tasks.map((task) =>
+      createTaskItem(task, (cleanup) => cleanups.push(cleanup))
+    )
+  );
+  list.replaceChildren(...items);
+  return () => cleanups.forEach((cleanup) => cleanup());
 });
 
 function loadTasks() {
@@ -220,7 +231,7 @@ function refreshSummary() {
   clearCompletedButton.disabled = !tasks.some(({ completed }) => completed);
 }
 
-function createTaskItem(task, { onCleanup }) {
+function createTaskItem(task, onCleanup) {
   const item = li({ className: "task-item" });
   item.dataset.taskId = task.id;
 
@@ -239,19 +250,12 @@ function createTaskItem(task, { onCleanup }) {
 
   item.append(toggle, title, remove);
 
-  const stopCompleted = bind(task, "completed", (completed) => {
+  onCleanup(effect(() => {
+    const completed = task.completed;
     item.classList.toggle("is-complete", completed);
     toggle.checked = completed;
     item.hidden = !matchesFilter(task, store.filter);
-    refreshSummary();
-  });
-  const stopFilter = bind(store, "filter", () => {
-    item.hidden = !matchesFilter(task, store.filter);
-  });
-  onCleanup(() => {
-    stopCompleted();
-    stopFilter();
-  });
+  }));
 
   toggle.addEventListener("change", () => {
     task.completed = toggle.checked;
