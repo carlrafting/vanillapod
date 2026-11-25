@@ -1,6 +1,7 @@
 {
   "name": "@vanillapod/components",
   "version": "0.0.0",
+  "exports": "./main.ts",
   "publish": {
     "exclude": [
       "_data.yml",
