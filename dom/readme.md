@@ -4,6 +4,10 @@ DOM helpers and granular state for vanillapod. It runs in the browser and needs
 a `document`. The source is plain JavaScript with JSDoc types, so there is no
 build step: you can import it directly from a CDN, or let a bundler use it.
 
+The full guide is in the
+[documentation](https://github.com/carlrafting/vanillapod/tree/dev/docs), which
+the project site renders at `/docs/`.
+
 ## Install
 
 ### Deno
@@ -81,9 +85,9 @@ render(
 
 A props object sets DOM properties on the element, such as `className`, `id`,
 `value` or `type`. Keys starting with `on` that hold a function are added to the
-element as event listeners. For attributes or `data-*` values, set them in your
-own code with `setAttribute` or `dataset`. `innerHTML` is not allowed through
-props.
+element as event listeners. `dataset` is merged into the element's dataset,
+`class` sets the class attribute, and keys with a dash (`aria-*`, `data-*`) are
+set as attributes. `innerHTML` is not allowed through props.
 
 ### Creating from a selector
 
@@ -226,8 +230,8 @@ enhance(element, { onclick: () => count((value) => value + 1) });
 
 ## Errors
 
-Invalid input throws an `Error`, for example `render` without a root, or
-`traverseChildNodes` without a parent.
+Invalid input throws, for example `render` without a root throws an `Error`, and
+`h` with an empty or invalid selector throws a `TypeError`.
 
 ## Types
 

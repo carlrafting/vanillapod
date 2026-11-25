@@ -1,4 +1,4 @@
-import { div, render } from "../../dom/main.js";
+import { div, render } from "@vanillapod/dom";
 
 /**
  * Adds a toast to a `.toasts` region. It removes itself after `timeout`

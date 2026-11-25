@@ -1,0 +1,107 @@
+/* Styles for the guide pages in /docs/. */
+
+.docs {
+  --docs-border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  --docs-muted: color-mix(in srgb, currentColor 70%, transparent);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+/* Sidebar beside the content on wide screens, above it on narrow ones. */
+@media (min-width: 48rem) {
+  .docs {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .docs-nav {
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+.docs-nav ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.docs-nav a {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  border-inline-start: 2px solid transparent;
+}
+
+.docs-nav a[aria-current="page"] {
+  border-inline-start-color: currentColor;
+  font-weight: 600;
+}
+
+.docs-content :is(h2, h3) {
+  margin-block-start: 2rem;
+}
+
+.docs-content :is(ul, ol):not([class]) {
+  padding-inline-start: 1.5rem;
+}
+
+.docs-content a:not([class]) {
+  text-decoration: underline;
+}
+
+.docs-content pre {
+  overflow-x: auto;
+}
+
+/* Wide tables scroll on their own instead of widening the page. */
+.docs-content table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.docs-content :is(th, td) {
+  padding: 0.25rem 0.75rem 0.25rem 0;
+  text-align: start;
+  vertical-align: top;
+  border-block-end: var(--docs-border);
+}
+
+.docs-content blockquote {
+  padding-inline-start: 1rem;
+  border-inline-start: var(--docs-border);
+  color: var(--docs-muted);
+}
+
+.docs-pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-start: 3rem;
+  padding-block-start: 1rem;
+  border-block-start: var(--docs-border);
+}
+
+.docs-pager a {
+  display: flex;
+  flex-direction: column;
+}
+
+.docs-pager a[rel="next"] {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+.docs-pager span {
+  font-size: 0.85em;
+  color: var(--docs-muted);
+}
+
+.docs-pager a:hover,
+.docs-pager a:focus-visible {
+  text-decoration: underline;
+}
