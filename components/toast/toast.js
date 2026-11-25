@@ -1,3 +1,5 @@
+import { div, render } from "../../dom/main.js";
+
 /**
  * Adds a toast to a `.toasts` region. It removes itself after `timeout`
  * (paused while hovered), or when clicked or activated with Enter or Space.
@@ -16,14 +18,26 @@ export function showToast(
     region = document.querySelector(".toasts"),
   } = {},
 ) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.tabIndex = 0;
-  toast.dataset.variant = variant;
-  toast.textContent = message;
-  region.append(toast);
+  let timer;
+  const start = () => (timer = setTimeout(remove, timeout));
+  const pause = () => clearTimeout(timer);
 
-  const remove = () => {
+  const toast = div({
+    class: "toast",
+    tabIndex: 0,
+    dataset: { variant },
+    onmouseenter: pause,
+    onmouseleave: start,
+    onclick: () => remove(),
+    onkeydown: (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        remove();
+      }
+    },
+  }, message);
+
+  function remove() {
     if (toast.dataset.leaving !== undefined) return;
     toast.dataset.leaving = "";
     const duration = Math.max(
@@ -36,19 +50,8 @@ export function showToast(
       once: true,
     });
     setTimeout(() => toast.remove(), duration + 50);
-  };
+  }
 
-  let timer;
-  const start = () => (timer = setTimeout(remove, timeout));
-  const pause = () => clearTimeout(timer);
-  toast.addEventListener("mouseenter", pause);
-  toast.addEventListener("mouseleave", start);
-  toast.addEventListener("click", remove);
-  toast.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      remove();
-    }
-  });
+  render([toast], region);
   start();
 }

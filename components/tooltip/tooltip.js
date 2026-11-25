@@ -1,3 +1,5 @@
+import { enhance } from "../../dom/main.js";
+
 const anchorSupported = CSS.supports("anchor-name: --tooltip");
 
 /** Fallback for browsers without CSS anchor positioning. */
@@ -39,10 +41,12 @@ export function initTooltips(root = document, selector = "[data-tooltip]") {
       if (!anchorSupported) place(trigger, tip);
     };
     const hide = () => tip.matches(":popover-open") && tip.hidePopover();
-    trigger.addEventListener("mouseenter", show);
-    trigger.addEventListener("focus", show);
-    trigger.addEventListener("mouseleave", hide);
-    trigger.addEventListener("blur", hide);
-    trigger.addEventListener("keydown", (e) => e.key === "Escape" && hide());
+    enhance(trigger, {
+      onmouseenter: show,
+      onfocus: show,
+      onmouseleave: hide,
+      onblur: hide,
+      onkeydown: (e) => e.key === "Escape" && hide(),
+    });
   }
 }

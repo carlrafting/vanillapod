@@ -1,3 +1,5 @@
+import { enhance } from "../../dom/main.js";
+
 /**
  * Adds selection and arrow/Home/End key navigation to every `.tabs` under
  * `root`.
@@ -11,26 +13,29 @@ export function initTabs(root = document, selector = ".tabs") {
     const select = (tab) => {
       for (const t of tabs) {
         const selected = t === tab;
-        t.setAttribute("aria-selected", selected);
-        document.getElementById(t.getAttribute("aria-controls")).hidden =
-          !selected;
+        enhance(t, { "aria-selected": selected });
+        enhance(document.getElementById(t.getAttribute("aria-controls")), {
+          hidden: !selected,
+        });
       }
       tab.focus();
     };
     for (const tab of tabs) {
-      tab.addEventListener("click", () => select(tab));
-      tab.addEventListener("keydown", (event) => {
-        const i = tabs.indexOf(tab);
-        const next = {
-          ArrowRight: tabs[(i + 1) % tabs.length],
-          ArrowLeft: tabs[(i - 1 + tabs.length) % tabs.length],
-          Home: tabs[0],
-          End: tabs[tabs.length - 1],
-        }[event.key];
-        if (next) {
-          event.preventDefault();
-          select(next);
-        }
+      enhance(tab, {
+        onclick: () => select(tab),
+        onkeydown: (event) => {
+          const i = tabs.indexOf(tab);
+          const next = {
+            ArrowRight: tabs[(i + 1) % tabs.length],
+            ArrowLeft: tabs[(i - 1 + tabs.length) % tabs.length],
+            Home: tabs[0],
+            End: tabs[tabs.length - 1],
+          }[event.key];
+          if (next) {
+            event.preventDefault();
+            select(next);
+          }
+        },
       });
     }
   }
