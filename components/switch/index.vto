@@ -1,7 +1,30 @@
 ---
-title: Switch
-description: Toggle for on/off settings, built on a native checkbox with role="switch" so it keeps form and keyboard behavior. Use for settings that apply immediately.
+title: "Switch"
+description: "Toggle for on/off settings, built on a native checkbox."
 tags: [forms, accessibility, css]
+usage: |
+  Put an `<input type="checkbox" role="switch">` and its text inside a `<label>`
+  with the `switch` class. It submits with forms like any checkbox. Use it for
+  settings that take effect immediately; use a plain checkbox in forms that are
+  submitted.
+accessibility: |
+  - `role="switch"` makes screen readers announce it as on or off rather than
+    checked or not checked.
+  - The label wraps the input, so clicking the text toggles it, and Space works
+    from the keyboard.
+  - A visible outline is drawn on keyboard focus.
+  - The thumb does not animate when the person prefers reduced motion.
+customProperties:
+  "--switch-gap": "Space between the switch and its text."
+  "--switch-inline-size": "Width of the track."
+  "--switch-block-size": "Height of the track."
+  "--switch-thumb-inset": "Space between the thumb and the track edge."
+  "--switch-track": "Track color when off."
+  "--switch-track-checked": "Track color when on."
+  "--switch-thumb": "Thumb color."
+  "--switch-duration": "Length of the thumb animation."
+  "--switch-easing": "Timing function of the animation."
+  "--switch-focus-ring": "Outline shown on keyboard focus."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

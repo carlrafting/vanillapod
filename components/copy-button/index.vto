@@ -1,7 +1,28 @@
 ---
-title: Copy Button
-description: Copies the text of a target element to the clipboard using the Clipboard API and announces the result. Point data-copy-target at an element id.
+title: "Copy Button"
+description: "Copies the text of another element to the clipboard and announces the result."
 tags: [utility, accessibility, javascript]
+usage: |
+  Give a button `data-copy-target` with the id of the element to copy, and put a
+  status element right after the button. Then call `initCopyButtons()`:
+
+  ```js
+  import { initCopyButtons } from "./copy-button.js";
+
+  initCopyButtons(); // or initCopyButtons(root, "[data-copy-target]")
+  ```
+
+  The status reads "Copied!" or "Copy failed" for two seconds. Copying needs a
+  secure context (HTTPS or localhost).
+accessibility: |
+  - The status element needs `role="status"` (or `aria-live="polite"`) so the
+    result is announced.
+  - Give the button a label that says what is copied when there are several on a
+    page, for example "Copy install command".
+customProperties:
+  "--copy-button-cursor": "Cursor over the button."
+  "--copy-status-gap": "Space between the button and the status text."
+  "--copy-status-font-size": "Font size of the status text."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

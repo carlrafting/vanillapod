@@ -1,7 +1,31 @@
 ---
-title: Validation Summary
-description: Collects invalid fields into a list of links above the form on submit, moves focus to the summary and marks fields with aria-invalid. Relies on native constraint validation.
+title: "Validation Summary"
+description: "Lists a form's invalid fields as links above the form when it is submitted."
 tags: [forms, accessibility, javascript]
+usage: |
+  Add the `validated-form` class and `novalidate` to a `<form>`, and put a
+  `<div class="validation-summary" tabindex="-1" hidden>` with a heading and an
+  empty `<ul>` at the top. Then call `initValidationSummaries()`:
+
+  ```js
+  import { initValidationSummaries } from "./validation-summary.js";
+
+  initValidationSummaries(); // or initValidationSummaries(root, ".validated-form")
+  ```
+
+  It uses the browser's constraint validation (`required`, `type`, `minlength`
+  and so on) and its messages.
+accessibility: |
+  - On a failed submit, focus moves to the summary so the errors are read out.
+  - Each error is a link that moves focus to its field.
+  - Invalid fields get `aria-invalid="true"`, cleared on the next submit.
+  - Every field needs a `<label for>`; its text is used in the summary.
+customProperties:
+  "--validation-summary-color": "Accent color."
+  "--validation-summary-border-width": "Width of the accent border."
+  "--validation-summary-background": "Background, mixed from the accent color."
+  "--validation-summary-padding": "Inner spacing."
+  "--validation-summary-margin-block-end": "Space below the summary."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

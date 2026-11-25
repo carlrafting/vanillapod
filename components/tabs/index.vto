@@ -1,7 +1,34 @@
 ---
-title: Tabs
-description: Accessible tabs with arrow-key, Home and End navigation. Every tab is also in the tab order, so Tab and Shift+Tab move between tabs. Mark up tablist, tab and tabpanel roles and the script wires up the behavior.
+title: "Tabs"
+description: "Tabbed panels with arrow-key, Home and End navigation."
 tags: [navigation, accessibility, javascript]
+usage: |
+  Inside an element with the `tabs` class, mark up a `role="tablist"` of
+  `role="tab"` buttons and a `role="tabpanel"` for each tab. Link them with
+  `aria-controls` and `aria-labelledby`, and hide all panels but the selected
+  one. Then call `initTabs()`:
+
+  ```js
+  import { initTabs } from "./tabs.js";
+
+  initTabs(); // or initTabs(root, ".tabs")
+  ```
+accessibility: |
+  - Arrow Left and Right move between tabs, Home and End jump to the first and
+    last. Every tab is also in the tab order, so Tab and Shift+Tab work too.
+  - `aria-selected` and the panels' `hidden` attribute are kept in sync.
+  - Label the tablist with `aria-label` or `aria-labelledby`.
+  - Panels have `tabindex="0"` so their content can be reached when it has no
+    focusable element.
+customProperties:
+  "--tabs-gap": "Space between tabs."
+  "--tabs-border": "Border under the tablist."
+  "--tabs-tab-padding": "Padding of each tab."
+  "--tabs-indicator-size": "Thickness of the selected-tab indicator."
+  "--tabs-indicator-color": "Color of the selected-tab indicator."
+  "--tabs-selected-font-weight": "Font weight of the selected tab."
+  "--tabs-focus-ring": "Outline shown on keyboard focus."
+  "--tabs-panel-padding": "Padding of the panels."
 ---
 
 <link rel="stylesheet" href="./styles.css" media="screen">

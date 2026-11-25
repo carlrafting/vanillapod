@@ -1,0 +1,102 @@
+---
+layout: ./page.vto
+---
+
+{{# Documentation page for one component. The demo is the page's own content;
+    usage, accessibility and customProperties come from its front matter, and
+    the source and custom property defaults are read from its files. #}}
+
+{{ set components = search.pages("type=component", "title=asc") }}
+{{ set position = components.findIndex((component) => component.url === url) }}
+{{ set previous = components[position - 1] }}
+{{ set next = components[position + 1] }}
+{{ set sources = url |> componentSources }}
+{{ set properties = url |> componentProperties }}
+
+<link rel="stylesheet" href="/playground/vendor/prism.min.css" media="screen">
+<link rel="stylesheet" href="/assets/components.css" media="screen">
+
+<div class="component-page flow">
+  <p class="component-back"><a href="/components/">All components</a></p>
+
+  {{ if tags && tags.length > 0 }}
+    <ul class="component-tags" aria-label="Tags">
+      {{ for tag of tags }}
+        <li><a href="/components/tags/{{ tag }}/">{{ tag }}</a></li>
+      {{ /for }}
+    </ul>
+  {{ /if }}
+
+  <section class="component-demo" aria-labelledby="demo">
+    <h2 id="demo">Demo</h2>
+    <div class="component-demo-canvas">
+      {{ content }}
+    </div>
+  </section>
+
+  {{ if usage }}
+    <section class="flow" aria-labelledby="usage">
+      <h2 id="usage">Usage</h2>
+      {{ usage |> md }}
+    </section>
+  {{ /if }}
+
+  {{ if accessibility }}
+    <section class="flow" aria-labelledby="accessibility">
+      <h2 id="accessibility">Accessibility</h2>
+      {{ accessibility |> md }}
+    </section>
+  {{ /if }}
+
+  {{ if properties.length > 0 }}
+    <section class="flow" aria-labelledby="custom-properties">
+      <h2 id="custom-properties">Custom properties</h2>
+      <p>Set these on the component, or on any ancestor, to change how it looks.</p>
+      <div class="component-table" role="region" aria-labelledby="custom-properties" tabindex="0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Property</th>
+              <th scope="col">Default</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ for property of properties }}
+              <tr>
+                <th scope="row"><code>{{ property.name }}</code></th>
+                <td><code>{{ property.value |> escape }}</code></td>
+                <td>{{ customProperties?.[property.name] ?? "" }}</td>
+              </tr>
+            {{ /for }}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  {{ /if }}
+
+  <section class="flow" aria-labelledby="source">
+    <h2 id="source">Source</h2>
+    {{ for file of sources }}
+      <details class="component-source">
+        <summary>{{ file.name }}</summary>
+        <pre><code class="language-{{ file.language }}">{{ file.code |> escape }}</code></pre>
+      </details>
+    {{ /for }}
+  </section>
+
+  {{ if previous || next }}
+    <nav class="component-pager" aria-label="Previous and next components">
+      {{ if previous }}
+        <a href="{{ previous.url }}" rel="prev">
+          <span>Previous</span> {{ previous.title }}
+        </a>
+      {{ /if }}
+      {{ if next }}
+        <a href="{{ next.url }}" rel="next">
+          <span>Next</span> {{ next.title }}
+        </a>
+      {{ /if }}
+    </nav>
+  {{ /if }}
+</div>

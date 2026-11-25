@@ -1,8 +1,16 @@
 ---
-title: Full Size
-description:
-    Component that provides authors and developers to display contents that stretches across the whole viewport width/size. Useful for banners, headers or footers. Combine with background colors or images to help make the element stand out visually on the page.
+title: "Full Size"
+description: "Stretches content across the full viewport width, for banners, headers or footers."
 tags: [layout, utility, css]
+usage: |
+  Use a `<full-size>` element or the `full-size` class. It cancels the page's
+  inline padding with negative margins, so it assumes the `1rem` inline padding
+  set on `html` in the site's global styles. Combine it with a background color
+  or image to make the section stand out.
+accessibility: |
+  - Check the contrast of text against the background you add.
+  - If the section is a landmark, such as a site banner, use the matching element
+    (`<header>`, `<footer>`) inside it.
 ---
 
 <full-size>
