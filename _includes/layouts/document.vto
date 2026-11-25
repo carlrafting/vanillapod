@@ -1,17 +1,18 @@
 <!doctype html>
 <html lang="en" data-theme="auto" data-page-url="{{ url }}">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
-<title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>
 {{ if title }}
 {{ title ?? null }} |
 {{ /if }}
 {{ site.name }}
-</title>
-<link rel="stylesheet" href="/assets/global.css" media="screen">
-<script type="importmap">
-{ "imports": { "@vanillapod/dom": "/dom/main.js" } }
-</script>
-<body class="flow">
+  </title>
+  <link rel="stylesheet" href="/assets/global.css" media="screen">
+  <link rel="stylesheet" href="/docs/styles.css" media="screen">
+  <script type="importmap">
+  { "imports": { "@vanillapod/dom": "/dom/main.js" } }
+  </script>
+  <body class="flow">
 {{ content }}
