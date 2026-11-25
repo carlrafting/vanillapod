@@ -158,6 +158,18 @@ const widget = {
 enhance(element, { on: { click: widget, keydown: widget } });
 ```
 
+To apply the same params to several elements, pass a list, such as a `NodeList`
+or an array. `enhance` returns them as an array. Every element gets the same
+listeners, so use `event.currentTarget` to tell them apart. Children must be
+strings or numbers, since one node can't be in several places:
+
+```js
+enhance(document.querySelectorAll("[data-copy]"), {
+  onclick: (event) =>
+    navigator.clipboard.writeText(event.currentTarget.dataset.copy),
+});
+```
+
 ### State
 
 `createStore` returns a reactive object for grouped state. Reading a property
@@ -231,7 +243,9 @@ enhance(element, { onclick: () => count((value) => value + 1) });
 ## Errors
 
 Invalid input throws, for example `render` without a root throws an `Error`, and
-`h` with an empty or invalid selector throws a `TypeError`.
+`h` with an empty or invalid selector throws a `TypeError`. `enhance` throws a
+`TypeError` for anything that isn't an element or a list of elements, and for a
+node child passed with a list, before changing any element.
 
 ## Types
 

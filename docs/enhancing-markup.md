@@ -88,8 +88,35 @@ list.dispatchEvent(new CustomEvent("item-added", { detail: { id: 1 } }));
 
 ## Enhancing many elements
 
-`enhance()` works on one element. To enhance every match, loop over
-`querySelectorAll`. This is the pattern the
+Pass a list of elements instead of one, such as the `NodeList` from
+`querySelectorAll` or an array, to apply the same props to each. `enhance()`
+then returns the elements as an array:
+
+```html
+<button data-copy="deno task serve">Copy</button>
+<button data-copy="deno add jsr:@vanillapod/dom">Copy</button>
+```
+
+```js
+import { enhance } from "@vanillapod/dom";
+
+enhance(document.querySelectorAll("[data-copy]"), {
+  type: "button",
+  onclick: (event) => {
+    navigator.clipboard.writeText(event.currentTarget.dataset.copy);
+  },
+});
+```
+
+- Every element gets the same listener, so use `event.currentTarget` inside it
+  to find out which element the event is for.
+- Children must be strings or numbers, and each element gets its own copy. A
+  DOM node can only be in one place, so passing one with a list throws a
+  `TypeError`.
+- Every entry must be an element. If one isn't, `enhance()` throws before
+  changing any of them.
+
+When each element needs its own state, loop instead. This is the pattern the
 [components](/docs/using-components/) use in their `init*()` functions:
 
 ```js

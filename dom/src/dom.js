@@ -103,19 +103,59 @@ function build(tagName, params) {
 }
 
 /**
- * Applies props, event handlers and children to an element that already
- * exists, using the same params as the element helpers. Children are appended.
+ * Applies props, event handlers and children to elements that already exist,
+ * using the same params as the element helpers. Children are appended.
+ *
+ * Pass one element to get it back, or a list of elements (an array, a
+ * `NodeList` or any other iterable) to apply the same params to each and get
+ * an array back. With a list, the same listeners are added to every element
+ * (use `event.currentTarget` to tell them apart), and children must be
+ * strings or numbers: a DOM node can only be in one place.
  *
  * @template {Element} T
+ * @overload
  * @param {T} element
  * @param {...any} params - an optional props object, then children
  * @returns {T} the same element
  */
-export function enhance(element, ...params) {
-  if (!(element instanceof Element)) {
-    throw new TypeError("enhance: first argument must be an Element");
+/**
+ * @template {Element} T
+ * @overload
+ * @param {Iterable<T>} elements
+ * @param {...any} params - an optional props object, then children
+ * @returns {T[]} the same elements, as an array
+ */
+/**
+ * @param {any} target
+ * @param {...any} params
+ * @returns {any}
+ */
+export function enhance(target, ...params) {
+  if (target instanceof Element) return apply(target, params);
+  if (
+    target === null || typeof target !== "object" ||
+    typeof target[Symbol.iterator] !== "function"
+  ) {
+    throw new TypeError(
+      "enhance: first argument must be an Element or a list of Elements",
+    );
   }
-  return apply(element, params);
+  const elements = [...target];
+  elements.forEach((element, index) => {
+    if (!(element instanceof Element)) {
+      throw new TypeError(
+        `enhance: item ${index} in the list is not an Element`,
+      );
+    }
+  });
+  if (params.some((param) => param instanceof Node)) {
+    throw new TypeError(
+      "enhance: a node child can't be added to a list of elements, " +
+        "because a node can only be in one place. " +
+        "Create the node for each element in a loop instead.",
+    );
+  }
+  return elements.map((element) => apply(element, params));
 }
 
 const selectorPattern = /^([a-zA-Z][\w-]*)?((?:[#.][\w-]+)*)$/;
