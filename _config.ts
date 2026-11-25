@@ -23,6 +23,6 @@ site.filter(
   "componentProperties",
   (url: string) => componentCustomProperties(site.src(url)),
 );
-site.ignore(".claude/", "components/README.md");
+site.ignore(".claude/", "README.md", "components/README.md");
 
 export default site;

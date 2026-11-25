@@ -1,0 +1,45 @@
+---
+layout: ./page.vto
+---
+
+{{# Guide page in /docs/. The sidebar and the previous/next links list every
+    page with `type: doc`, sorted by its `order` front matter. #}}
+
+{{ set pages = search.pages("type=doc", "order=asc") }}
+{{ set position = pages.findIndex((page) => page.url === url) }}
+{{ set previous = pages[position - 1] }}
+{{ set next = pages[position + 1] }}
+
+<link rel="stylesheet" href="/playground/vendor/prism.min.css" media="screen">
+<link rel="stylesheet" href="/assets/docs.css" media="screen">
+
+<div class="docs">
+  <nav class="docs-nav" aria-label="Documentation">
+    <ol>
+      {{ for page of pages }}
+        <li>
+          <a href="{{ page.url }}"{{ if page.url === url }} aria-current="page"{{ /if }}>{{ page.title }}</a>
+        </li>
+      {{ /for }}
+    </ol>
+  </nav>
+
+  <article class="docs-content flow">
+    {{ content }}
+
+    {{ if previous || next }}
+      <nav class="docs-pager" aria-label="Previous and next pages">
+        {{ if previous }}
+          <a href="{{ previous.url }}" rel="prev">
+            <span>Previous</span> {{ previous.title }}
+          </a>
+        {{ /if }}
+        {{ if next }}
+          <a href="{{ next.url }}" rel="next">
+            <span>Next</span> {{ next.title }}
+          </a>
+        {{ /if }}
+      </nav>
+    {{ /if }}
+  </article>
+</div>
