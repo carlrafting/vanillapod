@@ -1,4 +1,4 @@
-import { enhance } from "../../dom/main.js";
+import { enhance } from "@vanillapod/dom";
 
 /**
  * Adds selection and arrow/Home/End key navigation to every `.tabs` under
