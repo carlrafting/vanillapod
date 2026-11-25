@@ -38,19 +38,21 @@ Deno.test("Docs pages in Chromium", async (t) => {
           await page.locator(".docs-nav [aria-current=page]").innerText(),
           title,
         );
-        // Every page after the introduction has code examples, and the
-        // JavaScript ones are highlighted.
-        if (index > 0) {
-          assert(
-            await page.locator(".docs-content pre code").count() > 0,
-            `${path} has code examples`,
+        // Every page after the introduction has code examples, and each
+        // language on the page is highlighted. Checked per language, not per
+        // block: a one-line command such as `deno task serve` has no tokens.
+        const blocks = await page.locator(".docs-content pre code")
+          .evaluateAll((codes) =>
+            codes.map((code) => ({
+              language: code.className,
+              tokens: code.querySelectorAll(".token").length,
+            }))
           );
-        }
-        const js = page.locator(".docs-content code.language-js");
-        if (await js.count() > 0) {
+        if (index > 0) assert(blocks.length > 0, `${path} has code`);
+        for (const language of new Set(blocks.map((b) => b.language))) {
           assert(
-            await js.locator(".token").count() > 0,
-            `${path} highlights its JavaScript`,
+            blocks.some((b) => b.language === language && b.tokens > 0),
+            `${path}: ${language} is highlighted`,
           );
         }
         const next = page.locator(".docs-pager a[rel=next]");
