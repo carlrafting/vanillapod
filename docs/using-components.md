@@ -81,16 +81,33 @@ import { showToast } from "/components/toast/toast.js";
 showToast("Saved", { variant: "success", timeout: 3000 });
 ```
 
-## Serving the files
+## Resolving @vanillapod/dom
 
-Tabs, tooltip, toast and validation summary import `@vanillapod/dom` by relative
-path (`../../dom/main.js`), so they work without an import map. Serve the `dom/`
-folder next to `components/`, as the repository lays them out, or load both from
-the same jsDelivr commit:
+Tabs, tooltip, toast and validation summary import `@vanillapod/dom` by its
+package name. In Deno, `components/deno.json` maps that name to the local
+`dom/` package. In the browser, add an import map before your first module
+script so the name resolves to wherever you serve `dom/main.js`:
 
-```js
-import { initTabs } from "https://cdn.jsdelivr.net/gh/carlrafting/vanillapod@<commit-or-tag>/components/tabs/tabs.js";
+```html
+<script type="importmap">
+  { "imports": { "@vanillapod/dom": "/dom/main.js" } }
+</script>
 ```
+
+This site's layout does the same. To load from jsDelivr instead, point the map
+at the same commit or tag as the components:
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "@vanillapod/dom": "https://cdn.jsdelivr.net/gh/carlrafting/vanillapod@<commit-or-tag>/dom/main.js"
+    }
+  }
+</script>
+```
+
+The other components have no imports and need no import map.
 
 ## Customizing
 
