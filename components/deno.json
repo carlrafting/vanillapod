@@ -1,6 +1,17 @@
 {
   "name": "@vanillapod/components",
   "version": "0.0.0",
+  "exports": {
+    "./copy-button": "./copy-button/copy-button.js",
+    "./dialog": "./dialog/dialog.js",
+    "./password-input": "./password-input/password-input.js",
+    "./table": "./table/table.js",
+    "./tabs": "./tabs/tabs.js",
+    "./theme-toggle": "./theme-toggle/theme-toggle.js",
+    "./toast": "./toast/toast.js",
+    "./tooltip": "./tooltip/tooltip.js",
+    "./validation-summary": "./validation-summary/validation-summary.js"
+  },
   "publish": {
     "exclude": [
       "_data.yml",
