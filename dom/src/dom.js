@@ -59,10 +59,12 @@ function applyProps(element, props) {
       listen(element, normalizeEvent(key), value);
     } else if (key === "dataset" && value && typeof value === "object") {
       Object.assign(element.dataset, value);
-    } else if (key === "class") {
-      element.setAttribute("class", value);
-    } else if (key.includes("-")) {
-      element.setAttribute(key, value);
+    } else if (key === "class" || key.includes("-")) {
+      if (value === null || value === undefined || value === false) {
+        element.removeAttribute(key);
+      } else {
+        element.setAttribute(key, value);
+      }
     } else {
       element[key] = value;
     }
@@ -368,9 +370,9 @@ export function render(
   }
   if (typeof mountables === "function") {
     mountables = mountables();
-    if (checkType(mountables) !== "array") {
-      mountables = [mountables];
-    }
+  }
+  if (checkType(mountables) !== "array") {
+    mountables = [mountables];
   }
   const results = /** @type {any[]} */ (mountables).filter((mountable) =>
     mountable !== null && mountable !== undefined &&

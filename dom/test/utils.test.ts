@@ -90,10 +90,10 @@ Deno.test("createLocalStorage read returns initialData when nothing is saved", (
   });
 });
 
-Deno.test("createLocalStorage read falls back to initialData for an empty array", () => {
+Deno.test("createLocalStorage read keeps a saved empty array", () => {
   withFakeLocalStorage(() => {
     const storage = createLocalStorage("list", ["seed"]);
     storage.write([]);
-    assertEquals(storage.read(), ["seed"]);
+    assertEquals(storage.read(), []);
   });
 });

@@ -128,15 +128,15 @@ export function traverseChildNodes(parent = null, callback = () => {}) {
  * createPersistedStorage
  *
  * @returns {Promise<{
- *  grant(): Promise<void>;
+ *  grant(): Promise<boolean>;
  * } | undefined>}
  */
 async function createPersistedStorage() {
   if (navigator.storage && navigator.storage.persisted) {
     await navigator.storage.persisted();
     return {
-      async grant() {
-        await navigator.storage.persist();
+      grant() {
+        return navigator.storage.persist();
       },
     };
   }
@@ -151,8 +151,9 @@ async function createPersistedStorage() {
  */
 export function createLocalStorage(key = "app", initialData = null) {
   createPersistedStorage()
-    .then((storage) => {
-      const granted = storage?.grant();
+    .then(async (storage) => {
+      if (!storage) return;
+      const granted = await storage.grant();
       console.log("Granted persisted storage?", granted ? "yes" : "no");
     })
     .catch((err) => console.log(err));
@@ -160,15 +161,7 @@ export function createLocalStorage(key = "app", initialData = null) {
   return {
     read() {
       const parsed = JSON.parse(localStorage.getItem(key) ?? "null");
-      const dataType = checkType(parsed);
-      console.log({ dataType });
-      if (
-        (parsed === null && initialData !== null) ||
-        (dataType === "array" && parsed.length === 0)
-      ) {
-        return initialData;
-      }
-      return parsed;
+      return parsed === null ? initialData : parsed;
     },
     /**
      * @param {any} data
