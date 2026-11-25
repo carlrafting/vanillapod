@@ -1,6 +1,10 @@
 {
   "name": "@vanillapod/components",
   "version": "0.0.0",
+  "exports": "./main.ts",
+  "imports": {
+    "@vanillapod/dom": "../dom/main.js"
+  },
   "publish": {
     "exclude": [
       "_data.yml",

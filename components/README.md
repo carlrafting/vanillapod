@@ -70,9 +70,10 @@ from `toast/toast.js`.
 
 Most modules have no imports. `tabs`, `tooltip`, `toast` and
 `validation-summary` use `enhance` and the element helpers from
-`@vanillapod/dom`, imported by relative path (`../../dom/main.js`) so they work
-on the docs site without an import map. They need `dom/` to be served next to
-`components/`.
+`@vanillapod/dom`, imported by its package name. `components/deno.json` maps it
+to the local `dom/` package, and the site layout (`document.vto`) adds an import
+map that resolves it to `/dom/main.js` in the browser. They need `dom/` to be
+served at `/dom/`.
 
 ## Documentation pages
 

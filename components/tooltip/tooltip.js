@@ -1,4 +1,4 @@
-import { enhance } from "../../dom/main.js";
+import { enhance } from "@vanillapod/dom";
 
 const anchorSupported = CSS.supports("anchor-name: --tooltip");
 

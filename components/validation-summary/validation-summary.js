@@ -1,4 +1,4 @@
-import { a, enhance, li, render } from "../../dom/main.js";
+import { a, enhance, li, render } from "@vanillapod/dom";
 
 /**
  * Replaces native validation bubbles on every `.validated-form` under `root`
