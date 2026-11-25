@@ -114,6 +114,100 @@ Deno.test("DOM elements in Chromium", async (t) => {
     );
 
     await t.step(
+      "enhance applies the same props to a NodeList or an array",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { enhance } = await import("/dom/main.js");
+          const list = document.createElement("div");
+          list.innerHTML = "<button>a</button><button>b</button>";
+          document.body.append(list);
+          const clicked: string[] = [];
+          const fromNodeList = enhance(list.querySelectorAll("button"), {
+            class: "copy",
+            dataset: { state: "idle" },
+            "aria-pressed": "false",
+            onclick: (event: Event) =>
+              clicked.push((event.currentTarget as Element).textContent!),
+          }, "!");
+          const buttons = [...list.querySelectorAll("button")];
+          const fromArray = enhance(buttons, { title: "Copy" });
+          for (const button of buttons) button.click();
+          list.remove();
+          return {
+            sameNodes: fromNodeList.every((el: Element, i: number) =>
+              el === buttons[i]
+            ),
+            isArray: Array.isArray(fromNodeList),
+            sameArray: fromArray.every((el: Element, i: number) =>
+              el === buttons[i]
+            ),
+            buttons: buttons.map((b) => ({
+              text: b.textContent,
+              className: b.className,
+              state: b.dataset.state,
+              pressed: b.getAttribute("aria-pressed"),
+              title: b.title,
+            })),
+            clicked,
+          };
+        });
+        const button = (text: string) => ({
+          text,
+          className: "copy",
+          state: "idle",
+          pressed: "false",
+          title: "Copy",
+        });
+        assertEquals(result, {
+          sameNodes: true,
+          isArray: true,
+          sameArray: true,
+          buttons: [button("a!"), button("b!")],
+          clicked: ["a!", "b!"],
+        });
+      },
+    );
+
+    await t.step(
+      "enhance with a list rejects node children and non-elements unchanged",
+      async () => {
+        const result = await page.evaluate(async () => {
+          const { enhance, span } = await import("/dom/main.js");
+          const a = document.createElement("p");
+          const b = document.createElement("p");
+          const messages: string[] = [];
+          for (
+            const run of [
+              () => enhance([a, b], { id: "x" }, span("icon")),
+              () => enhance([a, "b"], { id: "x" }),
+              () => enhance("p", { id: "x" }),
+            ]
+          ) {
+            try {
+              run();
+              messages.push("");
+            } catch (err) {
+              messages.push(
+                `${(err as Error).name}: ${(err as Error).message}`,
+              );
+            }
+          }
+          return {
+            messages,
+            untouched: a.id === "" && b.id === "" && a.childNodes.length === 0,
+            empty: enhance([], { id: "x" }),
+          };
+        });
+        assertStringIncludes(result.messages[0], "TypeError: ");
+        assertStringIncludes(result.messages[0], "node child");
+        assertStringIncludes(result.messages[1], "item 1");
+        assertStringIncludes(result.messages[2], "list of Elements");
+        assertEquals(result.untouched, true);
+        assertEquals(result.empty, []);
+      },
+    );
+
+    await t.step(
       "enhance throws when given something that is not an element",
       async () => {
         const message = await page.evaluate(async () => {

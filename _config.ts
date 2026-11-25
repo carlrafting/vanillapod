@@ -1,5 +1,8 @@
 import lume from "lume/mod.ts";
 import prismPlugin from "lume/plugins/prism.ts";
+// Languages beyond Prism's defaults, for the shell and YAML examples in docs/.
+import "https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.js";
+import "https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-yaml.js";
 import { escape } from "@std/html";
 import {
   componentCustomProperties,
