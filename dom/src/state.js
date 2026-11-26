@@ -19,6 +19,8 @@ const scheduler = { pending: new Set(), scheduled: false };
  * @typedef {object} Effect
  * @property {{ run: () => void; active: boolean }} sub
  * @property {Set<Set<any>>} deps subscriber sets this effect is listed in
+ * @property {Set<() => void>} children dispose functions of effects created
+ *   while this one ran, disposed before it runs again
  */
 
 /** @type {Effect | null} */
@@ -102,12 +104,18 @@ const handler = {
     if (desc && !desc.configurable && !desc.writable) return value;
     return wrap(value);
   },
-  set(target, key, value) {
+  set(target, key, value, receiver) {
     const next = toRaw(value);
     const prev = toRaw(target[key]);
     const prevLength = Array.isArray(target) ? target.length : 0;
-    const ok = Reflect.set(target, key, next);
+    const ok = Reflect.set(target, key, next, receiver);
     if (ok && !Object.is(prev, next)) notify(target, key);
+    // Shrinking `length` removes indices without a write to each of them.
+    if (ok && key === "length" && Array.isArray(target)) {
+      for (let i = target.length; i < prevLength; i++) {
+        notify(target, String(i));
+      }
+    }
     // Writing past the end grows the array without a write to `length`.
     if (
       ok && key !== "length" && Array.isArray(target) &&
@@ -132,7 +140,17 @@ const handler = {
  * @returns {void}
  */
 export function flush() {
+  let rounds = 0;
   while (scheduler.pending.size) {
+    if (++rounds > 1000) {
+      scheduler.pending.clear();
+      console.error(
+        new Error(
+          "flush: effects kept re-running, likely an effect writes a value it reads",
+        ),
+      );
+      break;
+    }
     const batch = [...scheduler.pending];
     scheduler.pending.clear();
     for (const sub of batch) {
@@ -239,10 +257,14 @@ export function effect(fn) {
   /** @type {Effect} */
   const record = {
     deps: new Set(),
+    children: new Set(),
     sub: { active: true, run: () => execute() },
   };
+  const parent = activeEffect;
 
   const release = () => {
+    for (const disposeChild of record.children) disposeChild();
+    record.children.clear();
     for (const subs of record.deps) subs.delete(record.sub);
     record.deps.clear();
     const done = cleanup;
@@ -263,11 +285,15 @@ export function effect(fn) {
     }
   };
 
-  execute();
-  return () => {
+  const dispose = () => {
     record.sub.active = false;
     release();
+    parent?.children.delete(dispose);
   };
+  // Disposed with the effect it was created in, when that one re-runs or stops.
+  if (parent) parent.children.add(dispose);
+  execute();
+  return dispose;
 }
 
 /**
