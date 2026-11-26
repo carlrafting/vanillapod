@@ -14,9 +14,12 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
       # 0.0.0 marks the package as unreleased, and JSR versions are immutable.
+      # Runs in dom/ so only @vanillapod/dom is published, not every workspace
+      # member.
       - name: Publish package
+        working-directory: dom
         run: |
-          if [ "$(jq -r .version dom/deno.json)" = "0.0.0" ]; then
+          if [ "$(jq -r .version deno.json)" = "0.0.0" ]; then
             echo "Skipping publish: dom/deno.json is still at version 0.0.0."
             exit 0
           fi

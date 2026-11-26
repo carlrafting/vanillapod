@@ -30,14 +30,18 @@ export class ThemeToggle extends HTMLElement {
     this.updateCheckedState();
     this.addEventListener("change", this);
     const theme = this.value;
-    if (theme) this.target.setAttribute("data-theme", theme);
+    if (theme) this.themeTarget.setAttribute("data-theme", theme);
     this.removeAttribute("loading");
     this.setAttribute("loaded", "");
   }
   handleEvent(event) {
     const theme = event.target.value;
-    this.target.setAttribute("data-theme", theme);
+    this.themeTarget.setAttribute("data-theme", theme);
     this.value = theme;
+  }
+  /** The element that gets `data-theme`, the document root by default. */
+  get themeTarget() {
+    return this.target ?? document.documentElement;
   }
   getDisabledElements() {
     const selector = "[disabled]";
@@ -96,25 +100,25 @@ export class ThemeToggle extends HTMLElement {
   }
   attributeChangedCallback(name, prev, next) {
     // console.log(`"${name}" changed from "${prev}" to "${next}"`);
+    const present = next !== null;
     if (name === "enable") {
-      this.enable = true;
+      this.enable = present;
     }
     if (name === "target") {
-      const target = document.querySelector(this.getAttribute("target"));
-      this.target = target;
+      this.target = present ? document.querySelector(next) : null;
     }
     if (name === "autodetect") {
-      this.autodetect = true;
+      this.autodetect = present;
     }
     if (name === "loading") {
-      this.loading = true;
+      this.loading = present;
     }
     if (name === "loaded") {
-      this.loading = false;
-      this.loaded = true;
+      if (present) this.loading = false;
+      this.loaded = present;
     }
     if (name === "store") {
-      this.store.type = next.toLowerCase();
+      this.store.type = present ? next.toLowerCase() : null;
     }
   }
 }

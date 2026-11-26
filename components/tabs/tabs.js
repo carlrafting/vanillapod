@@ -13,7 +13,7 @@ export function initTabs(root = document, selector = ".tabs") {
     const select = (tab) => {
       for (const t of tabs) {
         const selected = t === tab;
-        enhance(t, { "aria-selected": selected });
+        enhance(t, { "aria-selected": String(selected) });
         enhance(document.getElementById(t.getAttribute("aria-controls")), {
           hidden: !selected,
         });
