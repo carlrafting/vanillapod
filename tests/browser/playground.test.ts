@@ -112,7 +112,7 @@ Deno.test(`Playground in ${engineName}`, async (t) => {
           assertEquals(options, [
             "hello|Hello, world",
             "counter|Counter (signal + effect)",
-            "list|List (createStore + effect)",
+            "list|List (store + effect)",
             "console|Console output",
           ]);
           assertEquals(

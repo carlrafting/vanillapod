@@ -16,7 +16,7 @@ bundler pick them up.
 
 - **`@vanillapod/dom`**: small DOM helpers to create elements (`div`, `button`,
   `h("section.card")`), enhance elements already in the page (`enhance`), and
-  granular reactive state (`signal`, `effect`, `derived`, `createStore`).
+  granular reactive state (`signal`, `effect`, `derived`, `store`).
 - **Components**: accessible building blocks such as tabs, dialogs, toasts and
   tooltips. Each one is plain markup and CSS, plus a small module when it needs
   behavior. Browse them on the [components page](/components/).

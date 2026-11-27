@@ -89,26 +89,26 @@ step in that flush. Call `double.dispose()` to stop it.
 
 ## Stores
 
-For grouped state, `createStore(initial)` returns a reactive object. Reading a
+For grouped state, `store(initial)` returns a reactive object. Reading a
 property inside an effect subscribes to that property, and writing it re-runs
 only the effects that read it. Nested objects and arrays are reactive too:
 
 ```js
-import { createStore, effect, li } from "@vanillapod/dom";
+import { effect, li, store } from "@vanillapod/dom";
 
-const store = createStore({ title: "Tasks", items: [] });
+const state = store({ title: "Tasks", items: [] });
 
 effect(() => {
-  document.title = store.title;
+  document.title = state.title;
 });
 
 const list = document.getElementById("list");
 effect(() => {
-  list.replaceChildren(...store.items.map((item) => li(item.label)));
+  list.replaceChildren(...state.items.map((item) => li(item.label)));
 });
 
-store.items.push({ id: 1, label: "First task" });
-store.title = "Tasks (1)";
+state.items.push({ id: 1, label: "First task" });
+state.title = "Tasks (1)";
 ```
 
 Only property reads are tracked. Adding a key to an object doesn't re-run an
