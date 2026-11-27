@@ -8,7 +8,7 @@ build step.
 
 - [`@vanillapod/dom`](dom/): DOM helpers (`div`, `h()`, `enhance()`,
   `render()`) and granular reactive state (`signal`, `effect`, `derived`,
-  `createStore`).
+  `store`).
 - [Components](components/): accessible building blocks such as tabs, dialogs,
   toasts and tooltips, each made of markup, a `styles.css` file and, where
   needed, a small ES module.

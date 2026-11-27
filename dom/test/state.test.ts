@@ -1,134 +1,134 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
-  createStore,
   derived,
   effect,
   flush,
   signal,
+  store,
   untracked,
 } from "../src/state.js";
 
 Deno.test("an effect runs once immediately and again only for the keys it read", () => {
-  const store = createStore({ count: 0, other: 0 });
+  const state = store({ count: 0, other: 0 });
   const seen: number[] = [];
   effect(() => {
-    seen.push(store.count);
+    seen.push(state.count);
   });
 
-  store.other = 1;
+  state.other = 1;
   flush();
   assertEquals(seen, [0]);
 
-  store.count = 2;
+  state.count = 2;
   flush();
   assertEquals(seen, [0, 2]);
 });
 
 Deno.test("writes of equal values do not notify", () => {
-  const store = createStore({ count: 1 });
+  const state = store({ count: 1 });
   let runs = 0;
   effect(() => {
-    store.count;
+    state.count;
     runs++;
   });
 
-  store.count = 1;
+  state.count = 1;
   flush();
   assertEquals(runs, 1);
 });
 
 Deno.test("writes in one tick are batched into a single update", async () => {
-  const store = createStore({ count: 0 });
+  const state = store({ count: 0 });
   let runs = 0;
   effect(() => {
-    store.count;
+    state.count;
     runs++;
   });
 
-  store.count = 1;
-  store.count = 2;
-  store.count = 3;
+  state.count = 1;
+  state.count = 2;
+  state.count = 3;
   await Promise.resolve();
   assertEquals(runs, 2);
 });
 
 Deno.test("nested objects are reactive and keep proxy identity", () => {
-  const store = createStore({ user: { name: "a" } });
+  const state = store({ user: { name: "a" } });
   const seen: string[] = [];
   effect(() => {
-    seen.push(store.user.name);
+    seen.push(state.user.name);
   });
 
-  assertStrictEquals(store.user, store.user);
-  store.user.name = "b";
+  assertStrictEquals(state.user, state.user);
+  state.user.name = "b";
   flush();
   assertEquals(seen, ["a", "b"]);
 });
 
 Deno.test("an effect on an array length follows push, pop and truncation", () => {
-  const store = createStore({ items: [] as string[] });
+  const state = store({ items: [] as string[] });
   const seen: number[] = [];
   effect(() => {
-    seen.push(store.items.length);
+    seen.push(state.items.length);
   });
 
-  store.items.push("a");
+  state.items.push("a");
   flush();
-  store.items.push("b");
+  state.items.push("b");
   flush();
-  store.items.pop();
+  state.items.pop();
   flush();
-  store.items.length = 0;
+  state.items.length = 0;
   flush();
   assertEquals(seen, [0, 1, 2, 1, 0]);
 });
 
 Deno.test("writes made while flushing are applied in the same flush", () => {
-  const store = createStore({ a: 0, b: 0 });
+  const state = store({ a: 0, b: 0 });
   const seen: number[] = [];
   effect(() => {
-    store.b = store.a * 10;
+    state.b = state.a * 10;
   });
   effect(() => {
-    seen.push(store.b);
+    seen.push(state.b);
   });
 
-  store.a = 2;
+  state.a = 2;
   flush();
   assertEquals(seen, [0, 20]);
 });
 
 Deno.test("an effect on an array index follows writes to that index", () => {
-  const store = createStore({ items: ["a", "b"] });
+  const state = store({ items: ["a", "b"] });
   const seen: string[] = [];
   effect(() => {
-    seen.push(store.items[0]);
+    seen.push(state.items[0]);
   });
 
-  store.items[0] = "c";
+  state.items[0] = "c";
   flush();
   assertEquals(seen, ["a", "c"]);
 });
 
 Deno.test("replacing a nested array re-runs effects that read its items", () => {
-  const store = createStore({ items: [{ id: 1 }, { id: 2 }] });
+  const state = store({ items: [{ id: 1 }, { id: 2 }] });
   const seen: number[][] = [];
   effect(() => {
-    seen.push(store.items.map((item) => item.id));
+    seen.push(state.items.map((item) => item.id));
   });
 
-  store.items = [{ id: 2 }, { id: 3 }];
+  state.items = [{ id: 2 }, { id: 3 }];
   flush();
-  store.items.push({ id: 4 });
+  state.items.push({ id: 4 });
   flush();
   assertEquals(seen, [[1, 2], [2, 3], [2, 3, 4]]);
 });
 
 Deno.test("frozen nested objects can be read from a store", () => {
   const settings = Object.freeze({ theme: { name: "dark" } });
-  const store = createStore({ settings });
-  assertStrictEquals(store.settings.theme, settings.theme);
-  assertEquals(store.settings.theme.name, "dark");
+  const state = store({ settings });
+  assertStrictEquals(state.settings.theme, settings.theme);
+  assertEquals(state.settings.theme.name, "dark");
 });
 
 Deno.test("signal reads, sets and updates", () => {
@@ -215,28 +215,28 @@ Deno.test("effect cleanup runs before the next run and on dispose", () => {
 });
 
 Deno.test("effect tracks store properties and nested objects", () => {
-  const store = createStore({ title: "a", user: { name: "x" }, other: 0 });
+  const state = store({ title: "a", user: { name: "x" }, other: 0 });
   const seen: string[] = [];
   effect(() => {
-    seen.push(`${store.title}/${store.user.name}`);
+    seen.push(`${state.title}/${state.user.name}`);
   });
-  store.other = 1;
+  state.other = 1;
   flush();
   assertEquals(seen, ["a/x"]);
-  store.user.name = "y";
+  state.user.name = "y";
   flush();
-  store.title = "b";
+  state.title = "b";
   flush();
   assertEquals(seen, ["a/x", "a/y", "b/y"]);
 });
 
 Deno.test("effect follows array length and index reads", () => {
-  const store = createStore({ items: [1, 2] });
+  const state = store({ items: [1, 2] });
   const seen: number[] = [];
   effect(() => {
-    seen.push(store.items.length);
+    seen.push(state.items.length);
   });
-  store.items.push(3);
+  state.items.push(3);
   flush();
   assertEquals(seen, [2, 3]);
 });

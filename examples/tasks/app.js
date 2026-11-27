@@ -1,6 +1,5 @@
 import {
   button,
-  createStore,
   div,
   effect,
   form,
@@ -14,13 +13,14 @@ import {
   render,
   section,
   span,
+  store,
   ul,
   untracked,
 } from "../../dom/main.js";
 
 const storageKey = "vanillapod-example-tasks";
 const filters = ["all", "active", "completed"];
-const store = createStore({ tasks: loadTasks(), filter: "all" });
+const state = store({ tasks: loadTasks(), filter: "all" });
 
 const app = document.querySelector("#app");
 const taskInput = input({
@@ -52,7 +52,7 @@ for (const filter of filters) {
   );
   filterButton.dataset.filter = filter;
   filterButton.addEventListener("click", () => {
-    store.filter = filter;
+    state.filter = filter;
   });
   filterButtons.set(filter, filterButton);
   filterNav.append(filterButton);
@@ -63,7 +63,7 @@ const clearCompletedButton = button(
   "Clear completed",
 );
 clearCompletedButton.addEventListener("click", () => {
-  store.tasks = store.tasks.filter(({ completed }) => !completed);
+  state.tasks = state.tasks.filter(({ completed }) => !completed);
   persist();
 });
 
@@ -89,7 +89,7 @@ taskForm.addEventListener("submit", (event) => {
     return;
   }
 
-  store.tasks.unshift({
+  state.tasks.unshift({
     id: crypto.randomUUID(),
     title,
     completed: false,
@@ -140,7 +140,7 @@ const appContent = main(
 render([appContent], app);
 
 effect(() => {
-  const current = store.filter;
+  const current = state.filter;
   for (const [filter, filterButton] of filterButtons) {
     filterButton.setAttribute("aria-pressed", String(filter === current));
   }
@@ -151,7 +151,7 @@ effect(refreshSummary);
 // Re-renders the items only when tasks are added, removed or replaced: toggling
 // a task changes one item's own effect, so the other items are left alone.
 effect(() => {
-  const tasks = store.tasks;
+  const tasks = state.tasks;
   void tasks.length;
   /** @type {(() => void)[]} */
   const cleanups = [];
@@ -196,7 +196,7 @@ function loadTasks() {
 
 function persist() {
   try {
-    localStorage.setItem(storageKey, JSON.stringify(store.tasks));
+    localStorage.setItem(storageKey, JSON.stringify(state.tasks));
     feedback.textContent = "";
   } catch (error) {
     console.error("Could not save tasks on this device.", error);
@@ -211,7 +211,7 @@ function matchesFilter(task, filter) {
 }
 
 function refreshSummary() {
-  const { tasks, filter } = store;
+  const { tasks, filter } = state;
   const visible = tasks.filter((task) => matchesFilter(task, filter)).length;
   const remaining = tasks.filter(({ completed }) => !completed).length;
 
@@ -254,7 +254,7 @@ function createTaskItem(task, onCleanup) {
     const completed = task.completed;
     item.classList.toggle("is-complete", completed);
     toggle.checked = completed;
-    item.hidden = !matchesFilter(task, store.filter);
+    item.hidden = !matchesFilter(task, state.filter);
   }));
 
   toggle.addEventListener("change", () => {
@@ -262,8 +262,8 @@ function createTaskItem(task, onCleanup) {
     persist();
   });
   remove.addEventListener("click", () => {
-    const index = store.tasks.indexOf(task);
-    if (index !== -1) store.tasks.splice(index, 1);
+    const index = state.tasks.indexOf(task);
+    if (index !== -1) state.tasks.splice(index, 1);
     persist();
   });
 
