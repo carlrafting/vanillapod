@@ -298,8 +298,9 @@ Deno.test("DOM elements in Chromium", async (t) => {
 
     await t.step("signals and effects drive the DOM", async () => {
       const result = await page.evaluate(async () => {
-        const { signal, effect, derived, flush, div, enhance } = await import(
-          "/dom/main.js"
+        const { div, enhance } = await import("/dom/main.js");
+        const { signal, effect, derived, flush } = await import(
+          "/state/main.js"
         );
         const element = div({ className: "element" });
         document.body.append(element);

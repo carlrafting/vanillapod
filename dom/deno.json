@@ -3,17 +3,18 @@
   "version": "0.0.0",
   "exports": "./main.js",
   "tasks": {
-    "dev": "cd test && deno test --watch"
+    "dev": "deno test --watch"
   },
   "license": "MIT",
   "compilerOptions": {
     "checkJs": true,
     "lib": [
       "dom",
-      "esnext"
+      "esnext",
+      "deno.ns"
     ]
   },
   "publish": {
-    "exclude": ["test/"]
+    "exclude": ["*.test.ts"]
   }
 }

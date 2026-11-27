@@ -1,7 +1,6 @@
 import {
   button,
   div,
-  effect,
   form,
   h1,
   header,
@@ -13,10 +12,9 @@ import {
   render,
   section,
   span,
-  store,
   ul,
-  untracked,
 } from "../../dom/main.js";
+import { effect, store, untracked } from "../../state/main.js";
 
 const storageKey = "vanillapod-example-tasks";
 const filters = ["all", "active", "completed"];

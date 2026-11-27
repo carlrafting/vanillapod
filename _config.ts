@@ -13,8 +13,9 @@ const site = lume();
 site.loadPages([".html.vto"]);
 site.use(prismPlugin());
 site.copy("./assets");
-site.copy("./dom/src", "./dom/src");
 site.copy("./dom/main.js", "./dom/main.js");
+site.copy("./dom/utils.js", "./dom/utils.js");
+site.copy("./state/main.js", "./state/main.js");
 site.copy([".css", ".js", ".png", ".avif"]);
 site.filter("escape", (input: string) => escape(input));
 // Component pages show their own files, read from the folder their URL maps to.

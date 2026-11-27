@@ -8,8 +8,8 @@ order: 1
 plain JavaScript with JSDoc types, so you can import it as it is.
 
 > **Status:** `@vanillapod/dom` has not been published to JSR yet (its version
-> is `0.0.0`), so the Deno and bundler commands below will not resolve until
-> the first release. The CDN URL works for any commit that contains `dom/`.
+> is `0.0.0`), so the Deno and bundler commands below will not resolve until the
+> first release. The CDN URL works for any commit that contains `dom/`.
 
 ## Install
 
@@ -20,12 +20,12 @@ branch names, so they may be out of date.
 
 ```html
 <script type="module">
-  import {
-    button,
-    render,
-  } from "https://cdn.jsdelivr.net/gh/carlrafting/vanillapod@<commit-or-tag>/dom/main.js";
+import {
+  button,
+  render,
+} from "https://cdn.jsdelivr.net/gh/carlrafting/vanillapod@<commit-or-tag>/dom/main.js";
 
-  render([button({ onclick: () => alert("hi") }, "Say hi")], document.body);
+render([button({ onclick: () => alert("hi") }, "Say hi")], document.body);
 </script>
 ```
 
@@ -80,4 +80,7 @@ so they run after the document has been parsed.
 Types come from the JSDoc comments in the source. Editors and `deno check` read
 them directly, so there are no `.d.ts` files to install.
 
-Next, see [Creating elements](/docs/elements/) for everything the helpers can do.
+Next, see [Creating elements](/docs/elements/) for everything the helpers can
+do. Reactive state (`signal`, `effect`, `store`) is in a separate package,
+`@vanillapod/state`, installed the same way. See
+[State and effects](/docs/state/).

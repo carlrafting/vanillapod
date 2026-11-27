@@ -7,8 +7,9 @@ build step.
 ## Packages
 
 - [`@vanillapod/dom`](dom/): DOM helpers (`div`, `h()`, `enhance()`,
-  `render()`) and granular reactive state (`signal`, `effect`, `derived`,
-  `store`).
+  `render()`).
+- [`@vanillapod/state`](state/): granular reactive state (`signal`, `effect`,
+  `derived`, `store`), with no DOM dependency.
 - [Components](components/): accessible building blocks such as tabs, dialogs,
   toasts and tooltips, each made of markup, a `styles.css` file and, where
   needed, a small ES module.
@@ -39,7 +40,11 @@ This serves the documentation site, with the component demos, the
 `_site/`.
 
 ```sh
-cd dom/test && deno test -A
+cd dom && deno test -A
+```
+
+```sh
+cd state && deno test -A
 ```
 
 ```sh
