@@ -53,14 +53,12 @@ jobs:
           cache: true
           cache-hash: ${{ hashFiles('deno.json', 'tests/browser/deno.json') }}
 
-      - name: Build site
-        run: deno task build
-
       - name: Install Chromium
         working-directory: tests/browser
         run: deno run -A npm:playwright@^1.65.0 install --with-deps chromium
 
-      # The tests start the Lume dev server themselves (see tests/browser/helpers.ts).
+      # The tests build the site and serve it themselves (see
+      # tests/browser/helpers.ts), so a broken build fails this step.
       - name: Run browser tests
         working-directory: tests/browser
         run: deno task test
