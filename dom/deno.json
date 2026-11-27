@@ -10,10 +10,11 @@
     "checkJs": true,
     "lib": [
       "dom",
-      "esnext"
+      "esnext",
+      "deno.ns"
     ]
   },
   "publish": {
-    "exclude": ["test/"]
+    "exclude": ["*.test.ts"]
   }
 }

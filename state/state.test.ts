@@ -1,12 +1,5 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
-import {
-  derived,
-  effect,
-  flush,
-  signal,
-  store,
-  untracked,
-} from "../src/state.js";
+import { derived, effect, flush, signal, store, untracked } from "./main.js";
 
 Deno.test("an effect runs once immediately and again only for the keys it read", () => {
   const state = store({ count: 0, other: 0 });
