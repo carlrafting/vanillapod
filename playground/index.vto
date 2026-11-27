@@ -39,10 +39,10 @@ render(
   document.querySelector("#app"),
 );</pre>
 
-  <pre id="list" data-title="List (createStore + effect)">import {
+  <pre id="list" data-title="List (store + effect)">import {
   effect,
   button,
-  createStore,
+  store,
   form,
   input,
   li,
@@ -51,7 +51,7 @@ render(
   ul,
 } from "vanillapod";
 
-const state = createStore({ items: [{ id: 1, text: "Try vanillapod" }] });
+const state = store({ items: [{ id: 1, text: "Try vanillapod" }] });
 let nextId = 2;
 
 const list = ul();
