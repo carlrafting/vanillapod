@@ -32,11 +32,11 @@ jobs:
       # Tests live in each package's test/ folder, which has its own config with
       # the Deno namespace.
       - name: Run dom unit tests
-        working-directory: dom
+        working-directory: dom/test
         run: deno test -A
 
       - name: Run state unit tests
-        working-directory: state
+        working-directory: state/test
         run: deno test -A
 
       # Type-checks the packages (checkJs). The JS entrypoint warning is non-blocking.
