@@ -1,12 +1,23 @@
 import { CodeJar } from "./vendor/codejar.js";
 
 const SOURCES = {
-  vanillapod: "../dom/main.js",
   "vp/dom": "../dom/src/dom.js",
-  "vp/state": "../dom/src/state.js",
+  "vp/state": "../state/src/state.js",
   "vp/utils": "../dom/src/utils.js",
   "vp/events": "../dom/src/events.js",
 };
+
+/**
+ * Specifiers that point at a module in SOURCES. An import map entry is keyed by
+ * URL, so both names load the same module instance.
+ */
+const ALIASES = {
+  "@vanillapod/dom": "vp/dom",
+  "@vanillapod/state": "vp/state",
+};
+
+/** "vanillapod" re-exports both packages, so examples need one import. */
+const COMBINED = `export * from "vp/dom";\nexport * from "vp/state";\n`;
 
 const encode = (code) =>
   btoa(String.fromCharCode(...new TextEncoder().encode(code)));
@@ -39,6 +50,10 @@ function loadImportMap() {
       );
       imports[name] = `data:text/javascript;base64,${encode(source)}`;
     }
+    for (const [alias, name] of Object.entries(ALIASES)) {
+      imports[alias] = imports[name];
+    }
+    imports.vanillapod = `data:text/javascript;base64,${encode(COMBINED)}`;
     return JSON.stringify({ imports }).replaceAll("<", "\\u003c");
   })();
   return importMapPromise;

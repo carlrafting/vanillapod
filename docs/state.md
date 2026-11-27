@@ -4,10 +4,23 @@ description: Keep the page in sync with your data using signals, derived values,
 order: 4
 ---
 
-`@vanillapod/dom` has a small, granular reactivity system. You keep data in
+`@vanillapod/state` is a small, granular reactivity system. You keep data in
 **signals** or a **store**, and write **effects** that read it and update the
 DOM. When the data changes, only the effects that read that piece of data run
 again. There are no keys, templates or per-property bindings to wire up.
+
+It is a separate package from `@vanillapod/dom` and doesn't touch the DOM
+itself, so it also runs in workers, Deno and Node. Install it the same way as
+[the DOM helpers](/docs/getting-started/):
+
+```sh
+deno add jsr:@vanillapod/state
+```
+
+On a page without a bundler, import
+`https://cdn.jsdelivr.net/gh/carlrafting/vanillapod@<commit-or-tag>/state/main.js`.
+Load it from a single URL: effects only track signals and stores from the same
+copy of the module.
 
 ## Signals
 
@@ -15,7 +28,7 @@ again. There are no keys, templates or per-property bindings to wire up.
 value to set, or with a function to update from the current value:
 
 ```js
-import { signal } from "@vanillapod/dom";
+import { signal } from "@vanillapod/state";
 
 const count = signal(0);
 
@@ -24,8 +37,7 @@ count(5); // set to 5
 count((n) => n + 1); // update to 6
 ```
 
-- The updater's return value becomes the new value, so write `n + 1`, not
-  `n++`.
+- The updater's return value becomes the new value, so write `n + 1`, not `n++`.
 - A function can't be stored as the value directly, because it's treated as an
   updater. Wrap it in an object instead: `signal({ fn })`.
 - Setting the same value (compared with `Object.is`) does nothing.
@@ -36,7 +48,8 @@ count((n) => n + 1); // update to 6
 read changes:
 
 ```js
-import { effect, enhance, signal } from "@vanillapod/dom";
+import { effect, signal } from "@vanillapod/state";
+import { enhance } from "@vanillapod/dom";
 
 const count = signal(0);
 const output = document.querySelector("output");
@@ -73,7 +86,7 @@ stop(); // the interval is cleared and the effect stops
 properties:
 
 ```js
-import { derived, effect, signal } from "@vanillapod/dom";
+import { derived, effect, signal } from "@vanillapod/state";
 
 const count = signal(2);
 const double = derived(() => count() * 2);
@@ -94,7 +107,8 @@ property inside an effect subscribes to that property, and writing it re-runs
 only the effects that read it. Nested objects and arrays are reactive too:
 
 ```js
-import { effect, li, store } from "@vanillapod/dom";
+import { effect, store } from "@vanillapod/state";
+import { li } from "@vanillapod/dom";
 
 const state = store({ title: "Tasks", items: [] });
 
@@ -117,8 +131,8 @@ effect that listed its keys with `Object.keys`.
 ## Batching and flush()
 
 Writes don't run effects straight away. They are batched, and the effects that
-need to run do so once, in a microtask. Several writes in a row therefore
-update the DOM once:
+need to run do so once, in a microtask. Several writes in a row therefore update
+the DOM once:
 
 ```js
 count(1);
@@ -130,7 +144,7 @@ Call `flush()` to run pending effects synchronously, for example in a test or
 before measuring the DOM:
 
 ```js
-import { flush } from "@vanillapod/dom";
+import { flush } from "@vanillapod/state";
 
 count(10);
 flush();
@@ -142,11 +156,11 @@ the other effects still run.
 
 ## Reading without tracking
 
-`untracked(fn)` runs `fn` and returns its result without subscribing the
-running effect to what it reads:
+`untracked(fn)` runs `fn` and returns its result without subscribing the running
+effect to what it reads:
 
 ```js
-import { effect, untracked } from "@vanillapod/dom";
+import { effect, untracked } from "@vanillapod/state";
 
 effect(() => {
   // Re-runs when count changes, but not when step does.
@@ -154,4 +168,5 @@ effect(() => {
 });
 ```
 
-For a complete app built this way, see the [task list example](/examples/tasks/).
+For a complete app built this way, see the
+[task list example](/examples/tasks/).

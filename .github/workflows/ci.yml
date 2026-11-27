@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dom:
-    name: DOM package
+  packages:
+    name: Packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -27,14 +27,19 @@ jobs:
           deno-version: v2.x
 
       - name: Check formatting
-        run: deno fmt --check dom
+        run: deno fmt --check dom state
 
-      # Tests live in dom/test, which has its own config with the Deno namespace.
-      - name: Run unit tests
+      # Tests live in each package's test/ folder, which has its own config with
+      # the Deno namespace.
+      - name: Run dom unit tests
         working-directory: dom/test
         run: deno test -A
 
-      # Type-checks dom/ (checkJs). The JS entrypoint warning is non-blocking.
+      - name: Run state unit tests
+        working-directory: state/test
+        run: deno test -A
+
+      # Type-checks the packages (checkJs). The JS entrypoint warning is non-blocking.
       - name: Verify JSR package
         run: deno publish --dry-run
 
