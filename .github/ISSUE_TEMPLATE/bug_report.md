@@ -1,39 +1,43 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
+about: Something in a vanillapod package or component doesn't work as documented
+title: ""
 labels: bug
 assignees: carlrafting
-type: Bug
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**What happened**
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+A short description of the bug, and any error from the browser console.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**What you expected**
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+What you expected to happen instead.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Reproduction**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+The smallest code that shows the problem. A playground share link is best: open
+the playground on the docs site, reproduce the bug and use "Copy share link".
+Otherwise paste a snippet or link to a repository.
 
-**Additional context**
-Add any other context about the problem here.
+```js
+```
+
+Steps, if the bug needs interaction:
+
+1.
+2.
+
+**Where it happens**
+
+- Package or component:
+  <!-- @vanillapod/dom, @vanillapod/state, or a component such as tabs -->
+- Version or commit:
+  <!-- the JSR version, or the commit/tag in your jsDelivr URL -->
+- How it's loaded: <!-- jsDelivr CDN, JSR in Deno, or a bundler (which one?) -->
+- Browser and version: <!-- e.g. Firefox 140, Safari 18.5 -->
+- OS: <!-- only if it seems relevant -->
+
+**Anything else**
+
+Screenshots, workarounds you found, or related issues.
