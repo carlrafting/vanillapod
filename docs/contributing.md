@@ -10,16 +10,16 @@ fixtures.
 
 ## Repository layout
 
-| Folder                           | What it holds                                                                            |
-| -------------------------------- | ---------------------------------------------------------------------------------------- |
-| `dom/`                           | The `@vanillapod/dom` package: `main.js`, its source in `src/` and unit tests in `test/` |
-| `state/`                         | The `@vanillapod/state` package, laid out the same way as `dom/`                         |
-| `components/`                    | One folder per component, each with its demo page                                        |
-| `docs/`                          | These guide pages, in Markdown                                                           |
-| `examples/`                      | Small apps built with the package, such as the task list                                 |
-| `playground/`                    | The in-browser editor at [/playground/](/playground/)                                    |
-| `tests/browser/`                 | Playwright tests that run the package and the site in a real browser                     |
-| `_includes/`, `_lib/`, `assets/` | Site layouts, build helpers and shared styles                                            |
+| Folder                           | What it holds                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| `dom/`                           | The `@vanillapod/dom` package: `main.js`, `utils.js` and their `*.test.ts` unit tests |
+| `state/`                         | The `@vanillapod/state` package, laid out the same way as `dom/`                      |
+| `components/`                    | One folder per component, each with its demo page                                     |
+| `docs/`                          | These guide pages, in Markdown                                                        |
+| `examples/`                      | Small apps built with the package, such as the task list                              |
+| `playground/`                    | The in-browser editor at [/playground/](/playground/)                                 |
+| `tests/browser/`                 | Playwright tests that run the package and the site in a real browser                  |
+| `_includes/`, `_lib/`, `assets/` | Site layouts, build helpers and shared styles                                         |
 
 ## Running the site
 
@@ -34,15 +34,15 @@ files change. `deno task build` writes a production build to `_site/`.
 
 ## Running the tests
 
-Unit tests for each package live in its `test/` folder, which has its own
-config:
+Unit tests sit next to the source as `*.test.ts` files. Run them from the
+package folder:
 
 ```sh
-cd dom/test && deno test -A
+cd dom && deno test -A
 ```
 
 ```sh
-cd state/test && deno test -A
+cd state && deno test -A
 ```
 
 Browser tests run in Chromium through Playwright. Install the browser once, then
@@ -59,7 +59,7 @@ See `tests/browser/README.md` for running them in Firefox and WebKit.
 On every push to `main` or `dev`, and on pull requests, CI:
 
 - checks formatting of the packages with `deno fmt --check dom state`,
-- runs the unit tests in `dom/test` and `state/test`,
+- runs the unit tests in `dom/` and `state/`,
 - type-checks the packages with `deno publish --dry-run`,
 - builds the site and runs the browser tests.
 

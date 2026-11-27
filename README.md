@@ -40,11 +40,11 @@ This serves the documentation site, with the component demos, the
 `_site/`.
 
 ```sh
-cd dom/test && deno test -A
+cd dom && deno test -A
 ```
 
 ```sh
-cd state/test && deno test -A
+cd state && deno test -A
 ```
 
 ```sh

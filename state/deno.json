@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "exports": "./main.js",
   "tasks": {
-    "dev": "cd test && deno test --watch"
+    "dev": "deno test --watch"
   },
   "license": "MIT",
   "imports": {
