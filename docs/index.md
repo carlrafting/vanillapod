@@ -15,8 +15,10 @@ bundler pick them up.
 ## What's included
 
 - **`@vanillapod/dom`**: small DOM helpers to create elements (`div`, `button`,
-  `h("section.card")`), enhance elements already in the page (`enhance`), and
-  granular reactive state (`signal`, `effect`, `derived`, `store`).
+  `h("section.card")`) and enhance elements already in the page (`enhance`).
+- **`@vanillapod/state`**: granular reactive state (`signal`, `effect`,
+  `derived`, `store`). It has no DOM dependency, so it pairs with
+  `@vanillapod/dom` or works on its own.
 - **Components**: accessible building blocks such as tabs, dialogs, toasts and
   tooltips. Each one is plain markup and CSS, plus a small module when it needs
   behavior. Browse them on the [components page](/components/).
@@ -32,5 +34,5 @@ bundler pick them up.
 - [Using components](/docs/using-components/): add a component to your page.
 - [Contributing](/docs/contributing/): run the site and the tests locally.
 
-To see it all working together, try the [task list example](/examples/tasks/)
-or experiment in the [playground](/playground/).
+To see it all working together, try the [task list example](/examples/tasks/) or
+experiment in the [playground](/playground/).

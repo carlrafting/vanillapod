@@ -13,10 +13,9 @@ import {
   render,
   section,
   span,
-  store,
   ul,
-  untracked,
 } from "../../dom/main.js";
+import { store, untracked } from "../../state/main.js";
 
 const storageKey = "vanillapod-example-tasks";
 const filters = ["all", "active", "completed"];
