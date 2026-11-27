@@ -4,7 +4,7 @@
  * Signals (`signal`, `derived`) and effects (`effect`) track what they read:
  * an effect re-runs when any signal or store property it read is written.
  *
- * Plain objects and arrays in a store (`createStore`) are wrapped in a Proxy.
+ * Plain objects and arrays in a store (`store`) are wrapped in a Proxy.
  * Subscriptions are keyed by (object, property), so a write only re-runs the
  * effects that read that exact property. Notifications are batched and
  * flushed in a microtask (or synchronously via `flush`).
@@ -172,7 +172,7 @@ export function flush() {
  * @param {T} initial
  * @returns {T}
  */
-export function createStore(initial = /** @type {T} */ ({})) {
+export function store(initial = /** @type {T} */ ({})) {
   return /** @type {T} */ (wrap(initial));
 }
 

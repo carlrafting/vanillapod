@@ -172,23 +172,23 @@ enhance(document.querySelectorAll("[data-copy]"), {
 
 ### State
 
-`createStore` returns a reactive object for grouped state. Reading a property
-inside an `effect` subscribes the effect to it, and writes re-run only the
-effects that read that property. Nested objects and arrays are reactive too:
+`store` returns a reactive object for grouped state. Reading a property inside
+an `effect` subscribes the effect to it, and writes re-run only the effects that
+read that property. Nested objects and arrays are reactive too:
 
 ```js
-import { createStore, effect } from "@vanillapod/dom";
+import { effect, store } from "@vanillapod/dom";
 
-const store = createStore({ title: "Tasks", items: [] });
+const state = store({ title: "Tasks", items: [] });
 
 effect(() => {
-  document.title = store.title;
+  document.title = state.title;
 });
 
 const list = document.getElementById("list");
 effect(() => {
   list.replaceChildren(
-    ...store.items.map((item) => {
+    ...state.items.map((item) => {
       const li = document.createElement("li");
       li.textContent = item.label;
       return li;
@@ -196,7 +196,7 @@ effect(() => {
   );
 });
 
-store.items.push({ id: 1, label: "First task" });
+state.items.push({ id: 1, label: "First task" });
 ```
 
 Notifications are batched and run in a microtask. Call `flush()` to apply them
@@ -231,9 +231,10 @@ enhance(element, { onclick: () => count((value) => value + 1) });
 - An effect tracks what it reads on each run, so a branch it no longer takes is
   forgotten. It may return a cleanup function, which runs before the next run
   and on dispose. `effect` returns a dispose function.
-- Inside an effect, reading `store.title` or `store.user.name` subscribes to
-  that property of a store from `createStore`. Only property reads are tracked:
-  adding a key to an object does not re-run an effect that listed its keys.
+- Inside an effect, reading `state.title` or `state.user.name` subscribes to
+  that property of an object returned by `store`. Only property reads are
+  tracked: adding a key to an object does not re-run an effect that listed its
+  keys.
 - `derived(fn)` is a read-only signal computed from others. It updates in the
   same flush as the write that changed it, so an effect that reads both a signal
   and a value derived from it may run once per step in that flush. Call its
