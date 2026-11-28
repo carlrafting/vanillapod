@@ -52,6 +52,15 @@ inserted, or a `selector` to use your own class:
 initTabs(document.querySelector("#settings"), ".settings-tabs");
 ```
 
+It is safe to call an init function again, for example after your code inserts
+more markup. Elements that were already enhanced are skipped, so they never get a
+second set of listeners:
+
+```js
+list.insertAdjacentHTML("beforeend", newTabsMarkup);
+initTabs(list); // enhances the new tabs only
+```
+
 The components that work this way are copy button, dialog, password input,
 table, tabs, tooltip and validation summary.
 

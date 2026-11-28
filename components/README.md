@@ -43,6 +43,11 @@ example `tabs`, `dialog` or `table`.
   `initTabs`, `initDialogs`, `initTables`.
 - Importing the module has no side effects. Nothing happens until the function
   is called.
+- Calling it again is safe, for example after inserting markup. Each module
+  keeps a `WeakSet` of the elements it has enhanced and skips them, so no
+  element gets a second set of listeners. Mark an element once its setup is
+  done, so one that failed halfway can be retried. An element is skipped
+  whatever selector or root the second call uses.
 - Markup is found through a class or a `data-*` attribute documented on the
   component's demo page.
 
