@@ -26,14 +26,21 @@ function place(trigger, tip) {
   tip.style.left = `${left}px`;
 }
 
+/** Elements this module has already enhanced. */
+const enhanced = new WeakSet();
+
 /**
  * Shows the popover named by `data-tooltip` on hover or focus of each trigger.
+ *
+ * Safe to call again, for example after inserting markup: elements that were
+ * already enhanced are skipped, so a second call adds nothing to them.
  *
  * @param {ParentNode} [root] where to look, defaults to the document
  * @param {string} [selector] CSS selector for the elements to enhance
  */
 export function initTooltips(root = document, selector = "[data-tooltip]") {
   for (const trigger of root.querySelectorAll(selector)) {
+    if (enhanced.has(trigger)) continue;
     const tip = document.getElementById(trigger.dataset.tooltip);
     const show = () => {
       if (tip.matches(":popover-open")) return;
@@ -48,5 +55,6 @@ export function initTooltips(root = document, selector = "[data-tooltip]") {
       onblur: hide,
       onkeydown: (e) => e.key === "Escape" && hide(),
     });
+    enhanced.add(trigger);
   }
 }

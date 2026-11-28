@@ -1,14 +1,21 @@
 import { enhance } from "@vanillapod/dom";
 
+/** Elements this module has already enhanced. */
+const enhanced = new WeakSet();
+
 /**
  * Adds selection and arrow/Home/End key navigation to every `.tabs` under
  * `root`.
+ *
+ * Safe to call again, for example after inserting markup: elements that were
+ * already enhanced are skipped, so a second call adds nothing to them.
  *
  * @param {ParentNode} [root] where to look, defaults to the document
  * @param {string} [selector] CSS selector for the elements to enhance
  */
 export function initTabs(root = document, selector = ".tabs") {
   for (const el of root.querySelectorAll(selector)) {
+    if (enhanced.has(el)) continue;
     const tabs = [...el.querySelectorAll('[role="tab"]')];
     const select = (tab) => {
       for (const t of tabs) {
@@ -38,5 +45,6 @@ export function initTabs(root = document, selector = ".tabs") {
         },
       });
     }
+    enhanced.add(el);
   }
 }

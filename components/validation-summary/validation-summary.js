@@ -1,8 +1,14 @@
 import { a, enhance, li, render } from "@vanillapod/dom";
 
+/** Elements this module has already enhanced. */
+const enhanced = new WeakSet();
+
 /**
  * Replaces native validation bubbles on every `.validated-form` under `root`
  * with a summary of links to the invalid fields.
+ *
+ * Safe to call again, for example after inserting markup: elements that were
+ * already enhanced are skipped, so a second call adds nothing to them.
  *
  * @param {ParentNode} [root] where to look, defaults to the document
  * @param {string} [selector] CSS selector for the elements to enhance
@@ -12,6 +18,7 @@ export function initValidationSummaries(
   selector = ".validated-form",
 ) {
   for (const form of root.querySelectorAll(selector)) {
+    if (enhanced.has(form)) continue;
     const summary = form.querySelector(".validation-summary");
     const list = summary.querySelector("ul");
     enhance(form, {
@@ -47,5 +54,6 @@ export function initValidationSummaries(
         summary.focus();
       },
     });
+    enhanced.add(form);
   }
 }
